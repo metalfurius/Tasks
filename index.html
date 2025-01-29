@@ -31,8 +31,32 @@
         window.serverTimestamp = serverTimestamp;
     </script>
 </head>
+<!-- index.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mis Tareas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
 <body>
-    <!-- ... (el resto de tu HTML original) ... -->
+    <div id="login" class="container">
+        <input type="password" id="password" placeholder="Contraseña">
+        <button onclick="checkPassword()">Entrar</button>
+    </div>
+
+    <div id="app" class="container hidden">
+        <h1>Mis Tareas ✅</h1>
+        <div class="new-task">
+            <input type="text" id="taskInput" placeholder="Nueva tarea">
+            <select id="category">
+                <option value="Personal">Personal</option>
+                <option value="Trabajo">Trabajo</option>
+                <option value="Estudio">Estudio</option>
+            </select>
+            <button onclick="addTask()">Agregar</button>
+        </div>
+        <div id="tasks"></div>
+    </div>
     <script src="app.js"></script>
 </body>
 </html>
