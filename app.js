@@ -1,31 +1,36 @@
+// Verificar si el usuario está autenticado
+if (!auth.currentUser) {
+    window.location.reload(); // Recargar si no está autenticado
+}
+
 let tasks = [];
 
 // Cargar tareas al iniciar
 document.addEventListener('DOMContentLoaded', () => {
+    // Crear la estructura de la aplicación
+    const appHTML = `
+        <div class="container">
+            <h1>Mis Tareas ✅</h1>
+            <div class="new-task">
+                <input type="text" id="taskInput" placeholder="Nueva tarea">
+                <select id="category">
+                    <option value="Personal">Personal</option>
+                    <option value="Trabajo">Trabajo</option>
+                    <option value="Estudio">Estudio</option>
+                </select>
+                <button onclick="addTask()">Agregar</button>
+            </div>
+            <div id="tasks"></div>
+        </div>
+    `;
+    document.body.innerHTML = appHTML;
+
+    // Cargar las tareas
     loadTasks();
 });
 
-async function checkPassword() {
-    const password = document.getElementById('password').value;
-    const errorElement = document.getElementById('error');
-    
-    try {
-        // Usuario fijo (cámbialo si quieres)
-        await signInWithEmailAndPassword(auth, 'usuario@tareas.com', password);
-        
-        document.getElementById('login').classList.add('hidden');
-        document.getElementById('app').classList.remove('hidden');
-        loadTasks();
-    } catch (error) {
-        errorElement.textContent = 'Contraseña incorrecta';
-        errorElement.classList.remove('hidden');
-    }
-}
-
-// Cargar tareas desde Firestore (solo si está autenticado)
+// Cargar tareas desde Firestore
 async function loadTasks() {
-    if (!auth.currentUser) return;
-    
     const querySnapshot = await getDocs(collection(db, 'tasks'));
     tasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     renderTasks();

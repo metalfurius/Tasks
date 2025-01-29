@@ -2,12 +2,10 @@
 <html>
 <head>
     <title>Mis Tareas</title>
-    <link rel="stylesheet" href="style.css">
     <!-- Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBNEQqC00bAupyv6L_lDJDvvi8vDGU3rO0",
@@ -20,41 +18,48 @@
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
-        
-        // Exportar funcionalidades necesarias
-        window.db = db;
-        window.auth = auth;
-        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
-        window.collection = collection;
-        window.getDocs = getDocs;
-        window.addDoc = addDoc;
-        window.updateDoc = updateDoc;
-        window.deleteDoc = deleteDoc;
-        window.doc = doc;
-        window.serverTimestamp = serverTimestamp;
+
+        // Función de login
+        window.checkPassword = async () => {
+            const password = document.getElementById('password').value;
+            const errorElement = document.getElementById('error');
+
+            try {
+                // Usuario fijo (cámbialo si quieres)
+                await signInWithEmailAndPassword(auth, 'usuario@tareas.com', password);
+
+                // Si la autenticación es exitosa, cargamos la aplicación
+                loadApp();
+            } catch (error) {
+                errorElement.textContent = 'Contraseña incorrecta';
+                errorElement.classList.remove('hidden');
+            }
+        };
+
+        // Cargar la aplicación después de autenticarse
+        async function loadApp() {
+            // Ocultar el formulario de login
+            document.getElementById('login').classList.add('hidden');
+
+            // Cargar el CSS de la aplicación
+            const link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.href = 'style.css';
+            document.head.appendChild(link);
+
+            // Cargar el JavaScript de la aplicación
+            const script = document.createElement('script');
+            script.src = 'app.js';
+            document.body.appendChild(script);
+        }
     </script>
 </head>
 <body>
-    <div id="login" class="container">
+    <!-- Solo muestra el formulario de login -->
+    <div id="login" class="login-container">
         <input type="password" id="password" placeholder="Contraseña">
         <button onclick="checkPassword()">Entrar</button>
         <p id="error" class="error hidden"></p>
     </div>
-
-    <div id="app" class="container hidden">
-        <h1>Mis Tareas ✅</h1>
-        <div class="new-task">
-            <input type="text" id="taskInput" placeholder="Nueva tarea">
-            <select id="category">
-                <option value="Personal">Personal</option>
-                <option value="Trabajo">Trabajo</option>
-                <option value="Estudio">Estudio</option>
-            </select>
-            <button onclick="addTask()">Agregar</button>
-        </div>
-        <div id="tasks"></div>
-    </div>
-    <script src="app.js"></script>
 </body>
 </html>

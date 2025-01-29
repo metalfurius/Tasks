@@ -1,43 +1,40 @@
-/* style.css */
-body {
-    font-family: Arial, sans-serif;
-    max-width: 600px;
-    margin: 0 auto;
+/* Estilos para el formulario de login */
+.login-container {
+    max-width: 300px;
+    margin: 100px auto;
     padding: 20px;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.container {
-    background: #f5f5f5;
-    padding: 20px;
+    border: 1px solid #ccc;
     border-radius: 10px;
+    text-align: center;
 }
 
-.task {
-    background: white;
+.login-container input {
+    width: 100%;
     padding: 10px;
-    margin: 5px 0;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
     border-radius: 5px;
-    display: flex;
-    align-items: center;
 }
 
-.completed {
-    opacity: 0.6;
-    text-decoration: line-through;
+.login-container button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-.new-task {
-    margin: 20px 0;
-    display: flex;
-    gap: 10px;
+.login-container button:hover {
+    background-color: #0056b3;
 }
 
 .error {
     color: #ff0000;
     margin-top: 10px;
     font-size: 0.9em;
+}
+
+.hidden {
+    display: none;
 }
