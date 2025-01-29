@@ -5,8 +5,27 @@ document.addEventListener('DOMContentLoaded', () => {
     loadTasks();
 });
 
-// Cargar tareas desde Firestore
+async function checkPassword() {
+    const password = document.getElementById('password').value;
+    const errorElement = document.getElementById('error');
+    
+    try {
+        // Usuario fijo (cámbialo si quieres)
+        await signInWithEmailAndPassword(auth, 'usuario@tareas.com', password);
+        
+        document.getElementById('login').classList.add('hidden');
+        document.getElementById('app').classList.remove('hidden');
+        loadTasks();
+    } catch (error) {
+        errorElement.textContent = 'Contraseña incorrecta';
+        errorElement.classList.remove('hidden');
+    }
+}
+
+// Cargar tareas desde Firestore (solo si está autenticado)
 async function loadTasks() {
+    if (!auth.currentUser) return;
+    
     const querySnapshot = await getDocs(collection(db, 'tasks'));
     tasks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     renderTasks();

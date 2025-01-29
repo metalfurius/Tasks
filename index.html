@@ -6,6 +6,7 @@
     <!-- Firebase -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
         import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
         const firebaseConfig = {
@@ -18,10 +19,13 @@
         };
 
         const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
         const db = getFirestore(app);
         
-        // Hacemos db disponible globalmente para app.js
+        // Exportar funcionalidades necesarias
         window.db = db;
+        window.auth = auth;
+        window.signInWithEmailAndPassword = signInWithEmailAndPassword;
         window.collection = collection;
         window.getDocs = getDocs;
         window.addDoc = addDoc;
@@ -31,17 +35,11 @@
         window.serverTimestamp = serverTimestamp;
     </script>
 </head>
-<!-- index.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Mis Tareas</title>
-    <link rel="stylesheet" href="style.css">
-</head>
 <body>
     <div id="login" class="container">
         <input type="password" id="password" placeholder="Contraseña">
         <button onclick="checkPassword()">Entrar</button>
+        <p id="error" class="error hidden"></p>
     </div>
 
     <div id="app" class="container hidden">
