@@ -41,3 +41,13 @@ body { background-color: #f5f5f5; }
     justify-content: center;
     gap: 8px;
 }
+
+input:invalid {
+    border-bottom: 1px solid #f44336 !important;
+    box-shadow: 0 1px 0 0 #f44336 !important;
+}
+
+input:valid {
+    border-bottom: 1px solid #4CAF50 !important;
+    box-shadow: 0 1px 0 0 #4CAF50 !important;
+}

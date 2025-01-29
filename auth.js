@@ -4,18 +4,53 @@ import { auth } from './firebase.js';
 export const initAuth = () => {
     const loginForm = document.getElementById('loginForm');
     const logoutBtn = document.getElementById('logoutBtn');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
     const googleLoginBtn = document.getElementById('googleLoginBtn');
 
-    // Login con email/password
+    
+    emailInput.value = localStorage.getItem('lastEmail') || '';
+    if (emailInput.value) {
+        passwordInput.focus();
+    }
+    // Si el usuario borra manualmente el email
+    emailInput.addEventListener('input', () => {
+        if (!emailInput.value) {
+            localStorage.removeItem('lastEmail');
+        }
+    });
+
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
+        if (!emailInput.checkValidity()) {
+            M.toast({html: 'Por favor ingresa un email válido', classes: 'orange'});
+            return;
+        }
+        const email = emailInput.value;
+        const password = passwordInput.value;
 
         try {
             await auth.signInWithEmailAndPassword(email, password);
+            // Guardar solo el email exitoso (nunca guardes contraseñas)
+            localStorage.setItem('lastEmail', email);
         } catch (error) {
-            M.toast({html: `Error: ${error.message}`, classes: 'red'});
+            let message = '';
+            switch (error.code) {
+                case 'auth/invalid-email':
+                    message = 'Email inválido';
+                    break;
+                case 'auth/user-not-found':
+                    message = 'Usuario no registrado';
+                    localStorage.removeItem('lastEmail'); // Limpia email obsoleto
+                    break;
+                case 'auth/wrong-password':
+                    message = 'Contraseña incorrecta';
+                    break;
+                default:
+                    message = error.message;
+            }
+            M.toast({html: `Error: ${message}`, classes: 'red'});
+            passwordInput.value = '';
         }
     });
 
@@ -26,6 +61,7 @@ export const initAuth = () => {
 
         try {
             await auth.signInWithPopup(provider);
+            localStorage.setItem('lastEmail', auth.currentUser.email);
         } catch (error) {
             M.toast({html: `Error: ${error.message}`, classes: 'red'});
         }
@@ -34,5 +70,6 @@ export const initAuth = () => {
     // Logout
     logoutBtn.addEventListener('click', () => {
         auth.signOut();
+        document.getElementById('password').value = '';
     });
 };
