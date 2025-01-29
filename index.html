@@ -38,16 +38,33 @@
 
         // Cargar la aplicación después de autenticarse
         async function loadApp() {
-            // Ocultar el formulario de login
+            // Hide login form
             document.getElementById('login').classList.add('hidden');
 
-            // Cargar el CSS de la aplicación
+            // Inject the app HTML structure
+            document.body.innerHTML += `
+            <div class="container">
+                <h1>Mis Tareas ✅</h1>
+                <div class="new-task">
+                    <input type="text" id="taskInput" placeholder="Nueva tarea">
+                    <select id="category">
+                        <option value="Personal">Personal</option>
+                        <option value="Trabajo">Trabajo</option>
+                        <option value="Estudio">Estudio</option>
+                    </select>
+                    <button onclick="addTask()">Agregar</button>
+                </div>
+                <div id="tasks"></div>
+            </div>
+        `;
+
+            // Load CSS
             const link = document.createElement('link');
             link.rel = 'stylesheet';
             link.href = 'style.css';
             document.head.appendChild(link);
 
-            // Cargar el JavaScript de la aplicación
+            // Load app.js
             const script = document.createElement('script');
             script.src = 'app.js';
             document.body.appendChild(script);

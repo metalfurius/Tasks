@@ -1,33 +1,7 @@
-// Verificar si el usuario está autenticado
-if (!auth.currentUser) {
-    window.location.reload(); // Recargar si no está autenticado
-}
 
 let tasks = [];
 
-// Cargar tareas al iniciar
-document.addEventListener('DOMContentLoaded', () => {
-    // Crear la estructura de la aplicación
-    const appHTML = `
-        <div class="container">
-            <h1>Mis Tareas ✅</h1>
-            <div class="new-task">
-                <input type="text" id="taskInput" placeholder="Nueva tarea">
-                <select id="category">
-                    <option value="Personal">Personal</option>
-                    <option value="Trabajo">Trabajo</option>
-                    <option value="Estudio">Estudio</option>
-                </select>
-                <button onclick="addTask()">Agregar</button>
-            </div>
-            <div id="tasks"></div>
-        </div>
-    `;
-    document.body.innerHTML = appHTML;
-
-    // Cargar las tareas
-    loadTasks();
-});
+loadTasks();
 
 // Cargar tareas desde Firestore
 async function loadTasks() {
