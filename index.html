@@ -1,82 +1,171 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Mis Tareas</title>
-    <!-- Firebase -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBNEQqC00bAupyv6L_lDJDvvi8vDGU3rO0",
-            authDomain: "tasks-dfce4.firebaseapp.com",
-            projectId: "tasks-dfce4",
-            storageBucket: "tasks-dfce4.firebasestorage.app",
-            messagingSenderId: "1010889254813",
-            appId: "1:1010889254813:web:bbcb772c978c94816a3174"
-        };
+    <!-- Materialize CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-
-        // Función de login
-        window.checkPassword = async () => {
-            const password = document.getElementById('password').value;
-            const errorElement = document.getElementById('error');
-
-            try {
-                // Usuario fijo (cámbialo si quieres)
-                await signInWithEmailAndPassword(auth, 'usuario@tareas.com', password);
-
-                // Si la autenticación es exitosa, cargamos la aplicación
-                loadApp();
-            } catch (error) {
-                errorElement.textContent = 'Contraseña incorrecta';
-                errorElement.classList.remove('hidden');
-            }
-        };
-
-        // Cargar la aplicación después de autenticarse
-        async function loadApp() {
-            // Hide login form
-            document.getElementById('login').classList.add('hidden');
-
-            // Inject the app HTML structure
-            document.body.innerHTML += `
-            <div class="container">
-                <h1>Mis Tareas ✅</h1>
-                <div class="new-task">
-                    <input type="text" id="taskInput" placeholder="Nueva tarea">
-                    <select id="category">
-                        <option value="Personal">Personal</option>
-                        <option value="Trabajo">Trabajo</option>
-                        <option value="Estudio">Estudio</option>
-                    </select>
-                    <button onclick="addTask()">Agregar</button>
-                </div>
-                <div id="tasks"></div>
-            </div>
-        `;
-
-            // Load CSS
-            const link = document.createElement('link');
-            link.rel = 'stylesheet';
-            link.href = 'style.css';
-            document.head.appendChild(link);
-
-            // Load app.js
-            const script = document.createElement('script');
-            script.src = 'app.js';
-            document.body.appendChild(script);
+    <style>
+        /* Keep all your existing CSS styles here */
+        body { background-color: #f5f5f5; }
+        .auth-card { margin-top: 50px; }
+        .task-card { margin-top: 30px; padding: 20px; }
+        .task-list { margin-top: 20px; }
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin: 10px 0;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 2px 0 rgba(0,0,0,0.14);
+            transition: all 0.3s ease;
         }
-    </script>
+        .task-text {
+            flex-grow: 1;
+            margin-left: 15px;
+            font-size: 1.1rem;
+        }
+        .completed {
+            text-decoration: line-through;
+            color: #9e9e9e !important;
+            opacity: 0.7;
+        }
+        .task-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 5px 0 rgba(0,0,0,0.14);
+        }
+        #tasksContainer { max-width: 800px; margin: 0 auto; }
+        .task-item input[type="checkbox"]:checked + span:not(.lever)::before {
+            border-right: 2px solid #26a69a;
+            border-bottom: 2px solid #26a69a;
+        }
+        .task-item input[type="checkbox"] + span { padding-left: 25px; }
+    </style>
 </head>
 <body>
-    <!-- Solo muestra el formulario de login -->
-    <div id="login" class="login-container">
-        <input type="password" id="password" placeholder="Contraseña">
-        <button onclick="checkPassword()">Entrar</button>
-        <p id="error" class="error hidden"></p>
+
+<!-- Keep all your existing HTML structure -->
+<!-- Login Section -->
+<div id="loginSection" class="container">
+    <div class="row">
+        <div class="col s12 m6 offset-m3">
+            <div class="card auth-card">
+                <div class="card-content">
+                    <span class="card-title center-align">Task Manager</span>
+                    <form id="loginForm">
+                        <div class="row">
+                            <div class="input-field col s12">
+                                <input id="email" type="email" class="validate" value="usuario@tareas.com">
+                                <label for="email">Email</label>
+                            </div>
+                            <div class="input-field col s12">
+                                <input id="password" type="password" class="validate" value="tareas123">
+                                <label for="password">Password</label>
+                            </div>
+                            <div class="col s12 center-align">
+                                <button class="btn waves-effect waves-light" type="submit">
+                                    Login <i class="material-icons right">send</i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
+</div>
+
+<!-- Tasks Section -->
+<div id="tasksSection" class="container" style="display: none;">
+    <nav>
+        <div class="nav-wrapper blue darken-3">
+            <a href="#" class="brand-logo center">My Tasks</a>
+            <ul class="right">
+                <li><a href="#" id="logoutBtn"><i class="material-icons">exit_to_app</i></a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div id="tasksContainer">
+        <div class="row">
+            <div class="col s12">
+                <div class="task-card">
+                    <div class="row">
+                        <div class="input-field col s12">
+                            <label for="newTask"></label><input placeholder="Add new task" id="newTask" type="text">
+                        </div>
+                    </div>
+
+                    <div class="task-list" id="tasksList">
+                        <!-- Tasks will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Action Button -->
+    <div class="fixed-action-btn">
+        <a class="btn-floating btn-large red">
+            <i class="large material-icons">add</i>
+        </a>
+    </div>
+</div>
+
+<!-- Scripts (updated order and added type="module") -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+<script type="module">
+    // This is the only script section that changes
+    import { initAuth } from './auth.js';
+    import { initTasks } from './tasks.js';
+    import { auth } from './firebase.js';
+
+    // Initialize Materialize components
+    document.addEventListener('DOMContentLoaded', () => {
+        M.AutoInit();
+        const fab = document.querySelector('.fixed-action-btn');
+        M.FloatingActionButton.init(fab, {
+            direction: 'left',
+            hoverEnabled: false
+        });
+    });
+
+    let unsubscribeTasks = null; // Store reference to the current Firestore listener
+
+    auth.onAuthStateChanged(user => {
+        const loginSection = document.getElementById('loginSection');
+        const tasksSection = document.getElementById('tasksSection');
+
+        if (user) {
+            loginSection.style.display = 'none';
+            tasksSection.style.display = 'block';
+
+            if (unsubscribeTasks) unsubscribeTasks(); // Unsubscribe previous listener if exists
+            const { loadTasks, unsubscribe } = initTasks();
+            loadTasks();
+            unsubscribeTasks = unsubscribe; // Store new unsubscribe function
+        } else {
+            loginSection.style.display = 'block';
+            tasksSection.style.display = 'none';
+
+            if (unsubscribeTasks) {
+                unsubscribeTasks(); // Ensure tasks are unsubscribed when logging out
+                unsubscribeTasks = null;
+            }
+        }
+    });
+
+    initAuth();
+</script>
+
 </body>
 </html>
