@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mis Tareas</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Firebase -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+        import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBNEQqC00bAupyv6L_lDJDvvi8vDGU3rO0",
+            authDomain: "tasks-dfce4.firebaseapp.com",
+            projectId: "tasks-dfce4",
+            storageBucket: "tasks-dfce4.firebasestorage.app",
+            messagingSenderId: "1010889254813",
+            appId: "1:1010889254813:web:bbcb772c978c94816a3174"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        
+        // Hacemos db disponible globalmente para app.js
+        window.db = db;
+        window.collection = collection;
+        window.getDocs = getDocs;
+        window.addDoc = addDoc;
+        window.updateDoc = updateDoc;
+        window.deleteDoc = deleteDoc;
+        window.doc = doc;
+        window.serverTimestamp = serverTimestamp;
+    </script>
+</head>
+<body>
+    <!-- ... (el resto de tu HTML original) ... -->
+    <script src="app.js"></script>
+</body>
+</html>

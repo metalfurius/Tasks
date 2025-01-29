@@ -1,0 +1,37 @@
+/* style.css */
+body {
+    font-family: Arial, sans-serif;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.container {
+    background: #f5f5f5;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.task {
+    background: white;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+}
+
+.completed {
+    opacity: 0.6;
+    text-decoration: line-through;
+}
+
+.new-task {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+}
