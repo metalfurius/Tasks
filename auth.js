@@ -7,7 +7,34 @@ export const initAuth = () => {
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
     const googleLoginBtn = document.getElementById('googleLoginBtn');
+    const authActionBtn = document.getElementById('authActionBtn');
+    const authActionText = document.getElementById('authActionText');
+    const toggleAuthMode = document.getElementById('toggleAuthMode');
 
+    let isRegisterMode = false;
+
+    const updateAuthUI = () => {
+        if (isRegisterMode) {
+            authActionText.textContent = 'Register';
+            toggleAuthMode.innerHTML = '<strong>Login</strong>';
+            document.querySelector('label[for="password"]').textContent = 'Create Password';
+        } else {
+            authActionText.textContent = 'Login';
+            toggleAuthMode.innerHTML = '<strong>Register</strong>';
+            document.querySelector('label[for="password"]').textContent = 'Password';
+        }
+
+        // Animación para refrescar los labels de Materialize
+        M.updateTextFields();
+    };
+
+    // Manejar el cambio de modo
+    toggleAuthMode.addEventListener('click', (e) => {
+        e.preventDefault();
+        isRegisterMode = !isRegisterMode;
+        updateAuthUI();
+        passwordInput.value = '';
+    });
     
     emailInput.value = localStorage.getItem('lastEmail') || '';
     if (emailInput.value) {
@@ -30,7 +57,14 @@ export const initAuth = () => {
         const password = passwordInput.value;
 
         try {
-            await auth.signInWithEmailAndPassword(email, password);
+            if (isRegisterMode) {
+                // Registrar usuario
+                await auth.createUserWithEmailAndPassword(email, password);
+                M.toast({html: '¡Registro exitoso!', classes: 'green'});
+            }
+            else {
+                await auth.signInWithEmailAndPassword(email, password);
+            }
             // Guardar solo el email exitoso (nunca guardes contraseñas)
             localStorage.setItem('lastEmail', email);
         } catch (error) {
@@ -45,6 +79,12 @@ export const initAuth = () => {
                     break;
                 case 'auth/wrong-password':
                     message = 'Contraseña incorrecta';
+                    break;
+                case 'auth/email-already-in-use':
+                    message = 'El email ya está registrado';
+                    break;
+                case 'auth/weak-password':
+                    message = 'Contraseña débil (mínimo 6 caracteres)';
                     break;
                 default:
                     message = error.message;

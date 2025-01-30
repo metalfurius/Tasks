@@ -12,7 +12,6 @@
 </head>
 <body>
 
-<!-- Keep all your existing HTML structure -->
 <!-- Login Section -->
 <div id="loginSection" class="container">
     <div class="row">
@@ -31,9 +30,18 @@
                                 <label for="password">Password</label>
                             </div>
                             <div class="col s12 center-align">
-                                <button class="btn waves-effect waves-light" type="submit">
-                                    Login <i class="material-icons right">send</i>
+                                <button class="btn waves-effect waves-light" type="submit" id="authActionBtn">
+                                    <!-- Texto dinámico -->
+                                    <span id="authActionText">Login</span>
+                                    <i class="material-icons right">send</i>
                                 </button>
+
+                                <div style="margin: 1rem 0;">
+                                    <a href="#" id="toggleAuthMode" class="blue-text text-darken-2">
+                                        <!-- Texto dinámico -->
+                                        Register
+                                    </a>
+                                </div>
                             </div>
                             <div class="col s12 center-align" style="margin-top: 1rem;">
                                 <a href="#" id="googleLoginBtn" class="btn red waves-effect waves-light">
@@ -85,14 +93,13 @@
     </div>
 </div>
 
-<!-- Scripts (updated order and added type="module") -->
+<!-- Scripts -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
 
 <script type="module">
-    // This is the only script section that changes
     import { initAuth } from './auth.js';
     import { initTasks } from './tasks.js';
     import { auth } from './firebase.js';

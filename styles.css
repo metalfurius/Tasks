@@ -51,3 +51,25 @@ input:valid {
     border-bottom: 1px solid #4CAF50 !important;
     box-shadow: 0 1px 0 0 #4CAF50 !important;
 }
+#toggleRegister {
+    display: block;
+    margin: 15px 0;
+    font-size: 0.9rem;
+}
+
+#toggleRegister:hover {
+    text-decoration: underline;
+}
+
+#loginBtn {
+    width: 100%;
+    margin-top: 10px;
+}
+#toggleAuthMode strong {
+    font-weight: 500;
+    text-decoration: underline;
+}
+
+.card-title, label {
+    transition: all 0.3s ease;
+}
