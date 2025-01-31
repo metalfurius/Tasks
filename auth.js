@@ -1,5 +1,6 @@
 ﻿// auth.js
 import { auth } from './firebase.js';
+import * as firebase from "./firebase";
 
 export const initAuth = () => {
     const loginForm = document.getElementById('loginForm');
@@ -49,7 +50,7 @@ export const initAuth = () => {
     loginForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         if (!emailInput.checkValidity()) {
-            M.toast({html: 'Por favor ingresa un email válido', classes: 'orange'});
+            M.toast({html: 'Please enter a valid email', classes: 'orange'});
             return;
         }
         const email = emailInput.value;
@@ -60,32 +61,32 @@ export const initAuth = () => {
                 // Registrar usuario
                 const userCredential = await auth.createUserWithEmailAndPassword(email, password);
                 await userCredential.user.sendEmailVerification();
-                M.toast({html: '¡Se ha enviado un correo de verificación! Revisa tu bandeja.', classes: 'green'});
+                M.toast({html: 'A verification email has been sent! Check your tray.', classes: 'green'});
 
             }
             else {
                 await auth.signInWithEmailAndPassword(email, password);
             }
-            // Guardar solo el email exitoso (nunca guardes contraseñas)
+            // Save only the successful email (never save passwords)
             localStorage.setItem('lastEmail', email);
         } catch (error) {
             let message = '';
             switch (error.code) {
                 case 'auth/invalid-email':
-                    message = 'Email inválido';
+                    message = 'Invalid email';
                     break;
                 case 'auth/user-not-found':
-                    message = 'Usuario no registrado';
-                    localStorage.removeItem('lastEmail'); // Limpia email obsoleto
+                    message = 'User not found';
+                    localStorage.removeItem('lastEmail'); // Clear obsolete email
                     break;
                 case 'auth/wrong-password':
-                    message = 'Contraseña incorrecta';
+                    message = 'Wrong password';
                     break;
                 case 'auth/email-already-in-use':
-                    message = 'El email ya está registrado';
+                    message = 'Email already in use';
                     break;
                 case 'auth/weak-password':
-                    message = 'Contraseña débil (mínimo 6 caracteres)';
+                    message = 'Weak password (6 characters or more)';
                     break;
                 default:
                     message = error.message;
@@ -111,8 +112,8 @@ export const initAuth = () => {
     // Logout
     logoutBtn.addEventListener('click', () => {
         auth.signOut();
-        emailInput.value = '';  // <-- Limpiar email
-        passwordInput.value = ''; // <-- Limpiar contraseña
+        emailInput.value = '';  // <-- Clear email
+        passwordInput.value = ''; // <-- Clear password
     });
 
     const resendVerificationBtn = document.getElementById('resendVerificationBtn');
@@ -121,7 +122,7 @@ export const initAuth = () => {
     resendVerificationBtn.addEventListener('click', async () => {
         try {
             await auth.currentUser.sendEmailVerification();
-            M.toast({html: '¡Correo reenviado! Revisa tu bandeja.', classes: 'green'});
+            M.toast({html: 'Email sent! Check your inbox.', classes: 'green'});
         } catch (error) {
             M.toast({html: `Error: ${error.message}`, classes: 'red'});
         }

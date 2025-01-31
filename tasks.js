@@ -32,7 +32,7 @@ export const initTasks = () => {
     // Event listener para la tecla Enter en el input
     newTaskInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
-            e.preventDefault(); // Previene el comportamiento por defecto
+            e.preventDefault(); // Prevent default submit
             handleCreateTask();
         }
     });

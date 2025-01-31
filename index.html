@@ -52,12 +52,12 @@
                         </div>
                     </form>
                     <div id="verificationMessage" style="display: none; text-align: center; margin-top: 20px;">
-                        <p>¡Último paso! Revisa tu correo para verificar tu cuenta.</p>
+                        <p>Last step! Check your email to verify your account.</p>
                         <button id="resendVerificationBtn" class="btn-small waves-effect waves-light">
-                            Reenviar correo
+                            Resend verification email
                         </button>
                         <button id="cancelVerificationBtn" class="btn-small waves-effect waves-light grey" style="margin-left: 10px;">
-                            Volver al login
+                            Cancel
                         </button>
                     </div>
                 </div>
@@ -134,31 +134,31 @@
 
         if (user) {
             if (user.emailVerified) {
-                // Usuario verificado
+                // Verified user
                 loginSection.style.display = 'none';
                 tasksSection.style.display = 'block';
                 verificationMessage.style.display = 'none';
                 loginForm.style.display = 'block';
 
-                // Cargar tareas
+                // Load tasks
                 if (unsubscribeTasks) unsubscribeTasks();
                 const { loadTasks, unsubscribe } = initTasks();
                 unsubscribeTasks = unsubscribe;
             } else {
-                // Usuario no verificado
+                // User not verified
                 loginSection.style.display = 'block';
                 tasksSection.style.display = 'none';
                 verificationMessage.style.display = 'block';
                 loginForm.style.display = 'none';
             }
         } else {
-            // Usuario no logueado
+            // User not logged in
             loginSection.style.display = 'block';
             tasksSection.style.display = 'none';
             verificationMessage.style.display = 'none';
             loginForm.style.display = 'block';
 
-            // Limpiar listeners de Firestore
+            // Clean up
             if (unsubscribeTasks) {
                 unsubscribeTasks();
                 unsubscribeTasks = null;
