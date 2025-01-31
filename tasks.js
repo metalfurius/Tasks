@@ -5,9 +5,8 @@ export const initTasks = () => {
     const tasksList = document.getElementById('tasksList');
     const newTaskInput = document.getElementById('newTask');
 
-    // Clear previous event listeners
-    document.querySelector('.fixed-action-btn').replaceWith(document.querySelector('.fixed-action-btn').cloneNode(true));
-    document.querySelector('.fixed-action-btn').addEventListener('click', async () => {
+    // Función reutilizable para crear tareas
+    const handleCreateTask = async () => {
         const text = newTaskInput.value.trim();
         if (text) {
             try {
@@ -21,6 +20,20 @@ export const initTasks = () => {
             } catch (error) {
                 M.toast({html: `Error adding task: ${error.message}`, classes: 'red'});
             }
+        }
+    };
+
+    // Limpiar event listeners previos del botón
+    document.querySelector('.fixed-action-btn').replaceWith(document.querySelector('.fixed-action-btn').cloneNode(true));
+
+    // Event listener para el botón
+    document.querySelector('.fixed-action-btn').addEventListener('click', handleCreateTask);
+
+    // Event listener para la tecla Enter en el input
+    newTaskInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); // Previene el comportamiento por defecto
+            handleCreateTask();
         }
     });
 
@@ -96,6 +109,9 @@ export const initTasks = () => {
             textInput.style.display = 'none';
         });
 
+
+        // Event listeners
+
         // Guardar con Enter
         textInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -103,8 +119,6 @@ export const initTasks = () => {
                 textInput.blur();
             }
         });
-
-        // Event listeners
         checkbox.querySelector('input').addEventListener('change', (e) => {
             db.collection('tasks').doc(doc.id).update({
                 completed: e.target.checked
