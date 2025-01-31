@@ -1,4 +1,5 @@
-﻿import { auth, db } from './firebase.js';
+﻿//tasks.js
+import { auth, db } from './firebase.js';
 
 export const initTasks = () => {
     const tasksList = document.getElementById('tasksList');

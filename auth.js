@@ -23,10 +23,9 @@ export const initAuth = () => {
             toggleAuthMode.innerHTML = '<strong>Register</strong>';
             document.querySelector('label[for="password"]').textContent = 'Password';
         }
-
-        // Animación para refrescar los labels de Materialize
         M.updateTextFields();
     };
+
 
     // Manejar el cambio de modo
     toggleAuthMode.addEventListener('click', (e) => {
@@ -59,8 +58,10 @@ export const initAuth = () => {
         try {
             if (isRegisterMode) {
                 // Registrar usuario
-                await auth.createUserWithEmailAndPassword(email, password);
-                M.toast({html: '¡Registro exitoso!', classes: 'green'});
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                await userCredential.user.sendEmailVerification();
+                M.toast({html: '¡Se ha enviado un correo de verificación! Revisa tu bandeja.', classes: 'green'});
+
             }
             else {
                 await auth.signInWithEmailAndPassword(email, password);
@@ -110,6 +111,25 @@ export const initAuth = () => {
     // Logout
     logoutBtn.addEventListener('click', () => {
         auth.signOut();
-        document.getElementById('password').value = '';
+        emailInput.value = '';  // <-- Limpiar email
+        passwordInput.value = ''; // <-- Limpiar contraseña
+    });
+
+    const resendVerificationBtn = document.getElementById('resendVerificationBtn');
+    const cancelVerificationBtn = document.getElementById('cancelVerificationBtn');
+
+    resendVerificationBtn.addEventListener('click', async () => {
+        try {
+            await auth.currentUser.sendEmailVerification();
+            M.toast({html: '¡Correo reenviado! Revisa tu bandeja.', classes: 'green'});
+        } catch (error) {
+            M.toast({html: `Error: ${error.message}`, classes: 'red'});
+        }
+    });
+
+    cancelVerificationBtn.addEventListener('click', () => {
+        auth.signOut();
+        verificationMessage.style.display = 'none';
+        loginForm.style.display = 'block';
     });
 };

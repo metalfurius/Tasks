@@ -1,3 +1,4 @@
+<!--index.html-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -50,6 +51,15 @@
                             </div>
                         </div>
                     </form>
+                    <div id="verificationMessage" style="display: none; text-align: center; margin-top: 20px;">
+                        <p>¡Último paso! Revisa tu correo para verificar tu cuenta.</p>
+                        <button id="resendVerificationBtn" class="btn-small waves-effect waves-light">
+                            Reenviar correo
+                        </button>
+                        <button id="cancelVerificationBtn" class="btn-small waves-effect waves-light grey" style="margin-left: 10px;">
+                            Volver al login
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -119,21 +129,38 @@
     auth.onAuthStateChanged(user => {
         const loginSection = document.getElementById('loginSection');
         const tasksSection = document.getElementById('tasksSection');
+        const verificationMessage = document.getElementById('verificationMessage');
+        const loginForm = document.getElementById('loginForm');
 
         if (user) {
-            loginSection.style.display = 'none';
-            tasksSection.style.display = 'block';
+            if (user.emailVerified) {
+                // Usuario verificado
+                loginSection.style.display = 'none';
+                tasksSection.style.display = 'block';
+                verificationMessage.style.display = 'none';
+                loginForm.style.display = 'block';
 
-            if (unsubscribeTasks) unsubscribeTasks(); // Unsubscribe previous listener if exists
-            const { loadTasks, unsubscribe } = initTasks();
-            loadTasks();
-            unsubscribeTasks = unsubscribe; // Store new unsubscribe function
+                // Cargar tareas
+                if (unsubscribeTasks) unsubscribeTasks();
+                const { loadTasks, unsubscribe } = initTasks();
+                unsubscribeTasks = unsubscribe;
+            } else {
+                // Usuario no verificado
+                loginSection.style.display = 'block';
+                tasksSection.style.display = 'none';
+                verificationMessage.style.display = 'block';
+                loginForm.style.display = 'none';
+            }
         } else {
+            // Usuario no logueado
             loginSection.style.display = 'block';
             tasksSection.style.display = 'none';
+            verificationMessage.style.display = 'none';
+            loginForm.style.display = 'block';
 
+            // Limpiar listeners de Firestore
             if (unsubscribeTasks) {
-                unsubscribeTasks(); // Ensure tasks are unsubscribed when logging out
+                unsubscribeTasks();
                 unsubscribeTasks = null;
             }
         }

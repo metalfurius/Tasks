@@ -90,3 +90,16 @@ input:valid {
     font-family: inherit;
     border-bottom: 1px solid #26a69a;
 }
+
+#verificationMessage {
+    padding: 20px;
+    background: #fff;
+    border-radius: 5px;
+    margin-top: 20px;
+    box-shadow: 0 2px 2px rgba(0,0,0,0.1);
+}
+
+#verificationMessage p {
+    margin: 0 0 15px 0;
+    color: #555;
+}
