@@ -38,17 +38,70 @@ export const initTasks = () => {
             </label>
         `;
 
-        const text = document.createElement('div');
-        text.className = `task-text ${data.completed ? 'completed' : ''}`;
-        text.textContent = data.text;
+        // Contenedor para texto y input de edición
+        const textContainer = document.createElement('div');
+        textContainer.className = 'task-text-container';
+
+        // Texto normal
+        const textDisplay = document.createElement('div');
+        textDisplay.className = `task-text ${data.completed ? 'completed' : ''}`;
+        textDisplay.textContent = data.text;
+
+        // Input de edición (oculto inicialmente)
+        const textInput = document.createElement('input');
+        textInput.type = 'text';
+        textInput.className = 'task-edit-input';
+        textInput.value = data.text;
+        textInput.style.display = 'none';
+
+        textContainer.appendChild(textDisplay);
+        textContainer.appendChild(textInput);
 
         const deleteBtn = document.createElement('a');
         deleteBtn.className = 'waves-effect waves-light btn-small red';
         deleteBtn.innerHTML = '<i class="material-icons">delete</i>';
 
         taskItem.appendChild(checkbox);
-        taskItem.appendChild(text);
+        taskItem.appendChild(textContainer);
         taskItem.appendChild(deleteBtn);
+
+        // Evento para editar al hacer clic en el texto
+        textDisplay.addEventListener('click', () => {
+            textInput.value = textDisplay.textContent.trim();
+            textDisplay.style.display = 'none';
+            textInput.style.display = 'block';
+            textInput.focus();
+        });
+
+        // Guardar cambios al salir del input
+        textInput.addEventListener('blur', () => {
+            const newText = textInput.value.trim();
+            const originalText = textDisplay.textContent.trim();
+
+            if (newText === '') {
+                M.toast({html: 'La tarea no puede estar vacía', classes: 'red'});
+                textInput.value = originalText;
+            } else if (newText !== originalText) {
+                textDisplay.textContent = newText;
+                db.collection('tasks').doc(doc.id).update({ text: newText })
+                    .catch(error => {
+                        M.toast({html: `Error: ${error.message}`, classes: 'red'});
+                        textDisplay.textContent = originalText;
+                        textInput.value = originalText;
+                    });
+            }
+
+            textDisplay.style.display = 'block';
+            textInput.style.display = 'none';
+        });
+
+        // Guardar con Enter
+        textInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                textInput.blur();
+            }
+        });
 
         // Event listeners
         checkbox.querySelector('input').addEventListener('change', (e) => {

@@ -73,3 +73,20 @@ input:valid {
 .card-title, label {
     transition: all 0.3s ease;
 }
+
+.task-text-container {
+    flex-grow: 1;
+    margin-left: 15px;
+}
+
+.task-edit-input {
+    border: none;
+    outline: none;
+    font-size: 1.1rem;
+    background: transparent;
+    width: 100%;
+    padding: 0;
+    color: inherit;
+    font-family: inherit;
+    border-bottom: 1px solid #26a69a;
+}
