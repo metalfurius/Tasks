@@ -24,14 +24,33 @@ const loadTasks = () => {
     });
 };
 
+let pendingDeleteId = null;
+let deleteTimeout = null;
+
+const handleDeleteClick = async (button, taskId) => {
+    if (pendingDeleteId === taskId) {
+        // Second click - confirm deletion
+        clearTimeout(deleteTimeout);
+        pendingDeleteId = null;
+        button.classList.remove('confirm-delete');
+        await deleteDoc(doc(db, 'tasks', taskId));
+    } else {
+        // First click - show confirmation
+        pendingDeleteId = taskId;
+        button.classList.add('confirm-delete');
+        deleteTimeout = setTimeout(() => {
+            button.classList.remove('confirm-delete');
+            pendingDeleteId = null;
+        }, 2000);
+    }
+};
+
 const renderTasks = () => {
     tasksList.innerHTML = tasks.map(task => `
         <div class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
             <input type="checkbox" ${task.completed ? 'checked' : ''} data-id="${task.id}">
             <div class="task-content" contenteditable="true">${task.text}</div>
             <div class="task-actions">
-                <button class="up-btn" data-id="${task.id}">⬆️</button>
-                <button class="down-btn" data-id="${task.id}">⬇️</button>
                 <button class="delete-btn" data-id="${task.id}">🗑️</button>
             </div>
         </div>
@@ -80,36 +99,6 @@ taskForm.addEventListener('submit', async e => {
     }
 });
 
-// Handle actions (delete, up, down)
-tasksList.addEventListener('click', async (e) => {
-    const taskId = e.target.dataset.id;
-    if (!taskId) return;
-
-    if (e.target.classList.contains('delete-btn')) {
-        await deleteDoc(doc(db, 'tasks', taskId));
-    } else if (e.target.classList.contains('up-btn') || e.target.classList.contains('down-btn')) {
-        const direction = e.target.classList.contains('up-btn') ? 'up' : 'down';
-        await moveTask(taskId, direction);
-    }
-});
-
-async function moveTask(taskId, direction) {
-    const taskIndex = tasks.findIndex(t => t.id === taskId);
-    if (taskIndex === -1) return;
-
-    const swapIndex = direction === 'up' ? taskIndex - 1 : taskIndex + 1;
-    if (swapIndex < 0 || swapIndex >= tasks.length) return;
-
-    const task = tasks[taskIndex];
-    const swapTask = tasks[swapIndex];
-
-    const batch = writeBatch(db);
-    batch.update(doc(db, 'tasks', task.id), { order: swapTask.order });
-    batch.update(doc(db, 'tasks', swapTask.id), { order: task.order });
-    await batch.commit();
-}
-
-
 // Improved edit handling with debouncing
 let editTimeout;
 tasksList.addEventListener('input', (e) => {
@@ -149,10 +138,12 @@ tasksList.addEventListener('blur', async e => {
     }
 }, true); // Use capture phase
 
-// Delete task (no changes needed here)
-tasksList.addEventListener('click', async e => {
+tasksList.addEventListener('click', async (e) => {
+    const taskId = e.target.dataset.id;
+    if (!taskId) return;
+
     if (e.target.classList.contains('delete-btn')) {
-        await deleteDoc(doc(db, 'tasks', e.target.dataset.id));
+        handleDeleteClick(e.target, taskId);
     }
 });
 

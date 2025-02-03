@@ -146,3 +146,25 @@ button:hover {
     display: flex;
     gap: 0.5rem;
 }
+
+.delete-btn {
+    transition: all 0.3s ease;
+    background-color: #ff4444;
+}
+
+.delete-btn.confirm-delete {
+    animation: shake 0.5s;
+    background-color: #cc0000;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(5px); }
+    50% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+    100% { transform: translateX(0); }
+}
+
+.task-actions {
+    min-width: 40px; /* Keep space for delete button */
+}
