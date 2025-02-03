@@ -28,7 +28,16 @@
         <button type="submit">Add Task</button>
     </form>
 
-    <div id="tasks-list"></div>
+    <div id="tabs">
+        <button class="tab-button active" data-tab="pending">Pending</button>
+        <button class="tab-button" data-tab="completed">Completed</button>
+        <button class="tab-button" data-tab="history">History</button>
+    </div>
+
+    <div class="tab-content active" id="pending-tasks"></div>
+    <div class="tab-content" id="completed-tasks"></div>
+    <div class="tab-content" id="history-tasks"></div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>

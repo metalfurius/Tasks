@@ -166,5 +166,59 @@ button:hover {
 }
 
 .task-actions {
-    min-width: 40px; /* Keep space for delete button */
+    min-width: 40px;
+}
+
+#tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    justify-content: center;
+}
+
+.tab-button {
+    background: none;
+    color: var(--primary);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tab-button.active {
+    background: var(--primary);
+    color: white;
+}
+
+.tab-content {
+    padding: 1rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+#tasks-container {
+    position: relative;
+}
+
+#task-form {
+    margin-bottom: 1.5rem;
+}
+.history-item {
+    padding: 0.8rem;
+    margin: 0.5rem 0;
+    background: var(--background);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: #666;
+    border-left: 4px solid var(--primary);
 }
