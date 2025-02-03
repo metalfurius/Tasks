@@ -1,6 +1,9 @@
 ﻿// tasks.js
 import { db } from './firebase.js';
-import { collection, addDoc, query, where, onSnapshot, updateDoc, deleteDoc, doc } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import {
+    collection, addDoc, query, where, onSnapshot,
+    updateDoc, deleteDoc, doc, orderBy, writeBatch
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 import { auth } from './firebase.js';
 
 const tasksList = document.getElementById('tasks-list');
@@ -8,45 +11,104 @@ const taskForm = document.getElementById('task-form');
 const taskInput = document.getElementById('task-input');
 
 let tasks = [];
+let sortable = null;
 
 const loadTasks = () => {
-    const q = query(collection(db, 'tasks'), where('userId', '==', auth.currentUser.uid));
+    const q = query(collection(db, 'tasks'),
+        where('userId', '==', auth.currentUser.uid),
+        orderBy('order', 'asc')
+    );
     return onSnapshot(q, (snapshot) => {
-        tasks = [];
-        snapshot.forEach(doc => {
-            tasks.push({ id: doc.id, ...doc.data() });
-        });
+        tasks = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
         renderTasks();
     });
 };
 
 const renderTasks = () => {
     tasksList.innerHTML = tasks.map(task => `
-        <div class="task-item ${task.completed ? 'completed' : ''}">
+        <div class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
             <input type="checkbox" ${task.completed ? 'checked' : ''} data-id="${task.id}">
-            <div class="task-content" contenteditable="true" data-id="${task.id}">${task.text}</div>
+            <div class="task-content" contenteditable="true">${task.text}</div>
             <div class="task-actions">
+                <button class="up-btn" data-id="${task.id}">⬆️</button>
+                <button class="down-btn" data-id="${task.id}">⬇️</button>
                 <button class="delete-btn" data-id="${task.id}">🗑️</button>
             </div>
         </div>
     `).join('');
+
+    initSortable();
 };
 
-// Add new task with correct field names
+function initSortable() {
+    if (sortable) sortable.destroy();
+
+    sortable = Sortable.create(tasksList, {
+        animation: 150,
+        handle: '.task-item',
+        onEnd: async (evt) => {
+            const batch = writeBatch(db);
+            Array.from(tasksList.children).forEach((item, index) => {
+                const taskId = item.dataset.id;
+                const task = tasks.find(t => t.id === taskId);
+                if (task.order !== index) {
+                    batch.update(doc(db, 'tasks', taskId), { order: index });
+                }
+            });
+            await batch.commit();
+        }
+    });
+}
+
+// Add new task
 taskForm.addEventListener('submit', async e => {
     e.preventDefault();
+    if (!taskInput.value.trim()) return;
+
+    const newOrder = tasks.length ? tasks[tasks.length - 1].order + 1 : 0;
     try {
         await addDoc(collection(db, 'tasks'), {
-            text: taskInput.value,
+            text: taskInput.value.trim(),
             completed: false,
             userId: auth.currentUser.uid,
-            timestamp: new Date()
+            timestamp: new Date(),
+            order: newOrder
         });
         taskInput.value = '';
     } catch (error) {
         alert(error.message);
     }
 });
+
+// Handle actions (delete, up, down)
+tasksList.addEventListener('click', async (e) => {
+    const taskId = e.target.dataset.id;
+    if (!taskId) return;
+
+    if (e.target.classList.contains('delete-btn')) {
+        await deleteDoc(doc(db, 'tasks', taskId));
+    } else if (e.target.classList.contains('up-btn') || e.target.classList.contains('down-btn')) {
+        const direction = e.target.classList.contains('up-btn') ? 'up' : 'down';
+        await moveTask(taskId, direction);
+    }
+});
+
+async function moveTask(taskId, direction) {
+    const taskIndex = tasks.findIndex(t => t.id === taskId);
+    if (taskIndex === -1) return;
+
+    const swapIndex = direction === 'up' ? taskIndex - 1 : taskIndex + 1;
+    if (swapIndex < 0 || swapIndex >= tasks.length) return;
+
+    const task = tasks[taskIndex];
+    const swapTask = tasks[swapIndex];
+
+    const batch = writeBatch(db);
+    batch.update(doc(db, 'tasks', task.id), { order: swapTask.order });
+    batch.update(doc(db, 'tasks', swapTask.id), { order: task.order });
+    await batch.commit();
+}
+
 
 // Improved edit handling with debouncing
 let editTimeout;
@@ -59,7 +121,7 @@ tasksList.addEventListener('input', (e) => {
                 text: e.target.textContent
             });
         }
-    }, 30000); // 500ms delay after typing stops
+    }, 30000); // 30000ms delay after typing stops
 });
 
 // Immediate checkbox update

@@ -131,3 +131,18 @@ button:hover {
 .container {
     text-align: center;
 }
+.task-item {
+    cursor: move; /* Show move cursor on hover */
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.task-item.dragging {
+    opacity: 0.5;
+    transform: scale(0.98);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.task-actions {
+    display: flex;
+    gap: 0.5rem;
+}

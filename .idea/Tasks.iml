@@ -12,5 +12,6 @@
     <orderEntry type="library" name="firebase-app" level="application" />
     <orderEntry type="library" name="firebase-auth" level="application" />
     <orderEntry type="library" name="firebase-firestore" level="application" />
+    <orderEntry type="library" name="sortablejs" level="application" />
   </component>
 </module>
