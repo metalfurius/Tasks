@@ -1,173 +1,41 @@
-<!--index.html-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Task Manager</title>
-
-    <!-- Materialize CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-<!-- Login Section -->
-<div id="loginSection" class="container">
-    <div class="row">
-        <div class="col s12 m6 offset-m3">
-            <div class="card auth-card">
-                <div class="card-content">
-                    <span class="card-title center-align">Task Manager</span>
-                    <form id="loginForm">
-                        <div class="row">
-                            <div class="input-field col s12">
-                                <input id="email" type="email" class="validate" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$">
-                                <label for="email">Email</label>
-                            </div>
-                            <div class="input-field col s12">
-                                <input id="password" type="password" class="validate">
-                                <label for="password">Password</label>
-                            </div>
-                            <div class="col s12 center-align">
-                                <button class="btn waves-effect waves-light" type="submit" id="authActionBtn">
-                                    <!-- Texto dinámico -->
-                                    <span id="authActionText">Login</span>
-                                    <i class="material-icons right">send</i>
-                                </button>
-
-                                <div style="margin: 1rem 0;">
-                                    <a href="#" id="toggleAuthMode" class="blue-text text-darken-2">
-                                        <!-- Texto dinámico -->
-                                        Register
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="col s12 center-align" style="margin-top: 1rem;">
-                                <a href="#" id="googleLoginBtn" class="btn red waves-effect waves-light">
-                                    <i class="material-icons left">account_circle</i> Sign in with Google
-                                </a>
-                            </div>
-                        </div>
-                    </form>
-                    <div id="verificationMessage" style="display: none; text-align: center; margin-top: 20px;">
-                        <p>Last step! Check your email to verify your account.</p>
-                        <button id="resendVerificationBtn" class="btn-small waves-effect waves-light">
-                            Resend verification email
-                        </button>
-                        <button id="cancelVerificationBtn" class="btn-small waves-effect waves-light grey" style="margin-left: 10px;">
-                            Cancel
-                        </button>
-                    </div>
-                </div>
-            </div>
+<!-- Auth Container -->
+<div id="auth-container" class="container">
+    <h1>Welcome to Taskify</h1>
+    <form id="auth-form">
+        <input type="email" id="email" placeholder="Email" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <div class="auth-buttons">
+            <button type="submit" id="login-btn">Sign In</button>
+            <button type="button" id="signup-btn">Sign Up</button>
         </div>
-    </div>
+    </form>
 </div>
 
-<!-- Tasks Section -->
-<div id="tasksSection" class="container" style="display: none;">
-    <nav>
-        <div class="nav-wrapper blue darken-3">
-            <a href="#" class="brand-logo center">My Tasks</a>
-            <ul class="right">
-                <li><a href="#" id="logoutBtn"><i class="material-icons">exit_to_app</i></a></li>
-            </ul>
-        </div>
-    </nav>
+<!-- Tasks Container -->
+<div id="tasks-container" class="container hidden">
+    <header>
+        <h1>Your Tasks</h1>
+        <button id="logout-btn">Logout</button>
+    </header>
 
-    <div id="tasksContainer">
-        <div class="row">
-            <div class="col s12">
-                <div class="task-card">
-                    <div class="row">
-                        <div class="input-field col s12">
-                            <label for="newTask"></label><input placeholder="Add new task" id="newTask" type="text">
-                        </div>
-                    </div>
+    <form id="task-form">
+        <input type="text" id="task-input" placeholder="Add a new task..." required>
+        <button type="submit">Add Task</button>
+    </form>
 
-                    <div class="task-list" id="tasksList">
-                        <!-- Tasks will be loaded here -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Floating Action Button -->
-    <div class="fixed-action-btn">
-        <a class="btn-floating btn-large red">
-            <i class="large material-icons">add</i>
-        </a>
-    </div>
+    <div id="tasks-list"></div>
 </div>
 
-<!-- Scripts -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
-
-<script type="module">
-    import { initAuth } from './auth.js';
-    import { initTasks } from './tasks.js';
-    import { auth } from './firebase.js';
-
-    // Initialize Materialize components
-    document.addEventListener('DOMContentLoaded', () => {
-        M.AutoInit();
-        const fab = document.querySelector('.fixed-action-btn');
-        M.FloatingActionButton.init(fab, {
-            direction: 'left',
-            hoverEnabled: false
-        });
-    });
-
-    let unsubscribeTasks = null; // Store reference to the current Firestore listener
-
-    auth.onAuthStateChanged(user => {
-        const loginSection = document.getElementById('loginSection');
-        const tasksSection = document.getElementById('tasksSection');
-        const verificationMessage = document.getElementById('verificationMessage');
-        const loginForm = document.getElementById('loginForm');
-
-        if (user) {
-            if (user.emailVerified) {
-                // Verified user
-                loginSection.style.display = 'none';
-                tasksSection.style.display = 'block';
-                verificationMessage.style.display = 'none';
-                loginForm.style.display = 'block';
-
-                // Load tasks
-                if (unsubscribeTasks) unsubscribeTasks();
-                const { loadTasks, unsubscribe } = initTasks();
-                unsubscribeTasks = unsubscribe;
-            } else {
-                // User not verified
-                loginSection.style.display = 'block';
-                tasksSection.style.display = 'none';
-                verificationMessage.style.display = 'block';
-                loginForm.style.display = 'none';
-            }
-        } else {
-            // User not logged in
-            loginSection.style.display = 'block';
-            tasksSection.style.display = 'none';
-            verificationMessage.style.display = 'none';
-            loginForm.style.display = 'block';
-
-            // Clean up
-            if (unsubscribeTasks) {
-                unsubscribeTasks();
-                unsubscribeTasks = null;
-            }
-        }
-    });
-
-    initAuth();
-</script>
-
+<script type="module" src="auth.js"></script>
+<script type="module" src="tasks.js"></script>
 </body>
 </html>
