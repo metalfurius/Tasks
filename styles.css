@@ -101,3 +101,33 @@ button:hover {
     background: var(--white);
     border-radius: 4px;
 }
+
+.google-btn {
+    background: #4285f4;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+}
+
+.google-btn:hover {
+    background: #357abd;
+    transform: translateY(-1px);
+}
+
+.google-btn img {
+    height: 20px;
+    width: 20px;
+}
+
+.container {
+    text-align: center;
+}
