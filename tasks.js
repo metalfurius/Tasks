@@ -73,7 +73,7 @@ const renderTasks = () => {
 const taskTemplate = (task) => `
     <div class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
         <input type="checkbox" ${task.completed ? 'checked' : ''} data-id="${task.id}">
-        <div class="task-content" contenteditable="true">${task.text}</div>
+        <div class="task-content" contenteditable="true" data-id="${task.id}">${task.text}</div>
         <div class="task-actions">
             <button class="delete-btn" data-id="${task.id}">🗑️</button>
         </div>
@@ -180,34 +180,40 @@ taskForm.addEventListener('submit', async e => {
     }
 });
 
-// Improved edit handling with debouncing
 let editTimeout;
 tasksContainer.addEventListener('input', (e) => {
     clearTimeout(editTimeout);
     editTimeout = setTimeout(async () => {
         const taskId = e.target.dataset.id;
         if (e.target.matches('.task-content')) {
-            await updateDoc(doc(db, 'tasks', taskId), {
-                text: e.target.textContent
-            });
+            const newText = e.target.textContent;
+            const task = tasks.find(t => t.id === taskId);
+
+            if (task && task.text !== newText) { // Añadir chequeo de task existente
+                await updateDoc(doc(db, 'tasks', taskId), {
+                    text: newText
+                });
+                await logHistory('Task edited', newText);
+            }
         }
-    }, 30000); // 30000ms delay after typing stops
+    }, 30000);
 });
 
-// Immediate checkbox update
 tasksContainer.addEventListener('change', async e => {
     if (e.target.matches('input[type="checkbox"]')) {
         const taskId = e.target.dataset.id;
         const task = tasks.find(t => t.id === taskId);
-        const action = e.target.checked ? 'Task completed' : 'Task marked incomplete';
-        await logHistory(action, task.text);
-        await updateDoc(doc(db, 'tasks', taskId), {
-            completed: e.target.checked
-        });
+
+        if (task) { // Añadir chequeo de existencia
+            const action = e.target.checked ? 'Task completed' : 'Task marked incomplete';
+            await logHistory(action, task.text);
+            await updateDoc(doc(db, 'tasks', taskId), {
+                completed: e.target.checked
+            });
+        }
     }
 });
 
-// Save on Enter key or blur
 tasksContainer.addEventListener('keydown', async e => {
     if (e.key === 'Enter' && e.target.matches('.task-content')) {
         e.preventDefault();
@@ -217,11 +223,19 @@ tasksContainer.addEventListener('keydown', async e => {
 
 tasksContainer.addEventListener('blur', async e => {
     if (e.target.matches('.task-content')) {
-        await updateDoc(doc(db, 'tasks', e.target.dataset.id), {
-            text: e.target.textContent
-        });
+        clearTimeout(editTimeout);
+        const taskId = e.target.dataset.id;
+        const newText = e.target.textContent;
+        const task = tasks.find(t => t.id === taskId);
+
+        if (task && task.text !== newText) { // Añadir chequeo de task existente
+            await updateDoc(doc(db, 'tasks', taskId), {
+                text: newText
+            });
+            await logHistory('Task edited', newText);
+        }
     }
-}, true); // Use capture phase
+}, true);
 
 tasksContainer.addEventListener('click', async (e) => {
     const taskId = e.target.dataset.id;
