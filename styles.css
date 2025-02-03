@@ -24,12 +24,14 @@ body {
     width: 100%;
     max-width: 500px;
     transition: transform 0.3s ease;
+    text-align: center;
 }
 
 .hidden {
     display: none;
 }
 
+/* Header Styles */
 header {
     display: flex;
     justify-content: space-between;
@@ -37,15 +39,14 @@ header {
     margin-bottom: 2rem;
 }
 
+/* Form Styles */
 #task-form {
     display: flex;
     gap: 0.5rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"] {
+input[type="text"] {
     flex: 1;
     padding: 0.8rem;
     border: 1px solid #e2e8f0;
@@ -53,6 +54,7 @@ input[type="password"] {
     font-size: 1rem;
 }
 
+/* Button Styles */
 button {
     background: var(--primary);
     color: var(--white);
@@ -67,44 +69,8 @@ button:hover {
     opacity: 0.9;
 }
 
-.auth-buttons {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-.task-item {
-    display: flex;
-    align-items: center;
-    padding: 1rem;
-    background: var(--background);
-    border-radius: 8px;
-    margin-bottom: 0.5rem;
-}
-
-.task-item.completed {
-    opacity: 0.6;
-}
-
-.task-content {
-    flex: 1;
-    margin: 0 1rem;
-}
-
-.task-actions {
-    display: flex;
-    gap: 0.5rem;
-}
-
-.task-content:focus {
-    outline: 2px solid var(--primary);
-    background: var(--white);
-    border-radius: 4px;
-}
-
 .google-btn {
     background: #4285f4;
-    color: white;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -114,8 +80,6 @@ button:hover {
     font-weight: 500;
     transition: all 0.3s ease;
     width: 100%;
-    border: none;
-    cursor: pointer;
 }
 
 .google-btn:hover {
@@ -128,12 +92,20 @@ button:hover {
     width: 20px;
 }
 
-.container {
-    text-align: center;
-}
+/* Task Items */
 .task-item {
-    cursor: move; /* Show move cursor on hover */
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    background: var(--background);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    cursor: move;
     transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.task-item.completed {
+    opacity: 0.6;
 }
 
 .task-item.dragging {
@@ -142,9 +114,22 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
+.task-content {
+    flex: 1;
+    margin: 0 1rem;
+}
+
+.task-content:focus {
+    outline: 2px solid var(--primary);
+    background: var(--white);
+    border-radius: 4px;
+}
+
+/* Task Actions */
 .task-actions {
     display: flex;
     gap: 0.5rem;
+    min-width: 40px;
 }
 
 .delete-btn {
@@ -165,10 +150,7 @@ button:hover {
     100% { transform: translateX(0); }
 }
 
-.task-actions {
-    min-width: 40px;
-}
-
+/* Tabs */
 #tabs {
     display: flex;
     gap: 0.5rem;
@@ -196,9 +178,6 @@ button:hover {
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     margin-top: 1rem;
-}
-
-.tab-content {
     display: none;
 }
 
@@ -206,13 +185,7 @@ button:hover {
     display: block;
 }
 
-#tasks-container {
-    position: relative;
-}
-
-#task-form {
-    margin-bottom: 1.5rem;
-}
+/* History */
 .history-item {
     padding: 0.8rem;
     margin: 0.5rem 0;
@@ -221,4 +194,10 @@ button:hover {
     font-size: 0.9rem;
     color: #666;
     border-left: 4px solid var(--primary);
+}
+
+.empty-state {
+    color: #666;
+    padding: 1rem;
+    text-align: center;
 }
