@@ -1,9 +1,47 @@
 ﻿:root {
     --primary: #4a90e2;
+    --container-bg: #ffffff;
     --background: #f5f7fa;
     --text: #2d3748;
-    --white: #ffffff;
+    --input-bg: #ffffff;
+    --border: #e2e8f0;
     --shadow: 0 2px 4px rgba(0,0,0,0.1);
+    --google-blue: #4285f4;
+    --delete-red: #ff4444;
+}
+[data-theme="dark"] {
+    --primary: #6fa8dc;
+    --container-bg: #2d2d2d;
+    --background: #1a1a1a;
+    --text: #e5e7eb;
+    --input-bg: #383838;
+    --border: #4a4a4a;
+    --shadow: 0 2px 4px rgba(0,0,0,0.3);
+    --google-blue: #357abd;
+    --delete-red: #cc0000;
+}
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.container, input, button, .task-item {
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+.theme-toggle {
+    background: var(--primary);
+    border: none;
+    color: var(--container-bg);
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease, background 0.3s ease;
+}
+.theme-toggle:hover {
+    transform: scale(1.1) rotate(15deg);
 }
 
 body {
@@ -17,7 +55,7 @@ body {
 }
 
 .container {
-    background: var(--white);
+    background: var(--container-bg);
     padding: 2rem;
     border-radius: 12px;
     box-shadow: var(--shadow);
@@ -49,15 +87,17 @@ header {
 input[type="text"] {
     flex: 1;
     padding: 0.8rem;
-    border: 1px solid #e2e8f0;
+    background: var(--input-bg);
+    border-color: var(--border);
     border-radius: 8px;
     font-size: 1rem;
+
 }
 
 /* Button Styles */
 button {
     background: var(--primary);
-    color: var(--white);
+    color: var(--container-bg);
     border: none;
     padding: 0.8rem 1.5rem;
     border-radius: 8px;
@@ -70,7 +110,7 @@ button:hover {
 }
 
 .google-btn {
-    background: #4285f4;
+    background: var(--google-blue);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -83,7 +123,7 @@ button:hover {
 }
 
 .google-btn:hover {
-    background: #357abd;
+    background: var(--delete-red);
     transform: translateY(-1px);
 }
 
@@ -121,7 +161,7 @@ button:hover {
 
 .task-content:focus {
     outline: 2px solid var(--primary);
-    background: var(--white);
+    background: var(--container-bg);
     border-radius: 4px;
 }
 
@@ -200,4 +240,20 @@ button:hover {
     color: #666;
     padding: 1rem;
     text-align: center;
+}
+
+#auth-container {
+    position: relative;
+}
+
+#auth-container .theme-toggle {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.header-controls {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
 }

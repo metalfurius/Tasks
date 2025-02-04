@@ -258,6 +258,35 @@ const setupListeners = () => {
         }
     });
 };
+const theme = {
+    init() {
+        this.toggleButtons = document.querySelectorAll('.theme-toggle');
+        this.loadTheme();
+        this.toggleButtons.forEach(btn =>
+            btn.addEventListener('click', () => this.toggleTheme())
+        );
+    },
+
+    loadTheme() {
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.body.setAttribute('data-theme', savedTheme);
+        this.updateButtons(savedTheme);
+    },
+
+    toggleTheme() {
+        const currentTheme = document.body.getAttribute('data-theme');
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        document.body.setAttribute('data-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        this.updateButtons(newTheme);
+    },
+
+    updateButtons(theme) {
+        this.toggleButtons.forEach(btn => {
+            btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+        });
+    }
+};
 
 // Auth State Listener
 auth.onAuthStateChanged(user => {
@@ -273,4 +302,5 @@ auth.onAuthStateChanged(user => {
 });
 
 // Initialize
+theme.init();
 setupListeners();

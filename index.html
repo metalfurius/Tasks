@@ -10,6 +10,7 @@
 <!-- Auth Container -->
 <div id="auth-container" class="container">
     <h1>Welcome to Taskify</h1>
+    <button class="theme-toggle" aria-label="Toggle theme">🌙</button>
     <button id="google-signin-btn" class="google-btn">
         <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google logo">
         Sign in with Google
@@ -20,7 +21,10 @@
 <div id="tasks-container" class="container hidden">
     <header>
         <h1>Your Tasks</h1>
-        <button id="logout-btn">Logout</button>
+        <div class="header-controls">
+            <button class="theme-toggle" aria-label="Toggle theme">🌙</button>
+            <button id="logout-btn">Logout</button>
+        </div>
     </header>
 
     <form id="task-form">
