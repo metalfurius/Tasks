@@ -1,49 +1,39 @@
-﻿:root {
-    --primary: #4a90e2;
-    --container-bg: #ffffff;
-    --background: #f5f7fa;
-    --text: #2d3748;
-    --input-bg: #ffffff;
-    --border: #e2e8f0;
-    --shadow: 0 2px 4px rgba(0,0,0,0.1);
-    --google-blue: #4285f4;
-    --delete-red: #ff4444;
+﻿/* ==================== */
+/* VARIABLES & THEMING  */
+/* ==================== */
+:root {
+    --primary: #6C63FF;          
+    --container-bg: #F8F9FF;
+    --background: #F4F1FF;
+    --text: #2E2E3A;
+    --text-muted: #6B6B7A;
+    --input-bg: #FFFFFF;
+    --border: #E1E1EF;
+    --shadow: 0 2px 8px rgba(110, 99, 255, 0.1);
+    --google-blue: #5A7AFF;
+    --google-blue-hover: #435EFF;
+    --delete-red: #FF5C5C;
+    --delete-red-hover: #FF4444;
 }
+
 [data-theme="dark"] {
-    --primary: #6fa8dc;
+    --primary: #EAE8FF;
     --container-bg: #2d2d2d;
     --background: #1a1a1a;
-    --text: #e5e7eb;
+    --text: #D8D5DB;
+    --text-muted: #B4B4BC;
     --input-bg: #383838;
     --border: #4a4a4a;
     --shadow: 0 2px 4px rgba(0,0,0,0.3);
-    --google-blue: #357abd;
+    --google-blue: #EAE8FF;
+    --google-blue-hover: #DAD6FF;
     --delete-red: #cc0000;
-}
-body {
-    transition: background-color 0.3s ease, color 0.3s ease;
+    --delete-red-hover: #990000;
 }
 
-.container, input, button, .task-item {
-    transition: background-color 0.3s ease, box-shadow 0.3s ease;
-}
-.theme-toggle {
-    background: var(--primary);
-    border: none;
-    color: var(--container-bg);
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease, background 0.3s ease;
-}
-.theme-toggle:hover {
-    transform: scale(1.1) rotate(15deg);
-}
-
+/* ==================== */
+/* BASE STYLES          */
+/* ==================== */
 body {
     font-family: 'Segoe UI', system-ui, sans-serif;
     background-color: var(--background);
@@ -52,6 +42,7 @@ body {
     min-height: 100vh;
     display: grid;
     place-items: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -65,19 +56,73 @@ body {
     text-align: center;
 }
 
-.hidden {
-    display: none;
-}
-
-/* Header Styles */
-header {
+/* ==================== */
+/* THEME TOGGLE         */
+/* ==================== */
+.theme-toggle {
+    background: var(--primary);
+    border: none;
+    color: var(--container-bg);
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
+    justify-content: center;
+    transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-/* Form Styles */
+.theme-toggle:hover {
+    transform: scale(1.1) rotate(15deg);
+}
+
+/* ==================== */
+/* BUTTONS              */
+/* ==================== */
+button {
+    background: var(--google-blue);
+    color: var(--container-bg);
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+}
+
+button:hover {
+    opacity: 0.9;
+}
+
+.google-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-weight: 500;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.google-btn:hover {
+    background: var(--google-blue-hover);
+    transform: translateY(-1px);
+}
+
+.delete-btn {
+    background-color: var(--delete-red);
+    transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+    background-color: var(--delete-red-hover);
+}
+
+/* ==================== */
+/* FORM ELEMENTS        */
+/* ==================== */
 #task-form {
     display: flex;
     gap: 0.5rem;
@@ -88,51 +133,16 @@ input[type="text"] {
     flex: 1;
     padding: 0.8rem;
     background: var(--input-bg);
-    border-color: var(--border);
+    border: 1px solid var(--border);
     border-radius: 8px;
     font-size: 1rem;
-
+    color: var(--text);
+    transition: border-color 0.3s ease;
 }
 
-/* Button Styles */
-button {
-    background: var(--primary);
-    color: var(--container-bg);
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: opacity 0.2s;
-}
-
-button:hover {
-    opacity: 0.9;
-}
-
-.google-btn {
-    background: var(--google-blue);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    width: 100%;
-}
-
-.google-btn:hover {
-    background: var(--delete-red);
-    transform: translateY(-1px);
-}
-
-.google-btn img {
-    height: 20px;
-    width: 20px;
-}
-
-/* Task Items */
+/* ==================== */
+/* TASK ITEMS           */
+/* ==================== */
 .task-item {
     display: flex;
     align-items: center;
@@ -141,7 +151,7 @@ button:hover {
     border-radius: 8px;
     margin-bottom: 0.5rem;
     cursor: move;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.3s;
 }
 
 .task-item.completed {
@@ -151,7 +161,7 @@ button:hover {
 .task-item.dragging {
     opacity: 0.5;
     transform: scale(0.98);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    box-shadow: var(--shadow);
 }
 
 .task-content {
@@ -165,32 +175,9 @@ button:hover {
     border-radius: 4px;
 }
 
-/* Task Actions */
-.task-actions {
-    display: flex;
-    gap: 0.5rem;
-    min-width: 40px;
-}
-
-.delete-btn {
-    transition: all 0.3s ease;
-    background-color: #ff4444;
-}
-
-.delete-btn.confirm-delete {
-    animation: shake 0.5s;
-    background-color: #cc0000;
-}
-
-@keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(5px); }
-    50% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
-    100% { transform: translateX(0); }
-}
-
-/* Tabs */
+/* ==================== */
+/* TABS                 */
+/* ==================== */
 #tabs {
     display: flex;
     gap: 0.5rem;
@@ -210,12 +197,12 @@ button:hover {
 
 .tab-button.active {
     background: var(--primary);
-    color: white;
+    color: var(--container-bg);
 }
 
 .tab-content {
     padding: 1rem;
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--border);
     border-radius: 8px;
     margin-top: 1rem;
     display: none;
@@ -225,21 +212,55 @@ button:hover {
     display: block;
 }
 
-/* History */
+/* ==================== */
+/* HISTORY              */
+/* ==================== */
 .history-item {
     padding: 0.8rem;
     margin: 0.5rem 0;
     background: var(--background);
     border-radius: 8px;
     font-size: 0.9rem;
-    color: #666;
+    color: var(--text-muted);
     border-left: 4px solid var(--primary);
 }
 
+/* ==================== */
+/* UTILITY CLASSES      */
+/* ==================== */
+.hidden {
+    display: none;
+}
+
 .empty-state {
-    color: #666;
+    color: var(--text-muted);
     padding: 1rem;
     text-align: center;
+}
+
+/* ==================== */
+/* ANIMATIONS           */
+/* ==================== */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(5px); }
+    50% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+    100% { transform: translateX(0); }
+}
+
+.delete-btn.confirm-delete {
+    animation: shake 0.5s;
+}
+
+/* ==================== */
+/* LAYOUT ENHANCEMENTS  */
+/* ==================== */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
 }
 
 #auth-container {
@@ -256,4 +277,8 @@ button:hover {
     display: flex;
     gap: 0.5rem;
     align-items: center;
+}
+
+.container, input, button, .task-item {
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
