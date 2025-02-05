@@ -9,6 +9,7 @@ import { auth } from './firebase.js';
 // DOM Elements
 const dom = {
     taskForm: document.getElementById('task-form'),
+    dueDateInput: document.getElementById('due-date-input'),
     taskInput: document.getElementById('task-input'),
     pendingTasks: document.getElementById('pending-tasks'),
     completedTasks: document.getElementById('completed-tasks'),
@@ -87,6 +88,7 @@ const render = {
         <div class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
             <input type="checkbox" ${task.completed ? 'checked' : ''} data-id="${task.id}">
             <div class="task-content" contenteditable="true" data-id="${task.id}">${task.text}</div>
+            ${task.dueDate ? `<div class="due-date">Due: ${task.dueDate.toDate().toLocaleDateString()}</div>` : ''}
             <div class="task-actions">
                 <button class="delete-btn" data-id="${task.id}">🗑️</button>
             </div>
@@ -209,6 +211,7 @@ const setupListeners = () => {
         if (!dom.taskInput.value.trim()) return;
 
         const taskText = dom.taskInput.value.trim();
+        const dueDate = dom.dueDateInput.value;
         const newOrder = state.tasks.length ? state.tasks[state.tasks.length - 1].order + 1 : 0;
 
         try {
@@ -217,9 +220,11 @@ const setupListeners = () => {
                 completed: false,
                 userId: auth.currentUser.uid,
                 timestamp: new Date(),
-                order: newOrder
+                order: newOrder,
+                dueDate: dueDate ? new Date(dueDate) : null
             });
             dom.taskInput.value = '';
+            dom.dueDateInput.value = '';
             await firebaseOps.logHistory('Task created', taskText);
         } catch (error) {
             alert(error.message);

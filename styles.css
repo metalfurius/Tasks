@@ -140,6 +140,22 @@ input[type="text"] {
     transition: border-color 0.3s ease;
 }
 
+input[type="date"] {
+    padding: 0.8rem;
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 1rem;
+    color: var(--text);
+    transition: border-color 0.3s ease;
+}
+
+.due-date {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-left: 1rem;
+}
+
 /* ==================== */
 /* TASK ITEMS           */
 /* ==================== */
