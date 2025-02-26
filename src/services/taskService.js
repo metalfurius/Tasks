@@ -85,7 +85,10 @@ const taskService = {
             const userId = authService.getCurrentUserId();
             if (!userId) throw new Error("No authenticated user");
 
-            const newOrder = this.tasks.length ? Math.max(...this.tasks.map(t => t.order)) + 1 : 0;
+            // Get minimum order of pending tasks and subtract 1
+            const pendingTasks = this.getPendingTasks();
+            const newOrder = pendingTasks.length > 0 ?
+                Math.min(...pendingTasks.map(t => t.order)) - 1 : 0;
 
             await addDoc(collection(db, 'tasks'), {
                 text: taskText,
@@ -99,13 +102,27 @@ const taskService = {
             return true;
         } catch (error) {
             console.error('Error adding task:', error);
-            throw error; // Simply re-throw the original error
+            throw error;
         }
     },
 
     // Update task
     async updateTask(taskId, updates) {
         try {
+            const task = this.getTask(taskId);
+            if (!task) return false;
+
+            // If completing/uncompleting a task, update its order
+            if ('completed' in updates && updates.completed !== task.completed) {
+                const tasksInTargetState = updates.completed ?
+                    this.getCompletedTasks() :
+                    this.getPendingTasks();
+
+                // Get minimum order of target state tasks and subtract 1
+                updates.order = tasksInTargetState.length > 0 ?
+                    Math.min(...tasksInTargetState.map(t => t.order)) - 1 : 0;
+            }
+
             await updateDoc(doc(db, 'tasks', taskId), updates);
             return true;
         } catch (error) {
@@ -149,12 +166,16 @@ const taskService = {
 
     // Get pending tasks
     getPendingTasks() {
-        return this.tasks.filter(task => !task.completed);
+        return this.tasks
+            .filter(task => !task.completed)
+            .sort((a, b) => a.order - b.order);
     },
 
     // Get completed tasks
     getCompletedTasks() {
-        return this.tasks.filter(task => task.completed);
+        return this.tasks
+            .filter(task => task.completed)
+            .sort((a, b) => a.order - b.order);
     }
 };
 
