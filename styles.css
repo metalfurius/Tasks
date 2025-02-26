@@ -114,6 +114,14 @@ button:hover {
 .delete-btn {
     background-color: var(--delete-red);
     transition: background-color 0.3s ease;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 1.2rem;
 }
 
 .delete-btn:hover {
@@ -154,15 +162,13 @@ input[type="date"] {
 /* DUE DATE STYLING     */
 /* ==================== */
 .due-date {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     color: var(--text-muted);
     background-color: var(--input-bg);
     padding: 0.25rem 0.5rem;
     border-radius: 4px;
     border: 1px solid var(--border);
-    display: inline-flex;
-    align-items: center;
-    margin-top: 0.25rem;
+    white-space: nowrap;
 }
 
 .due-date::before {
@@ -180,18 +186,24 @@ input[type="date"] {
 /* ==================== */
 .task-item {
     display: flex;
-    align-items: flex-start;
-    padding: 1rem;
+    flex-direction: column;
     background: var(--background);
     border-radius: 8px;
     margin-bottom: 0.5rem;
+    padding: 0.75rem;
     cursor: move;
     transition: transform 0.2s, box-shadow 0.2s, opacity 0.3s;
-    flex-wrap: wrap;
+}
+.task-item-main {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
 }
 
-.task-item.completed {
-    opacity: 0.6;
+.task-item.completed .task-content {
+    text-decoration: line-through;
+    opacity: 0.7;
 }
 
 .task-item.dragging {
@@ -202,10 +214,9 @@ input[type="date"] {
 
 .task-content {
     flex: 1;
-    margin: 0 1rem;
-    word-break: break-word;
-    overflow-wrap: break-word;
-    max-width: 100%;
+    padding: 0.5rem;
+    margin: 0;
+    line-height: 1.4;
     min-width: 0;
 }
 
@@ -213,11 +224,7 @@ input[type="date"] {
     outline: 2px solid var(--primary);
     background: var(--container-bg);
     border-radius: 4px;
-}
-.task-item-main {
-    display: flex;
-    width: 100%;
-    align-items: flex-start;
+    padding: 0.5rem;
 }
 
 .task-meta {
@@ -227,6 +234,20 @@ input[type="date"] {
     margin-top: 0.5rem;
     align-items: center;
     padding-left: 2.5rem;
+}
+.task-item input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    margin: 0;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.task-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    width: 80px;
 }
 
 /* ==================== */
