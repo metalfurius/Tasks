@@ -218,6 +218,8 @@ input[type="date"] {
     margin: 0;
     line-height: 1.4;
     min-width: 0;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 .task-content:focus {
@@ -298,6 +300,8 @@ input[type="date"] {
     font-size: 0.9rem;
     color: var(--text-muted);
     border-left: 4px solid var(--primary);
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 /* ==================== */
