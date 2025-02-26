@@ -88,14 +88,12 @@ const TaskList = {
         return `<div class="due-date ${isOverdue ? 'overdue' : ''}">${formattedDate}</div>`;
     },
 
-    // Create task HTML
-    // Modify the createTaskHtml method in taskList.js
     createTaskHtml(task) {
         return `
         <div class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
             <div class="task-item-main">
                 <input type="checkbox" ${task.completed ? 'checked' : ''} data-id="${task.id}">
-                <div class="task-content" contenteditable="true" data-id="${task.id}">${task.text}</div>
+                <div class="task-content" ${task.completed ? '' : 'contenteditable="true"'} data-id="${task.id}">${task.text}</div>
                 <div class="task-actions">
                     <button class="delete-btn ${task.completed ? 'disabled' : ''}" data-id="${task.id}" ${task.completed ? 'disabled' : ''}>🗑️</button>
                     ${task.dueDate ? this.formatDueDate(task.dueDate) : ''}

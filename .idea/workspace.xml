@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Enhance delete button styling and disable functionality for completed tasks">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/taskService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/taskService.js" afterDir="false" />
+    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Refactor task order management and enhance task state updates">
+      <change beforePath="$PROJECT_DIR$/src/components/tasks/taskItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tasks/taskItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/tasks/taskList.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tasks/taskList.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -84,7 +84,7 @@
       <updated>1738352156868</updated>
       <workItem from="1738352158143" duration="5984000" />
       <workItem from="1740595138286" duration="4459000" />
-      <workItem from="1740603294932" duration="681000" />
+      <workItem from="1740603294932" duration="1071000" />
     </task>
     <task id="LOCAL-00001" summary="Add due date styling and overdue check functionality">
       <option name="closed" value="true" />
@@ -118,7 +118,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740602881364</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="Refactor task order management and enhance task state updates">
+      <option name="closed" value="true" />
+      <created>1740604145338</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1740604145338</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -140,6 +148,7 @@
     <MESSAGE value="Enhance task item styling and structure with due date integration" />
     <MESSAGE value="Enhance task item styling with improved word break handling" />
     <MESSAGE value="Enhance delete button styling and disable functionality for completed tasks" />
-    <option name="LAST_COMMIT_MESSAGE" value="Enhance delete button styling and disable functionality for completed tasks" />
+    <MESSAGE value="Refactor task order management and enhance task state updates" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor task order management and enhance task state updates" />
   </component>
 </project>

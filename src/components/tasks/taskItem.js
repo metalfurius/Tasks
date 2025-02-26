@@ -49,21 +49,19 @@ const TaskItem = {
         }
     },
 
-    // Handle task text edit
-    async handleTaskEdit(contentElement) {
-        const taskId = contentElement.dataset.id;
-        const newText = contentElement.textContent.trim();
-        let task;
-        try {
-            task = taskService.getTask(taskId);
-            if (!task || task.text === newText || newText === '') return;
-
-            await taskService.updateTask(taskId, { text: newText });
-            await historyService.logAction('Task edited', `Changed from "${task.text}" to "${newText}"`);
-        } catch (error) {
-            console.error('Error updating task text:', error);
-            contentElement.textContent = task ? task.text : '';
-        }
+    createTaskHtml(task) {
+        return `
+        <div class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
+            <div class="task-item-main">
+                <input type="checkbox" ${task.completed ? 'checked' : ''} data-id="${task.id}">
+                <div class="task-content" ${task.completed ? '' : 'contenteditable="true"'} data-id="${task.id}">${task.text}</div>
+                <div class="task-actions">
+                    <button class="delete-btn ${task.completed ? 'disabled' : ''}" data-id="${task.id}" ${task.completed ? 'disabled' : ''}>🗑️</button>
+                    ${task.dueDate ? this.formatDueDate(task.dueDate) : ''}
+                </div>
+            </div>
+        </div>
+    `;
     },
 
     // Handle task deletion
