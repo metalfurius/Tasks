@@ -150,10 +150,29 @@ input[type="date"] {
     transition: border-color 0.3s ease;
 }
 
+/* ==================== */
+/* DUE DATE STYLING     */
+/* ==================== */
 .due-date {
     font-size: 0.8rem;
     color: var(--text-muted);
-    margin-left: 1rem;
+    background-color: var(--input-bg);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    display: inline-flex;
+    align-items: center;
+    margin-top: 0.25rem;
+}
+
+.due-date::before {
+    content: "📅";
+    margin-right: 0.25rem;
+}
+
+.due-date.overdue {
+    color: var(--delete-red);
+    border-color: var(--delete-red);
 }
 
 /* ==================== */
@@ -161,13 +180,14 @@ input[type="date"] {
 /* ==================== */
 .task-item {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     padding: 1rem;
     background: var(--background);
     border-radius: 8px;
     margin-bottom: 0.5rem;
     cursor: move;
     transition: transform 0.2s, box-shadow 0.2s, opacity 0.3s;
+    flex-wrap: wrap;
 }
 
 .task-item.completed {
@@ -183,12 +203,30 @@ input[type="date"] {
 .task-content {
     flex: 1;
     margin: 0 1rem;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+    min-width: 0;
 }
 
 .task-content:focus {
     outline: 2px solid var(--primary);
     background: var(--container-bg);
     border-radius: 4px;
+}
+.task-item-main {
+    display: flex;
+    width: 100%;
+    align-items: flex-start;
+}
+
+.task-meta {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+    align-items: center;
+    padding-left: 2.5rem;
 }
 
 /* ==================== */

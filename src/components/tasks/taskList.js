@@ -42,7 +42,7 @@ const TaskList = {
         }
 
         this.pendingTasksContainer.innerHTML = pendingTasks
-            .map(this.createTaskHtml)
+            .map((task) => this.createTaskHtml(task))
             .join('');
 
         // Initialize sortable if on pending tab
@@ -61,20 +61,45 @@ const TaskList = {
         }
 
         this.completedTasksContainer.innerHTML = completedTasks
-            .map(this.createTaskHtml)
+            .map((task) => this.createTaskHtml(task))
             .join('');
+    },
+
+    // Check if a date is overdue
+    isOverdue(date) {
+        if (!date) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time part for comparison
+        return date < today;
+    },
+
+    // Format the due date
+    formatDueDate(dueDate) {
+        if (!dueDate) return '';
+
+        const date = dueDate.toDate();
+        const isOverdue = this.isOverdue(date);
+        const formattedDate = date.toLocaleDateString(undefined, {
+            month: 'short',
+            day: 'numeric',
+            year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+        });
+
+        return `<div class="due-date ${isOverdue ? 'overdue' : ''}">${formattedDate}</div>`;
     },
 
     // Create task HTML
     createTaskHtml(task) {
         return `
             <div class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
-                <input type="checkbox" ${task.completed ? 'checked' : ''} data-id="${task.id}">
-                <div class="task-content" contenteditable="true" data-id="${task.id}">${task.text}</div>
-                ${task.dueDate ? `<div class="due-date">Due: ${task.dueDate.toDate().toLocaleDateString()}</div>` : ''}
-                <div class="task-actions">
-                    <button class="delete-btn" data-id="${task.id}">🗑️</button>
+                <div class="task-item-main">
+                    <input type="checkbox" ${task.completed ? 'checked' : ''} data-id="${task.id}">
+                    <div class="task-content" contenteditable="true" data-id="${task.id}">${task.text}</div>
+                    <div class="task-actions">
+                        <button class="delete-btn" data-id="${task.id}">🗑️</button>
+                    </div>
                 </div>
+                ${task.dueDate ? `<div class="task-meta">${this.formatDueDate(task.dueDate)}</div>` : ''}
             </div>
         `;
     },
