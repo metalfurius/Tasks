@@ -128,6 +128,17 @@ button:hover {
     background-color: var(--delete-red-hover);
 }
 
+.delete-btn.disabled {
+    background-color: var(--text-muted);
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.delete-btn.disabled:hover {
+    background-color: var(--text-muted);
+    transform: none;
+}
+
 /* ==================== */
 /* FORM ELEMENTS        */
 /* ==================== */
