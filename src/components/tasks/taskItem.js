@@ -33,19 +33,34 @@ const TaskItem = {
     async handleTaskCompletion(checkbox) {
         const taskId = checkbox.dataset.id;
         const isCompleted = checkbox.checked;
+        const taskElement = checkbox.closest('.task-item');
 
         try {
             const task = taskService.getTask(taskId);
             if (!task) return;
+
+            // Add animation class
+            taskElement.classList.add(isCompleted ? 'completing' : 'uncompleting');
+            checkbox.style.animation = 'checkmark 0.5s ease';
+
+            // Wait for animation
+            await new Promise(resolve => setTimeout(resolve, 500));
 
             await taskService.updateTask(taskId, { completed: isCompleted });
             await historyService.logAction(
                 isCompleted ? 'Task completed' : 'Task marked incomplete',
                 task.text
             );
+
+            // Remove animation class
+            taskElement.classList.remove('completing', 'uncompleting');
+            checkbox.style.animation = '';
+
         } catch (error) {
             console.error('Error updating task completion:', error);
             checkbox.checked = !isCompleted; // Revert UI if error
+            taskElement.classList.remove('completing', 'uncompleting');
+            checkbox.style.animation = '';
         }
     },
 
