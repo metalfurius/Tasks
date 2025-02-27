@@ -36,6 +36,41 @@
     --delete-red-hover: #FF9797;
     --success-green: #33D69F;
 }
+[data-theme="sepia"] {
+    --primary: #8B4513;
+    --primary-light: #A0522D;
+    --container-bg: #F4ECD8;
+    --background: #FDF5E6;
+    --text: #5C4033;
+    --text-secondary: #8B7355;
+    --text-muted: #A0522D;
+    --input-bg: #FAEBD7;
+    --border: #DEB887;
+    --shadow: 0 10px 20px rgba(139, 69, 19, 0.1);
+    --google-blue: #8B4513;
+    --google-blue-hover: #A0522D;
+    --delete-red: #CD5C5C;
+    --delete-red-hover: #FA8072;
+    --success-green: #2E8B57;
+}
+
+[data-theme="midnight"] {
+    --primary: #4A90E2;
+    --primary-light: #5DA0E2;
+    --container-bg: #1A1B2E;
+    --background: #13141F;
+    --text: #E2E8F0;
+    --text-secondary: #A0AEC0;
+    --text-muted: #718096;
+    --input-bg: #222436;
+    --border: #2D3748;
+    --shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    --google-blue: #4A90E2;
+    --google-blue-hover: #5DA0E2;
+    --delete-red: #FC8181;
+    --delete-red-hover: #FEB2B2;
+    --success-green: #48BB78;
+}
 
 /* ==================== */
 /* BASE STYLES          */
@@ -73,22 +108,72 @@ h1 {
 /* ==================== */
 /* THEME TOGGLE         */
 /* ==================== */
-.theme-toggle {
-    background: var(--primary);
-    border: none;
-    color: var(--container-bg);
-    cursor: pointer;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease, background-color 0.3s ease;
+.theme-selector {
+    position: fixed;
+    background: var(--container-bg);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    padding: 8px;
+    z-index: 1000;
+    min-width: 160px;
+    border: 1px solid var(--border);
 }
 
-.theme-toggle:hover {
-    transform: scale(1.1) rotate(15deg);
+.theme-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #DFE3FA;
+    cursor: pointer;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    margin-bottom: 4px;
+}
+
+/* Light theme button */
+.theme-option[data-theme="light"] {
+    background: #FFFFFF;
+    color: #0C0E16;
+}
+
+/* Sepia theme button */
+.theme-option[data-theme="sepia"] {
+    background: #F4ECD8;
+    color: #8B4513;
+}
+
+/* Dark theme button */
+.theme-option[data-theme="dark"] {
+    background: #1E2139;
+    color: #FFFFFF;
+}
+
+/* Midnight theme button */
+.theme-option[data-theme="midnight"] {
+    background: #13141F;
+    color: #E2E8F0;
+}
+
+.theme-option:last-child {
+    margin-bottom: 0;
+}
+
+.theme-option:hover {
+    transform: translateX(2px);
+    border-color: var(--primary);
+}
+
+.theme-icon {
+    font-size: 1.2em;
+    width: 24px;
+    text-align: center;
+}
+
+.theme-name {
+    font-size: 0.9em;
+    font-weight: 500;
 }
 
 /* ==================== */
