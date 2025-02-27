@@ -1,5 +1,6 @@
 // src/utils/sortable.js
 import taskService from '../services/taskService.js';
+import ToastService from '../services/toastService.js';
 
 const SortableManager = {
     instances: {},
@@ -37,8 +38,10 @@ const SortableManager = {
                 .map(el => el.dataset.id);
 
             await taskService.updateTaskOrder(orderedIds);
+            ToastService.info('📋 Task order updated');
         } catch (error) {
             console.error('Error updating task order:', error);
+            ToastService.error('😕 Could not save the new task order');
         }
     }
 };

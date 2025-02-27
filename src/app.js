@@ -6,6 +6,7 @@ import TaskItem from './components/tasks/taskItem.js';
 import TabManager from './components/ui/tabs.js';
 import ThemeManager from './components/ui/theme.js';
 import HistoryView from './components/history/history.js';
+import ToastService from './services/toastService.js';
 
 // App initialization
 const App = {
@@ -13,6 +14,7 @@ const App = {
         // Initialize UI components
         ThemeManager.init();
         TabManager.init();
+        ToastService.init();
 
         // Initialize auth
         AuthComponent.init();

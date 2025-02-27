@@ -1,6 +1,7 @@
 // src/services/taskService.js
 import { db } from './firebase.js';
 import authService from './authService.js';
+import ToastService from './toastService.js';
 import {
     collection, addDoc, query, where, onSnapshot,
     updateDoc, deleteDoc, doc, orderBy, writeBatch
@@ -98,9 +99,10 @@ const taskService = {
                 order: newOrder,
                 dueDate: dueDate ? new Date(dueDate) : null
             });
-
+            ToastService.success('Task added successfully');
             return true;
         } catch (error) {
+            ToastService.error('Failed to add task');
             console.error('Error adding task:', error);
             throw error;
         }
@@ -124,20 +126,38 @@ const taskService = {
             }
 
             await updateDoc(doc(db, 'tasks', taskId), updates);
+            if ('completed' in updates) {
+                ToastService.success(updates.completed ?
+                    `🎉 Great job! "${this.truncateText(task.text)}" completed` :
+                    `↩️ "${this.truncateText(task.text)}" moved back to pending`
+                );
+            } else if ('text' in updates) {
+                ToastService.info(`📝 Task text updated successfully`);
+            } else {
+                ToastService.success('✅ Task updated successfully');
+            }
             return true;
         } catch (error) {
-            console.error('Error updating task:', error);
+            ToastService.error('❌ Failed to update task. Please try again');
             throw error;
         }
+    },
+    truncateText(text, maxLength = 20) {
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength) + '...';
     },
 
     // Delete task
     async deleteTask(taskId) {
         try {
+            const task = this.getTask(taskId);
+            if (!task) return false;
+
             await deleteDoc(doc(db, 'tasks', taskId));
+            ToastService.warning(`🗑️ "${this.truncateText(task.text)}" has been deleted`);
             return true;
         } catch (error) {
-            console.error('Error deleting task:', error);
+            ToastService.error('❌ Could not delete task. Please try again');
             throw error;
         }
     },
