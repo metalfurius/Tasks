@@ -2,6 +2,7 @@
 import taskService from '../../services/taskService.js';
 import TabManager from '../ui/tabs.js';
 import SortableManager from '../../utils/sortable.js';
+import TaskItem from './taskItem.js';
 
 const TaskList = {
     // DOM elements
@@ -42,7 +43,7 @@ const TaskList = {
         }
 
         this.pendingTasksContainer.innerHTML = pendingTasks
-            .map((task) => this.createTaskHtml(task))
+            .map((task) => TaskItem.createTaskHtml(task))  // Use TaskItem's method
             .join('');
 
         // Initialize sortable if on pending tab
@@ -61,7 +62,7 @@ const TaskList = {
         }
 
         this.completedTasksContainer.innerHTML = completedTasks
-            .map((task) => this.createTaskHtml(task))
+            .map((task) => TaskItem.createTaskHtml(task))  // Use TaskItem's method
             .join('');
     },
 
@@ -69,7 +70,7 @@ const TaskList = {
     isOverdue(date) {
         if (!date) return false;
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Reset time part for comparison
+        today.setHours(0, 0, 0, 0);
         return date < today;
     },
 
@@ -86,21 +87,6 @@ const TaskList = {
         });
 
         return `<div class="due-date ${isOverdue ? 'overdue' : ''}">${formattedDate}</div>`;
-    },
-
-    createTaskHtml(task) {
-        return `
-        <div class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
-            <div class="task-item-main">
-                <input type="checkbox" ${task.completed ? 'checked' : ''} data-id="${task.id}">
-                <div class="task-content" ${task.completed ? '' : 'contenteditable="true"'} data-id="${task.id}">${task.text}</div>
-                <div class="task-actions">
-                    <button class="delete-btn ${task.completed ? 'disabled' : ''}" data-id="${task.id}" ${task.completed ? 'disabled' : ''}>🗑️</button>
-                    ${task.dueDate ? this.formatDueDate(task.dueDate) : ''}
-                </div>
-            </div>
-        </div>
-    `;
     },
 
     // Handle tab change

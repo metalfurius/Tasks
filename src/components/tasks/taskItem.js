@@ -94,6 +94,30 @@ const TaskItem = {
             console.error('Error deleting task:', error);
             alert('Failed to delete task');
         }
+    },
+    async handleTaskEdit(contentElement) {
+        const taskId = contentElement.dataset.id;
+        let newText = contentElement.innerHTML
+            .replace(/<div>/g, '\n')
+            .replace(/<\/div>/g, '')
+            .replace(/<br>/g, '\n')
+            .trim();
+        let originalTask = null;
+
+        try {
+            originalTask = taskService.getTask(taskId);
+            if (!originalTask || originalTask.text === newText) return;
+
+            // Convertir saltos de línea a <br> para almacenamiento
+            newText = newText.replace(/\n/g, '<br>');
+            await taskService.updateTask(taskId, { text: newText });
+            await historyService.logAction('Task edited', `${originalTask.text} → ${newText}`);
+        } catch (error) {
+            console.error('Error updating task:', error);
+            if (originalTask) {
+                contentElement.innerHTML = originalTask.text;
+            }
+        }
     }
 };
 
