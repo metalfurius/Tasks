@@ -1,5 +1,7 @@
 // src/components/auth/auth.js
 import authService from '../../services/authService.js';
+import NotificationMonitor from '../../services/notificationMonitor.js';
+import ToastService from '../../services/toastService.js';
 
 const AuthComponent = {
     // DOM elements
@@ -43,6 +45,11 @@ const AuthComponent = {
     handleAuthStateChanged(user) {
         if (user) {
             this.showTasksView();
+            ToastService.success(`Welcome back, ${user.displayName}! 👋`);
+            // Start initial checks after a brief delay
+            setTimeout(() => {
+                NotificationMonitor.initialCheck();
+            }, 1500);
         } else {
             this.showAuthView();
         }

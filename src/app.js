@@ -7,6 +7,7 @@ import TabManager from './components/ui/tabs.js';
 import ThemeManager from './components/ui/theme.js';
 import HistoryView from './components/history/history.js';
 import ToastService from './services/toastService.js';
+import NotificationMonitor from './services/notificationMonitor.js';
 
 // App initialization
 const App = {
@@ -15,6 +16,7 @@ const App = {
         ThemeManager.init();
         TabManager.init();
         ToastService.init();
+        NotificationMonitor.init();
 
         // Initialize auth
         AuthComponent.init();
