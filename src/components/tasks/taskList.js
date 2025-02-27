@@ -66,29 +66,6 @@ const TaskList = {
             .join('');
     },
 
-    // Check if a date is overdue
-    isOverdue(date) {
-        if (!date) return false;
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        return date < today;
-    },
-
-    // Format the due date
-    formatDueDate(dueDate) {
-        if (!dueDate) return '';
-
-        const date = dueDate.toDate();
-        const isOverdue = this.isOverdue(date);
-        const formattedDate = date.toLocaleDateString(undefined, {
-            month: 'short',
-            day: 'numeric',
-            year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
-        });
-
-        return `<div class="due-date ${isOverdue ? 'overdue' : ''}">${formattedDate}</div>`;
-    },
-
     // Handle tab change
     handleTabChange(tabName) {
         if (tabName === 'pending') {
