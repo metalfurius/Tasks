@@ -44,7 +44,6 @@ const TaskItem = {
         const taskId = checkbox.dataset.id;
         const isCompleted = checkbox.checked;
         const taskElement = checkbox.closest('.task-item');
-        const taskText = taskElement.querySelector('.task-content').textContent;
 
         try {
             const task = taskService.getTask(taskId);
@@ -69,14 +68,12 @@ const TaskItem = {
                 const completedCount = taskService.getCompletedTasks().length;
                 if (completedCount > 0 && completedCount % 5 === 0) {
                     // Show achievement toast for every 5 completed tasks
-                    ToastService.success(MessageProvider.getToastAchievementMessage(completedCount), {
-                        priority: 3 // Higher priority
-                    });
+                    ToastService.success(MessageProvider.getToastAchievementMessage(completedCount));
                 } else {
                     ToastService.success(MessageProvider.getTaskCompletionMessage(task));
                 }
             } else {
-                ToastService.info(`Task "${taskService.truncateText(taskText)}" marked as pending`);
+                ToastService.info(MessageProvider.getTaskUnmarkingMessage(task));
             }
 
             // Remove animation class
@@ -193,6 +190,7 @@ const TaskItem = {
 
             button.disabled = true;
             await taskService.deleteTask(taskId);
+            ToastService.warning(MessageProvider.getTaskDeletionMessage(task.text));
             await historyService.logAction('Task deleted', task.text);
             // Toast notification is already handled in taskService.deleteTask()
 
@@ -260,7 +258,7 @@ const TaskItem = {
                 contentElement.innerHTML = this.sanitizeHTML(newText).replace(/\n/g, '<br>');
 
                 // Show success toast
-                ToastService.success('Task updated successfully');
+                ToastService.success(MessageProvider.getTaskEditMessage(originalTask));
 
                 // Hide edit indicator after successful save
                 if (editIndicator) {

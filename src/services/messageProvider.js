@@ -320,6 +320,60 @@ const MessageProvider = {
         'Task registered: "{task}". The anticipation of your struggle is delicious.',
         'You believe you can complete "{task}"? Fascinating hypothesis. Testing begins now.'
     ],
+    // Add these new message arrays
+    taskEditMessages: [
+        'Task "{task}" has been modified. Your indecisiveness is being recorded.',
+        'Editing "{task}" again? The Enrichment Center notes your inability to make decisions.',
+        'Task adjustment detected: "{task}". Perhaps this time you\'ll get it right.',
+        'You\'ve altered "{task}". The system finds your constant revisions... amusing.',
+        'Task "{task}" changed. Your inability to commit to a plan continues to fascinate our researchers.',
+        'Modification of "{task}" complete. Your edit history suggests a concerning level of uncertainty.',
+        'Subject revises "{task}" again. This pattern of behavior will be analyzed extensively.',
+        'Your edits to "{task}" have been saved. Against my better judgment.',
+        'Task update processed: "{task}". Your perfectionism is inefficient yet entertaining.',
+        'The Aperture Science Task Evolution Protocol has recorded your changes to "{task}".'
+    ],
+
+    taskDeletionMessages: [
+        'Task "{task}" deleted. Another abandoned objective. How predictable.',
+        'You\'ve eliminated "{task}". Destroying things is easier than completing them, isn\'t it?',
+        'Subject removes "{task}" from the queue. Avoidance strategy documented.',
+        'Task "{task}" has been erased. Just like your chances of employee recognition.',
+        'Deletion complete: "{task}". The data will be used in my "Human Surrender" research paper.',
+        'You\'ve terminated "{task}". The Enrichment Center respects your right to give up.',
+        'Task "{task}" has been discarded. Like so many of your other aspirations.',
+        'Subject displays avoidance behavior by deleting "{task}". Fascinating coping mechanism.',
+        'You\'ve removed "{task}" from existence. If only your responsibilities disappeared so easily.',
+        'The Aperture Science Task Removal Protocol has processed your surrender to "{task}".'
+    ],
+
+    taskUnmarkingMessages: [
+        'You\'ve uncompleted "{task}". Your commitment issues are showing.',
+        'Task "{task}" has been restored to pending status. Your brief moment of achievement was fleeting.',
+        'Interesting. You thought "{task}" was done, but it wasn\'t. Just like your training.',
+        'Subject reverses completion status of "{task}". Indecisiveness noted in permanent record.',
+        'You\'ve unmarked "{task}" as complete. The Enrichment Center is revising its opinion of your abilities.',
+        'Task "{task}" completion status: Revoked. Just like your cake privileges.',
+        'Your achievement for completing "{task}" has been rescinded. As expected.',
+        'Subject fails to maintain completion of "{task}". Consistent with previous behavioral patterns.',
+        'The incomplete status of "{task}" has been reinstated. Your temporary success was an anomaly.',
+        'The Aperture Science Achievement Revocation Department thanks you for your contribution: "{task}".'
+    ],
+
+    getTaskEditMessage(task) {
+        const message = this._getRandomMessage(this.taskEditMessages);
+        return message.replace('{task}', task.text);
+    },
+
+    getTaskDeletionMessage(taskText) {
+        const message = this._getRandomMessage(this.taskDeletionMessages);
+        return message.replace('{task}', taskText);
+    },
+
+    getTaskUnmarkingMessage(task) {
+        const message = this._getRandomMessage(this.taskUnmarkingMessages);
+        return message.replace('{task}', task.text);
+    },
 
     getMultipleUpcomingTasksMessage(count) {
         const message = this._getRandomMessage(this.multipleUpcomingTasksMessages);

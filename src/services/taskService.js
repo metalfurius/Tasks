@@ -308,7 +308,6 @@ const taskService = {
 
             // Delete from Firestore
             await deleteDoc(doc(db, 'tasks', taskId));
-            ToastService.warning(`🗑️ "${this.truncateText(task.text)}" has been deleted`);
             return true;
         } catch (error) {
             // Revert local deletion if Firestore deletion fails
