@@ -10,8 +10,6 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const MAX_HISTORY_AGE = 30 * 24 * 60 * 60 * 1000; // 30 days
-const MAX_HISTORY_ITEMS = 1000;
-
 const historyService = {
     historyItems: [],
     unsubscribe: null,
@@ -104,26 +102,33 @@ const historyService = {
         if (!userId) return;
 
         try {
+            // Only load last 30 days of history
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
             const q = query(
                 collection(db, 'history'),
                 where('userId', '==', userId),
+                where('timestamp', '>=', thirtyDaysAgo),
                 orderBy('timestamp', 'desc'),
-                limit(MAX_HISTORY_ITEMS)
+                limit(50) // Reduce initial load
             );
 
             if (this.unsubscribe) {
                 this.unsubscribe();
             }
 
-            this.unsubscribe = onSnapshot(q, (snapshot) => {
-                this.historyItems = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-                this.notifyObservers();
-            }, (error) => {
-                console.error('History query error:', error);
-                ToastService.error('Failed to load history');
+            // Use cache-first strategy
+            this.unsubscribe = onSnapshot(q, {
+                includeMetadataChanges: true
+            }, (snapshot) => {
+                if (!snapshot.metadata.hasPendingWrites) {
+                    this.historyItems = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                    this.notifyObservers();
+                }
             });
         } catch (error) {
             console.error('Error loading history:', error);

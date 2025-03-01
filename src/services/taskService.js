@@ -6,7 +6,7 @@ import { RateLimiter } from './rateLimiter.js';
 import { Validator } from '../utils/validation.js';
 import {
     collection, addDoc, query, where, onSnapshot,
-    updateDoc, deleteDoc, doc, orderBy, writeBatch
+    updateDoc, deleteDoc, doc, orderBy, writeBatch, enableIndexedDbPersistence
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 // Task service object
@@ -61,20 +61,21 @@ const taskService = {
                 orderBy('order', 'asc')
             );
 
-            // Unsubscribe from previous listener
             if (this.unsubscribe) {
                 this.unsubscribe();
             }
 
-            // Set up new listener
-            this.unsubscribe = onSnapshot(q, (snapshot) => {
-                this.tasks = snapshot.docs.map(doc => ({
-                    id: doc.id,
-                    ...doc.data()
-                }));
-                this.notifyObservers();
-            }, (error) => {
-                console.error('Tasks query error:', error);
+            // Use cache-first strategy
+            this.unsubscribe = onSnapshot(q, {
+                includeMetadataChanges: true
+            }, (snapshot) => {
+                if (!snapshot.metadata.hasPendingWrites) {
+                    this.tasks = snapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                    this.notifyObservers();
+                }
             });
         } catch (error) {
             console.error('Error loading tasks:', error);
@@ -150,13 +151,24 @@ const taskService = {
         }
     },
 
-    // Update task order (batch)
     async updateTaskOrder(orderedIds) {
         try {
-            const batch = writeBatch(db);
+            // Only update if order has actually changed
+            const currentOrder = this.tasks
+                .sort((a, b) => a.order - b.order)
+                .map(task => task.id);
 
+            if (JSON.stringify(currentOrder) === JSON.stringify(orderedIds)) {
+                return true;
+            }
+
+            const batch = writeBatch(db);
             orderedIds.forEach((taskId, index) => {
-                batch.update(doc(db, 'tasks', taskId), { order: index });
+                // Only update if position changed
+                const task = this.tasks.find(t => t.id === taskId);
+                if (task && task.order !== index) {
+                    batch.update(doc(db, 'tasks', taskId), { order: index });
+                }
             });
 
             await batch.commit();

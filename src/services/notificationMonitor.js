@@ -36,8 +36,17 @@ const NotificationMonitor = {
     },
 
     checkTasks() {
+        // Only check if tab is visible
+        if (document.hidden) return;
+
         const tasks = taskService.getPendingTasks();
         if (!tasks.length) return;
+
+        const now = Date.now();
+        if (this.lastCheck && now - this.lastCheck < 300000) { // 5 minutes
+            return;
+        }
+        this.lastCheck = now;
 
         this.checkOverdueTasks(tasks);
         this.checkUpcomingTasks(tasks);

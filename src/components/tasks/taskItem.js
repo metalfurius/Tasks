@@ -139,22 +139,28 @@ const TaskItem = {
             .replace(/<\/div>/g, '')
             .replace(/<br>/g, '\n')
             .trim();
-        let originalTask = null;
 
-        try {
-            originalTask = taskService.getTask(taskId);
-            if (!originalTask || originalTask.text === newText) return;
+        // Skip update if text hasn't changed
+        const originalTask = taskService.getTask(taskId);
+        if (!originalTask || originalTask.text === newText) return;
 
-            // Convertir saltos de línea a <br> para almacenamiento
-            newText = newText.replace(/\n/g, '<br>');
-            await taskService.updateTask(taskId, { text: newText });
-            await historyService.logAction('Task edited', `${originalTask.text} → ${newText}`);
-        } catch (error) {
-            console.error('Error updating task:', error);
-            if (originalTask) {
-                contentElement.innerHTML = originalTask.text;
-            }
+        // Use debounce for updates
+        if (this.updateTimeout) {
+            clearTimeout(this.updateTimeout);
         }
+
+        this.updateTimeout = setTimeout(async () => {
+            try {
+                newText = newText.replace(/\n/g, '<br>');
+                await taskService.updateTask(taskId, { text: newText });
+                await historyService.logAction('Task edited', `${originalTask.text} → ${newText}`);
+            } catch (error) {
+                console.error('Error updating task:', error);
+                if (originalTask) {
+                    contentElement.innerHTML = originalTask.text;
+                }
+            }
+        }, 1000); // Wait 1 second before updating
     }
 };
 
