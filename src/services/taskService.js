@@ -6,7 +6,7 @@ import { RateLimiter } from './rateLimiter.js';
 import { Validator } from '../utils/validation.js';
 import {
     collection, addDoc, query, where, onSnapshot,
-    updateDoc, deleteDoc, doc, orderBy, writeBatch, enableIndexedDbPersistence, limit, startAfter, getDocs
+    updateDoc, deleteDoc, doc, orderBy, writeBatch, limit, startAfter, getDocs
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const TASKS_PER_PAGE = 20;
@@ -14,31 +14,37 @@ let lastPendingDoc = null;
 let lastCompletedDoc = null;
 let hasMorePending = true;
 let hasMoreCompleted = true;
+let isLoading = false;
+let loadingPromise = null;
 
 // Task service object
 const taskService = {
-    // Tasks array
     tasks: [],
-
-    // Snapshot unsubscribe function
     unsubscribe: null,
-
-    // Task observers
     observers: [],
 
-    // Initialize tasks
     init() {
-        authService.onAuthStateChanged(user => {
-            if (user) {
-                this.loadTasks();
-            } else {
-                if (this.unsubscribe) {
-                    this.unsubscribe();
-                    this.unsubscribe = null;
-                }
-                this.tasks = [];
-                this.notifyObservers();
+        authService.onAuthStateChanged(async user => {
+            // Cancel any previous loading
+            if (this.unsubscribe) {
+                this.unsubscribe();
+                this.unsubscribe = null;
             }
+
+            // Reset state
+            this.tasks = [];
+            isLoading = false;
+            loadingPromise = null;
+            lastPendingDoc = null;
+            lastCompletedDoc = null;
+            hasMorePending = true;
+            hasMoreCompleted = true;
+
+            if (user) {
+                await this.loadTasks();
+            }
+
+            this.notifyObservers();
         });
     },
 // Add task observer
@@ -57,26 +63,73 @@ const taskService = {
 
     // Load tasks from Firebase
     async loadTasks() {
+        // If already loading, return existing promise
+        if (isLoading) {
+            return loadingPromise;
+        }
+
+        const userId = authService.getCurrentUserId();
+        if (!userId) return;
+
         try {
-            const userId = authService.getCurrentUserId();
-            if (!userId) return;
+            isLoading = true;
+            loadingPromise = (async () => {
+                // Load initial tasks
+                await Promise.all([
+                    this.loadPendingTasks(),
+                    this.loadCompletedTasks()
+                ]);
 
-            // Reset pagination state
-            lastPendingDoc = null;
-            lastCompletedDoc = null;
-            hasMorePending = true;
-            hasMoreCompleted = true;
+                // Set up real-time listener only after initial load
+                const q = query(
+                    collection(db, 'tasks'),
+                    where('userId', '==', userId)
+                );
 
-            // Load initial tasks (await both operations)
-            await Promise.all([
-                this.loadPendingTasks(),
-                this.loadCompletedTasks()
-            ]);
+                this.unsubscribe = onSnapshot(q, (snapshot) => {
+                    if (!isLoading) { // Only process updates after initial load
+                        this.handleSnapshotChanges(snapshot);
+                    }
+                });
+            })();
+
+            await loadingPromise;
         } catch (error) {
             console.error('Error loading tasks:', error);
             ToastService.error('Failed to load tasks');
+        } finally {
+            isLoading = false;
+            loadingPromise = null;
         }
     },
+
+    // New helper method to handle snapshot changes
+    handleSnapshotChanges(snapshot) {
+        snapshot.docChanges().forEach((change) => {
+            const task = { id: change.doc.id, ...change.doc.data() };
+
+            switch (change.type) {
+                case 'removed':
+                    this.tasks = this.tasks.filter(t => t.id !== change.doc.id);
+                    break;
+                case 'modified':
+                    const index = this.tasks.findIndex(t => t.id === change.doc.id);
+                    if (index !== -1) {
+                        this.tasks[index] = task;
+                    }
+                    break;
+                case 'added':
+                    if (!this.tasks.some(t => t.id === change.doc.id)) {
+                        this.tasks.push(task);
+                    }
+                    break;
+            }
+        });
+
+        this.tasks.sort((a, b) => a.order - b.order);
+        this.notifyObservers();
+    },
+
     async loadPendingTasks() {
         if (!hasMorePending) return false;
 
@@ -88,7 +141,7 @@ const taskService = {
                 collection(db, 'tasks'),
                 where('userId', '==', userId),
                 where('completed', '==', false),
-                orderBy('order', 'asc'),
+                orderBy('timestamp', 'desc'), // Cambiado a timestamp descendente
                 limit(TASKS_PER_PAGE)
             );
 
@@ -105,8 +158,9 @@ const taskService = {
                 ...doc.data()
             }));
 
-            // Keep existing tasks and append new ones
-            const existingPendingTasks = this.tasks.filter(t => !t.completed);
+            // Mantener tareas existentes y agregar nuevas
+            const newTaskIds = newTasks.map(t => t.id);
+            const existingPendingTasks = this.tasks.filter(t => !t.completed && !newTaskIds.includes(t.id));
             const existingCompletedTasks = this.tasks.filter(t => t.completed);
             this.tasks = [...existingPendingTasks, ...newTasks, ...existingCompletedTasks];
             this.notifyObservers();
@@ -130,7 +184,7 @@ const taskService = {
                 collection(db, 'tasks'),
                 where('userId', '==', userId),
                 where('completed', '==', true),
-                orderBy('order', 'asc'),
+                orderBy('timestamp', 'desc'), // Cambiado a timestamp descendente
                 limit(TASKS_PER_PAGE)
             );
 
@@ -147,8 +201,9 @@ const taskService = {
                 ...doc.data()
             }));
 
-            // Keep existing tasks and append new ones
-            const existingCompletedTasks = this.tasks.filter(t => t.completed);
+            // Mantener tareas existentes y agregar nuevas
+            const newTaskIds = newTasks.map(t => t.id);
+            const existingCompletedTasks = this.tasks.filter(t => t.completed && !newTaskIds.includes(t.id));
             const existingPendingTasks = this.tasks.filter(t => !t.completed);
             this.tasks = [...existingPendingTasks, ...existingCompletedTasks, ...newTasks];
             this.notifyObservers();
@@ -176,34 +231,25 @@ const taskService = {
         try {
             RateLimiter.checkLimit('addTask', userId);
 
-            // Find minimum order value for uncompleted tasks
-            const uncompletedTasks = this.tasks.filter(t => !t.completed);
-            const minOrder = uncompletedTasks.length > 0
-                ? Math.min(...uncompletedTasks.map(t => t.order))
-                : 0;
+            const lastTask = Array.from(this.tasks.values())
+                .reduce((max, task) => (!task.completed && task.order > max.order) ? task : max, { order: 0 });
 
-            // Convert dueDate string to Firestore timestamp if provided
             const taskData = {
-                text: text.trim(),
-                userId,
+                text,
                 completed: false,
+                userId,
+                order: lastTask.order + 1000,
                 timestamp: new Date(),
-                order: minOrder - 1
+                dueDate: dueDate ? new Date(dueDate) : null
             };
 
-            if (dueDate) {
-                taskData.dueDate = new Date(dueDate);
-            }
-
-            // Validate task data
             Validator.task(taskData);
-
-            // Add task to Firestore
-            await addDoc(collection(db, 'tasks'), taskData);
+            const docRef = await addDoc(collection(db, 'tasks'), taskData);
+            return docRef.id;
 
         } catch (error) {
             console.error('Error adding task:', error);
-            ToastService.error(error.message);
+            ToastService.error('Failed to add task');
             throw error;
         }
     },
@@ -256,10 +302,21 @@ const taskService = {
             const task = this.getTask(taskId);
             if (!task) return false;
 
+            // Remove from local array immediately
+            this.tasks = this.tasks.filter(t => t.id !== taskId);
+            this.notifyObservers();
+
+            // Delete from Firestore
             await deleteDoc(doc(db, 'tasks', taskId));
             ToastService.warning(`🗑️ "${this.truncateText(task.text)}" has been deleted`);
             return true;
         } catch (error) {
+            // Revert local deletion if Firestore deletion fails
+            const task = this.getTask(taskId);
+            if (task) {
+                this.tasks.push(task);
+                this.notifyObservers();
+            }
             ToastService.error('❌ Could not delete task. Please try again');
             throw error;
         }
@@ -298,19 +355,18 @@ const taskService = {
         return this.tasks.find(task => task.id === taskId);
     },
 
-    // Get pending tasks
     getPendingTasks() {
-        return this.tasks
+        return Array.from(this.tasks.values())
             .filter(task => !task.completed)
-            .sort((a, b) => a.order - b.order);
+            .sort((a, b) => b.timestamp - a.timestamp); // Ordenar por timestamp descendente
     },
 
-    // Get completed tasks
     getCompletedTasks() {
-        return this.tasks
+        return Array.from(this.tasks.values())
             .filter(task => task.completed)
-            .sort((a, b) => a.order - b.order);
+            .sort((a, b) => b.timestamp - a.timestamp); // Ya estaba correcto
     },
+
     async getTotalPendingCount() {
         const userId = authService.getCurrentUserId();
         if (!userId) return 0;

@@ -21,19 +21,31 @@ export const Validator = {
             throw new Error('Invalid timestamp');
         }
 
-        // Enhanced due date validation
         if (data.dueDate) {
-            const date = data.dueDate instanceof Date ? data.dueDate : new Date(data.dueDate);
+            let date;
+            // Handle Firestore Timestamp objects
+            if (data.dueDate.toDate && typeof data.dueDate.toDate === 'function') {
+                date = data.dueDate.toDate();
+            } else if (data.dueDate instanceof Date) {
+                date = data.dueDate;
+            } else {
+                date = new Date(data.dueDate);
+            }
+
             if (isNaN(date.getTime())) {
                 throw new Error('Invalid due date');
             }
-            if (date < new Date().setHours(0, 0, 0, 0)) {
-                throw new Error('Due date cannot be in the past');
-            }
-            const oneYearFromNow = new Date();
-            oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
-            if (date > oneYearFromNow) {
-                throw new Error('Due date cannot be more than 1 year in the future');
+
+            // Only validate future dates for new tasks, not existing ones
+            if (!data.id) {
+                if (date < new Date().setHours(0, 0, 0, 0)) {
+                    throw new Error('Due date cannot be in the past');
+                }
+                const oneYearFromNow = new Date();
+                oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
+                if (date > oneYearFromNow) {
+                    throw new Error('Due date cannot be more than 1 year in the future');
+                }
             }
         }
     },

@@ -358,6 +358,24 @@ input[type="text"], input[type="date"] {
 .task-item:hover {
     border-left-color: var(--primary);
 }
+.edit-indicator {
+    font-size: 0.8rem;
+    color: var(--primary);
+    text-align: center;
+    padding: 2px 5px;
+    font-style: italic;
+    transition: opacity 0.3s ease;
+}
+
+.hidden {
+    display: none;
+}
+
+.editable:focus {
+    outline: 1px solid var(--primary);
+    padding: 2px;
+    border-radius: 3px;
+}
 
 .task-content {
     flex: 1;
@@ -565,6 +583,12 @@ input[type="text"], input[type="date"] {
         transform: translateX(0);
         opacity: 1;
     }
+}
+
+@keyframes pulse {
+    0% { opacity: 0.5; }
+    50% { opacity: 1; }
+    100% { opacity: 0.5; }
 }
 
 /* ==================== */
