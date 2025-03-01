@@ -11,12 +11,12 @@ import NotificationMonitor from './services/notificationMonitor.js';
 
 // App initialization
 const App = {
-    init() {
+    async init() {
         // Initialize UI components
+        ToastService.init();
         ThemeManager.init();
         TabManager.init();
-        ToastService.init();
-        NotificationMonitor.init();
+        await NotificationMonitor.init();
 
         // Initialize auth
         AuthComponent.init();
@@ -46,7 +46,7 @@ const App = {
 
 // Initialize app when document is ready
 document.addEventListener('DOMContentLoaded', () => {
-    App.init();
+    App.init().catch(error => console.error('App initialization failed:', error));
 });
 
 export default App;

@@ -1,26 +1,11 @@
 // src/services/toastService.js
 const ToastService = {
     container: null,
-    toastTypes: {
-        success: {
-            icon: '✅',
-            color: 'var(--success-green)'
-        },
-        error: {
-            icon: '❌',
-            color: 'var(--delete-red)'
-        },
-        warning: {
-            icon: '⚠️',
-            color: 'var(--google-blue)'
-        },
-        info: {
-            icon: 'ℹ️',
-            color: 'var(--primary)'
-        }
-    },
+    defaultDuration: 5000, // 5 seconds default duration
+    maxToasts: 5, // Maximum number of toasts shown at once
 
     init() {
+        // Create toast container if it doesn't exist
         if (!this.container) {
             this.container = document.createElement('div');
             this.container.className = 'toast-container';
@@ -28,78 +13,107 @@ const ToastService = {
         }
     },
 
-    show(message, type = 'success', duration = 3000) {
-        this.init(); // Ensure container exists
-
+    // Create and show a toast notification
+    show(message, type = 'info', duration = this.defaultDuration, isPersistent = false) {
+        // Create toast element
         const toast = document.createElement('div');
-        const typeConfig = this.toastTypes[type];
-
         toast.className = `toast ${type}`;
-        toast.style.borderLeftColor = typeConfig.color;
 
-        toast.innerHTML = `
-            <span class="toast-icon">${typeConfig.icon}</span>
-            <div class="toast-content">${message}</div>
-        `;
-
-        // Add toast to container
-        this.container.appendChild(toast);
-
-        // Trigger entrance animation
-        requestAnimationFrame(() => {
-            toast.style.animation = 'slideIn 0.3s ease forwards';
-        });
-
-        // Set up removal function
-        const removeToast = () => {
-            toast.style.animation = 'fadeOut 0.3s ease forwards';
-            toast.addEventListener('animationend', () => {
-                toast.remove();
-            }, { once: true });
-        };
-
-        // Add close button for all toasts
-        const closeBtn = document.createElement('button');
-        closeBtn.className = 'toast-close';
-        closeBtn.innerHTML = '&times;';
-        closeBtn.addEventListener('click', removeToast);
-        toast.appendChild(closeBtn);
-
-        // Set timeout for auto-dismissal if duration is provided
-        if (duration > 0) {
-            const timeout = setTimeout(removeToast, duration);
-
-            // Clear timeout if toast is removed early
-            toast.addEventListener('click', (e) => {
-                if (e.target !== closeBtn) { // Don't trigger on close button click
-                    clearTimeout(timeout);
-                    removeToast();
-                }
-            });
+        // Add icon based on type
+        let icon = '📝';
+        switch (type) {
+            case 'success': icon = '✅'; break;
+            case 'error': icon = '❌'; break;
+            case 'warning': icon = '⚠️'; break;
+            case 'info': icon = 'ℹ️'; break;
         }
 
-        return toast; // Return toast element for possible further manipulation
+        // Create toast content
+        toast.innerHTML = `
+            <div class="toast-icon">${icon}</div>
+            <div class="toast-content">${message}</div>
+            <button class="toast-close" aria-label="Close">×</button>
+            ${!isPersistent ? `<div class="toast-progress"></div>` : ''}
+        `;
+
+        // Manage max toasts
+        this.manageToastCount();
+
+        // Add to container
+        this.container.appendChild(toast);
+
+        // Show toast with animation
+        setTimeout(() => toast.classList.add('show'), 10);
+
+        // Set up close button
+        const closeButton = toast.querySelector('.toast-close');
+        closeButton.addEventListener('click', () => this.closeToast(toast));
+
+        // Set auto-dismiss if not persistent
+        if (!isPersistent && duration > 0) {
+            // Animate progress bar
+            const progressBar = toast.querySelector('.toast-progress');
+            if (progressBar) {
+                progressBar.style.animationDuration = `${duration}ms`;
+            }
+
+            // Set timeout to remove toast
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    this.closeToast(toast);
+                }
+            }, duration);
+        }
+
+        return toast;
     },
 
-    success(message, duration = 3000) {
+    // Close a toast
+    closeToast(toast) {
+        toast.classList.remove('show');
+
+        // Remove after animation
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300); // match the CSS transition time
+    },
+
+    // Manage the maximum number of toasts
+    manageToastCount() {
+        const toasts = this.container.querySelectorAll('.toast');
+        if (toasts.length >= this.maxToasts) {
+            // Remove the oldest toasts if we exceed the maximum
+            for (let i = 0; i < toasts.length - this.maxToasts + 1; i++) {
+                this.closeToast(toasts[i]);
+            }
+        }
+    },
+
+    // Show success toast
+    success(message, duration = this.defaultDuration) {
         return this.show(message, 'success', duration);
     },
 
-    error(message, duration = 5000) { // Longer duration for errors
+    // Show error toast
+    error(message, duration = this.defaultDuration) {
         return this.show(message, 'error', duration);
     },
 
-    warning(message, duration = 4000) { // Medium duration for warnings
+    // Show warning toast
+    warning(message, duration = this.defaultDuration) {
         return this.show(message, 'warning', duration);
     },
 
-    info(message, duration = 3000) {
+    // Show info toast
+    info(message, duration = this.defaultDuration) {
         return this.show(message, 'info', duration);
     },
 
-    // New method for persistent toasts
+    // Show persistent toast that doesn't auto-dismiss
     persistent(message, type = 'info') {
-        return this.show(message, type, 0); // 0 means persistent
+        return this.show(message, type, 0, true);
     }
 };
 

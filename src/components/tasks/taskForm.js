@@ -1,6 +1,7 @@
 // src/components/tasks/taskForm.js
 import taskService from '../../services/taskService.js';
 import historyService from '../../services/historyService.js';
+import ToastService from "../../services/toastService.js";
 
 const TaskForm = {
     // DOM elements
@@ -48,7 +49,7 @@ const TaskForm = {
             // Reset form
             this.resetForm();
         } catch (error) {
-            alert(`Error adding task: ${error.message}`);
+            ToastService.error(`Error adding task: ${error.message}`);
         }
     },
 

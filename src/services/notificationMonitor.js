@@ -23,10 +23,14 @@ const NotificationMonitor = {
 
     startMonitoring() {
         // Initial check
-        this.checkTasks();
+        this.checkTasks()
+            .catch(error => console.error('Error checking tasks:', error));
 
         // Set up interval for subsequent checks
-        this.intervalId = setInterval(() => this.checkTasks(), this.checkInterval);
+        this.intervalId = setInterval(() => {
+            this.checkTasks()
+                .catch(error => console.error('Error checking tasks:', error));
+        }, this.checkInterval);
     },
 
     async checkTasks() {

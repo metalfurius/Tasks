@@ -4,10 +4,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Update favicon paths and manifest for relative URLs, enhance start URL configuration">
+    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Update favicon paths and manifest for crossorigin support, enhance task list management">
+      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/icons/apple-touch-icon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/tasks/taskForm.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tasks/taskForm.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/tasks/taskList.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tasks/taskList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/messageProvider.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/messageProvider.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/notificationMonitor.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/notificationMonitor.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/toastService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/toastService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +83,7 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-76f8388c3a79-JavaScript-WS-243.24978.60" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-WS-243.25659.40" />
       </set>
     </attachedChunks>
   </component>
@@ -94,7 +100,8 @@
       <workItem from="1740603294932" duration="1102000" />
       <workItem from="1740644744766" duration="6568000" />
       <workItem from="1740788884358" duration="8931000" />
-      <workItem from="1740827693960" duration="6083000" />
+      <workItem from="1740827693960" duration="7319000" />
+      <workItem from="1740837453108" duration="4151000" />
     </task>
     <task id="LOCAL-00001" summary="Add due date styling and overdue check functionality">
       <option name="closed" value="true" />
@@ -272,7 +279,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740835508660</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="Update favicon paths and manifest for crossorigin support, enhance task list management">
+      <option name="closed" value="true" />
+      <created>1740836186008</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1740836186008</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -310,6 +325,7 @@
     <MESSAGE value="Add PWA support with manifest, enhance task editing with toast notifications, and improve task loading logic" />
     <MESSAGE value="Add PWA support with updated manifest, enhance favicon links, and improve icon paths" />
     <MESSAGE value="Update favicon paths and manifest for relative URLs, enhance start URL configuration" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update favicon paths and manifest for relative URLs, enhance start URL configuration" />
+    <MESSAGE value="Update favicon paths and manifest for crossorigin support, enhance task list management" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update favicon paths and manifest for crossorigin support, enhance task list management" />
   </component>
 </project>

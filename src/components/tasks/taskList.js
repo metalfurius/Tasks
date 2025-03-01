@@ -3,6 +3,7 @@ import taskService from '../../services/taskService.js';
 import TabManager from '../ui/tabs.js';
 import SortableManager from '../../utils/sortable.js';
 import TaskItem from './taskItem.js';
+import ToastService from "../../services/toastService.js";
 
 
 const TaskList = {
@@ -40,6 +41,13 @@ const TaskList = {
 
         if (pendingTasks.length === 0) {
             this.pendingTasksContainer.innerHTML = '<div class="empty-state">No pending tasks 🎉</div>';
+
+            // Add this line to show a toast when all tasks are completed
+            if (taskService.getCompletedTasks().length > 0) {
+                ToastService.success('All tasks completed! Great job!', {
+                    icon: '🏆'
+                });
+            }
             return;
         }
 
@@ -55,12 +63,19 @@ const TaskList = {
             loadMoreBtn.addEventListener('click', async () => {
                 loadMoreBtn.disabled = true;
                 loadMoreBtn.textContent = 'Loading...';
-                const hasMore = await taskService.loadPendingTasks();
-                if (!hasMore) {
-                    loadMoreBtn.remove();
-                } else {
+                try {
+                    const hasMore = await taskService.loadPendingTasks();
+                    if (!hasMore) {
+                        loadMoreBtn.remove();
+                        ToastService.info('All tasks loaded');
+                    } else {
+                        loadMoreBtn.disabled = false;
+                        loadMoreBtn.textContent = 'Load More Tasks';
+                    }
+                } catch (error) {
+                    ToastService.error('Failed to load tasks');
                     loadMoreBtn.disabled = false;
-                    loadMoreBtn.textContent = 'Load More Tasks';
+                    loadMoreBtn.textContent = 'Retry Loading';
                 }
             });
             this.pendingTasksContainer.appendChild(loadMoreBtn);
