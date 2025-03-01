@@ -46,9 +46,14 @@ const AuthComponent = {
         if (user) {
             this.showTasksView();
             ToastService.success(`Welcome back, ${user.displayName}! 👋`);
-            // Start initial checks after a brief delay
-            setTimeout(() => {
-                NotificationMonitor.initialCheck();
+            // Handle initial checks properly
+            setTimeout(async () => {
+                try {
+                    await NotificationMonitor.initialCheck();
+                } catch (error) {
+                    console.error('Error during initial checks:', error);
+                    ToastService.error('Failed to check notifications');
+                }
             }, 1500);
         } else {
             this.showAuthView();

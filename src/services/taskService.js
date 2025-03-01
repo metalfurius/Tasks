@@ -2,6 +2,8 @@
 import { db } from './firebase.js';
 import authService from './authService.js';
 import ToastService from './toastService.js';
+import { RateLimiter } from './rateLimiter.js';
+import { Validator } from '../utils/validation.js';
 import {
     collection, addDoc, query, where, onSnapshot,
     updateDoc, deleteDoc, doc, orderBy, writeBatch
@@ -33,8 +35,7 @@ const taskService = {
             }
         });
     },
-
-    // Add task observer
+// Add task observer
     onTasksChanged(callback) {
         this.observers.push(callback);
         // Return unsubscribe function
@@ -81,64 +82,51 @@ const taskService = {
     },
 
     // Add new task
-    async addTask(taskText, dueDate = null) {
+    async addTask(text, dueDate = null) {
+        const userId = authService.getCurrentUserId();
+        if (!userId) throw new Error("Authentication required");
+
         try {
-            const userId = authService.getCurrentUserId();
-            if (!userId) throw new Error("No authenticated user");
+            RateLimiter.checkLimit('addTask', userId);
 
-            // Get minimum order of pending tasks and subtract 1
-            const pendingTasks = this.getPendingTasks();
-            const newOrder = pendingTasks.length > 0 ?
-                Math.min(...pendingTasks.map(t => t.order)) - 1 : 0;
-
-            await addDoc(collection(db, 'tasks'), {
-                text: taskText,
+            const taskData = {
+                text,
                 completed: false,
-                userId: userId,
-                timestamp: new Date(),
-                order: newOrder,
+                userId,
+                order: this.tasks.length,
                 dueDate: dueDate ? new Date(dueDate) : null
-            });
+            };
+
+            Validator.task(taskData);
+
+            await addDoc(collection(db, 'tasks'), taskData);
             ToastService.success('Task added successfully');
-            return true;
         } catch (error) {
-            ToastService.error('Failed to add task');
             console.error('Error adding task:', error);
+            ToastService.error(error.message);
             throw error;
         }
     },
 
-    // Update task
     async updateTask(taskId, updates) {
+        const userId = authService.getCurrentUserId();
+        if (!userId) throw new Error("Authentication required");
+
         try {
-            const task = this.getTask(taskId);
-            if (!task) return false;
+            RateLimiter.checkLimit('updateTask', userId);
 
-            // If completing/uncompleting a task, update its order
-            if ('completed' in updates && updates.completed !== task.completed) {
-                const tasksInTargetState = updates.completed ?
-                    this.getCompletedTasks() :
-                    this.getPendingTasks();
+            const taskRef = doc(db, 'tasks', taskId);
+            const task = this.tasks.find(t => t.id === taskId);
 
-                // Get minimum order of target state tasks and subtract 1
-                updates.order = tasksInTargetState.length > 0 ?
-                    Math.min(...tasksInTargetState.map(t => t.order)) - 1 : 0;
-            }
+            if (!task) throw new Error('Task not found');
 
-            await updateDoc(doc(db, 'tasks', taskId), updates);
-            if ('completed' in updates) {
-                ToastService.success(updates.completed ?
-                    `🎉 Great job! "${this.truncateText(task.text)}" completed` :
-                    `↩️ "${this.truncateText(task.text)}" moved back to pending`
-                );
-            } else if ('text' in updates) {
-                ToastService.info(`📝 Task text updated successfully`);
-            } else {
-                ToastService.success('✅ Task updated successfully');
-            }
-            return true;
+            const updatedTask = { ...task, ...updates };
+            Validator.task(updatedTask);
+
+            await updateDoc(taskRef, updates);
         } catch (error) {
-            ToastService.error('❌ Failed to update task. Please try again');
+            console.error('Error updating task:', error);
+            ToastService.error(error.message);
             throw error;
         }
     },
@@ -196,7 +184,7 @@ const taskService = {
         return this.tasks
             .filter(task => task.completed)
             .sort((a, b) => a.order - b.order);
-    }
+    },
 };
 
 // Initialize task service
