@@ -4,6 +4,7 @@ import TabManager from '../ui/tabs.js';
 import SortableManager from '../../utils/sortable.js';
 import TaskItem from './taskItem.js';
 
+
 const TaskList = {
     // DOM elements
     pendingTasksContainer: null,
@@ -43,15 +44,33 @@ const TaskList = {
         }
 
         this.pendingTasksContainer.innerHTML = pendingTasks
-            .map((task) => TaskItem.createTaskHtml(task))  // Use TaskItem's method
+            .map((task) => TaskItem.createTaskHtml(task))
             .join('');
+
+        // Add load more button if needed
+        if (taskService.hasMorePendingTasks()) {
+            const loadMoreBtn = document.createElement('button');
+            loadMoreBtn.className = 'load-more-btn';
+            loadMoreBtn.textContent = 'Load More Tasks';
+            loadMoreBtn.addEventListener('click', async () => {
+                loadMoreBtn.disabled = true;
+                loadMoreBtn.textContent = 'Loading...';
+                const hasMore = await taskService.loadPendingTasks();
+                if (!hasMore) {
+                    loadMoreBtn.remove();
+                } else {
+                    loadMoreBtn.disabled = false;
+                    loadMoreBtn.textContent = 'Load More Tasks';
+                }
+            });
+            this.pendingTasksContainer.appendChild(loadMoreBtn);
+        }
 
         // Initialize sortable if on pending tab
         if (TabManager.getActiveTab() === 'pending') {
             SortableManager.initSortable('pending-tasks');
         }
     },
-
     // Render completed tasks
     renderCompletedTasks() {
         const completedTasks = taskService.getCompletedTasks();
@@ -62,8 +81,27 @@ const TaskList = {
         }
 
         this.completedTasksContainer.innerHTML = completedTasks
-            .map((task) => TaskItem.createTaskHtml(task))  // Use TaskItem's method
+            .map((task) => TaskItem.createTaskHtml(task))
             .join('');
+
+        // Add load more button if needed
+        if (taskService.hasMoreCompletedTasks()) {
+            const loadMoreBtn = document.createElement('button');
+            loadMoreBtn.className = 'load-more-btn';
+            loadMoreBtn.textContent = 'Load More Tasks';
+            loadMoreBtn.addEventListener('click', async () => {
+                loadMoreBtn.disabled = true;
+                loadMoreBtn.textContent = 'Loading...';
+                const hasMore = await taskService.loadCompletedTasks();
+                if (!hasMore) {
+                    loadMoreBtn.remove();
+                } else {
+                    loadMoreBtn.disabled = false;
+                    loadMoreBtn.textContent = 'Load More Tasks';
+                }
+            });
+            this.completedTasksContainer.appendChild(loadMoreBtn);
+        }
     },
 
     // Handle tab change

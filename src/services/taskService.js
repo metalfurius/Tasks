@@ -6,8 +6,14 @@ import { RateLimiter } from './rateLimiter.js';
 import { Validator } from '../utils/validation.js';
 import {
     collection, addDoc, query, where, onSnapshot,
-    updateDoc, deleteDoc, doc, orderBy, writeBatch, enableIndexedDbPersistence
+    updateDoc, deleteDoc, doc, orderBy, writeBatch, enableIndexedDbPersistence, limit, startAfter, getDocs
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+const TASKS_PER_PAGE = 20;
+let lastPendingDoc = null;
+let lastCompletedDoc = null;
+let hasMorePending = true;
+let hasMoreCompleted = true;
 
 // Task service object
 const taskService = {
@@ -50,36 +56,116 @@ const taskService = {
     },
 
     // Load tasks from Firebase
-    loadTasks() {
+    async loadTasks() {
         try {
             const userId = authService.getCurrentUserId();
             if (!userId) return;
 
-            const q = query(
-                collection(db, 'tasks'),
-                where('userId', '==', userId),
-                orderBy('order', 'asc')
-            );
+            // Reset pagination state
+            lastPendingDoc = null;
+            lastCompletedDoc = null;
+            hasMorePending = true;
+            hasMoreCompleted = true;
 
-            if (this.unsubscribe) {
-                this.unsubscribe();
-            }
-
-            // Use cache-first strategy
-            this.unsubscribe = onSnapshot(q, {
-                includeMetadataChanges: true
-            }, (snapshot) => {
-                if (!snapshot.metadata.hasPendingWrites) {
-                    this.tasks = snapshot.docs.map(doc => ({
-                        id: doc.id,
-                        ...doc.data()
-                    }));
-                    this.notifyObservers();
-                }
-            });
+            // Load initial tasks (await both operations)
+            await Promise.all([
+                this.loadPendingTasks(),
+                this.loadCompletedTasks()
+            ]);
         } catch (error) {
             console.error('Error loading tasks:', error);
+            ToastService.error('Failed to load tasks');
         }
+    },
+    async loadPendingTasks() {
+        if (!hasMorePending) return false;
+
+        const userId = authService.getCurrentUserId();
+        if (!userId) return false;
+
+        try {
+            let q = query(
+                collection(db, 'tasks'),
+                where('userId', '==', userId),
+                where('completed', '==', false),
+                orderBy('order', 'asc'),
+                limit(TASKS_PER_PAGE)
+            );
+
+            if (lastPendingDoc) {
+                q = query(q, startAfter(lastPendingDoc));
+            }
+
+            const snapshot = await getDocs(q);
+            lastPendingDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+            hasMorePending = snapshot.docs.length === TASKS_PER_PAGE;
+
+            const newTasks = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+
+            // Keep existing tasks and append new ones
+            const existingPendingTasks = this.tasks.filter(t => !t.completed);
+            const existingCompletedTasks = this.tasks.filter(t => t.completed);
+            this.tasks = [...existingPendingTasks, ...newTasks, ...existingCompletedTasks];
+            this.notifyObservers();
+
+            return hasMorePending;
+        } catch (error) {
+            console.error('Error loading pending tasks:', error);
+            ToastService.error('Failed to load more pending tasks');
+            return false;
+        }
+    },
+
+    async loadCompletedTasks() {
+        if (!hasMoreCompleted) return false;
+
+        const userId = authService.getCurrentUserId();
+        if (!userId) return false;
+
+        try {
+            let q = query(
+                collection(db, 'tasks'),
+                where('userId', '==', userId),
+                where('completed', '==', true),
+                orderBy('order', 'asc'),
+                limit(TASKS_PER_PAGE)
+            );
+
+            if (lastCompletedDoc) {
+                q = query(q, startAfter(lastCompletedDoc));
+            }
+
+            const snapshot = await getDocs(q);
+            lastCompletedDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+            hasMoreCompleted = snapshot.docs.length === TASKS_PER_PAGE;
+
+            const newTasks = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+
+            // Keep existing tasks and append new ones
+            const existingCompletedTasks = this.tasks.filter(t => t.completed);
+            const existingPendingTasks = this.tasks.filter(t => !t.completed);
+            this.tasks = [...existingPendingTasks, ...existingCompletedTasks, ...newTasks];
+            this.notifyObservers();
+
+            return hasMoreCompleted;
+        } catch (error) {
+            console.error('Error loading completed tasks:', error);
+            ToastService.error('Failed to load more completed tasks');
+            return false;
+        }
+    },
+    hasMorePendingTasks() {
+        return hasMorePending;
+    },
+
+    hasMoreCompletedTasks() {
+        return hasMoreCompleted;
     },
 
     // Add new task
@@ -225,6 +311,24 @@ const taskService = {
             .filter(task => task.completed)
             .sort((a, b) => a.order - b.order);
     },
+    async getTotalPendingCount() {
+        const userId = authService.getCurrentUserId();
+        if (!userId) return 0;
+
+        try {
+            const q = query(
+                collection(db, 'tasks'),
+                where('userId', '==', userId),
+                where('completed', '==', false)
+            );
+
+            const snapshot = await getDocs(q);
+            return snapshot.size;
+        } catch (error) {
+            console.error('Error getting total pending count:', error);
+            return 0;
+        }
+    }
 };
 
 // Initialize task service

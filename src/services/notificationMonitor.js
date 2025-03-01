@@ -1,118 +1,100 @@
 // src/services/notificationMonitor.js
 import taskService from './taskService.js';
 import ToastService from './toastService.js';
+import MessageProvider from './messageProvider.js';
 import authService from './authService.js';
 
 const NotificationMonitor = {
-    CHECK_INTERVAL: 600000, // Check every 10 minutes
+    checkInterval: 5 * 60 * 1000, // 5 minutes
     intervalId: null,
+    lastNotificationTime: null,
 
-    init() {
-        // Listen for auth changes
-        authService.onAuthStateChanged(user => {
-            if (user) {
-                this.startMonitoring();
-            } else {
-                this.stopMonitoring();
-            }
-        });
+    async init() {
+        // Clear any existing interval
+        if (this.intervalId) {
+            clearInterval(this.intervalId);
+        }
+
+        // Start monitoring if user is logged in
+        if (authService.getCurrentUserId()) {
+            this.startMonitoring();
+        }
     },
 
     startMonitoring() {
         // Initial check
         this.checkTasks();
 
-        // Set up periodic checks
-        this.intervalId = setInterval(() => {
-            this.checkTasks();
-        }, this.CHECK_INTERVAL);
+        // Set up interval for subsequent checks
+        this.intervalId = setInterval(() => this.checkTasks(), this.checkInterval);
     },
 
-    stopMonitoring() {
-        if (this.intervalId) {
-            clearInterval(this.intervalId);
-            this.intervalId = null;
-        }
-    },
-
-    checkTasks() {
-        // Only check if tab is visible
-        if (document.hidden) return;
-
-        const tasks = taskService.getPendingTasks();
-        if (!tasks.length) return;
-
-        const now = Date.now();
-        if (this.lastCheck && now - this.lastCheck < 300000) { // 5 minutes
-            return;
-        }
-        this.lastCheck = now;
-
-        this.checkOverdueTasks(tasks);
-        this.checkUpcomingTasks(tasks);
-        this.checkTaskLoad(tasks);
-    },
-
-    checkOverdueTasks(tasks) {
+    async checkTasks() {
+        const pendingTasks = taskService.getPendingTasks();
         const now = new Date();
-        const overdueTasks = tasks.filter(task =>
-            task.dueDate && task.dueDate.toDate() < now
-        );
+        const totalPendingCount = await taskService.getTotalPendingCount();
 
-        if (overdueTasks.length > 0) {
-            const message = overdueTasks.length === 1
-                ? '⚠️ You have 1 overdue task'
-                : `⚠️ You have ${overdueTasks.length} overdue tasks`;
-            ToastService.warning(message);
-        }
-    },
+        // Count upcoming and overdue tasks
+        const upcomingTasks = [];
+        const overdueTasks = [];
 
-    checkUpcomingTasks(tasks) {
-        const now = new Date();
-        const tomorrow = new Date(now);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        tomorrow.setHours(23, 59, 59);
+        pendingTasks.forEach(task => {
+            if (task.dueDate) {
+                const dueDate = task.dueDate.toDate();
+                const timeDiff = dueDate - now;
+                const hoursUntilDue = timeDiff / (1000 * 60 * 60);
 
-        const upcomingTasks = tasks.filter(task => {
-            if (!task.dueDate) return false;
-            const dueDate = task.dueDate.toDate();
-            return dueDate > now && dueDate <= tomorrow;
+                if (timeDiff < 0) {
+                    overdueTasks.push(task);
+                } else if (hoursUntilDue <= 24) {
+                    upcomingTasks.push(task);
+                }
+            }
         });
 
-        if (upcomingTasks.length > 0) {
-            const message = upcomingTasks.length === 1
-                ? '📅 You have 1 task due today/tomorrow'
-                : `📅 You have ${upcomingTasks.length} tasks due today/tomorrow`;
-            ToastService.info(message);
+        // Show notifications if needed
+        if (this.shouldShowNotification()) {
+            this.showTaskNotifications(upcomingTasks, overdueTasks, totalPendingCount);
         }
     },
 
-    checkTaskLoad(tasks) {
-        if (tasks.length >= 10) {
-            ToastService.warning(`📊 High task load: ${tasks.length} pending tasks`);
+    shouldShowNotification() {
+        const now = Date.now();
+        if (!this.lastNotificationTime || (now - this.lastNotificationTime) > 30 * 60 * 1000) { // 30 minutes
+            this.lastNotificationTime = now;
+            return true;
         }
+        return false;
     },
 
-    // Call this when user logs in
-    async initialCheck() {
-        const tasks = taskService.getPendingTasks();
-        if (!tasks.length) {
-            ToastService.info('👋 Welcome! Your task list is empty');
-            return;
+    showTaskNotifications(upcomingTasks, overdueTasks, totalPending) {
+        // Show task-specific notifications
+        if (upcomingTasks.length > 0 || overdueTasks.length > 0) {
+            let message;
+            let notificationType = 'info';
+
+            if (overdueTasks.length > 0) {
+                message = overdueTasks.length === 1
+                    ? MessageProvider.getOverdueTaskMessage(overdueTasks[0])
+                    : MessageProvider.getMultipleOverdueTasksMessage(overdueTasks.length);
+                notificationType = 'error';
+
+                // Show overdue tasks as persistent (won't auto-dismiss)
+                ToastService.persistent(message, notificationType);
+            } else if (upcomingTasks.length > 0) {
+                message = upcomingTasks.length === 1
+                    ? MessageProvider.getUpcomingTaskMessage(upcomingTasks[0])
+                    : MessageProvider.getMultipleUpcomingTasksMessage(upcomingTasks.length);
+                notificationType = 'warning';
+
+                // Show upcoming tasks as persistent (won't auto-dismiss)
+                ToastService.persistent(message, notificationType);
+            }
         }
 
-        // Delay notifications to not overwhelm the user
-        setTimeout(() => {
-            this.checkOverdueTasks(tasks);
-        }, 1000);
-
-        setTimeout(() => {
-            this.checkUpcomingTasks(tasks);
-        }, 2000);
-
-        setTimeout(() => {
-            this.checkTaskLoad(tasks);
-        }, 3000);
+        // Always show the total pending tasks toast with short duration
+        const message = MessageProvider.getTotalPendingMessage(totalPending);
+        ToastService.info(message, 15000);
     }
 };
 

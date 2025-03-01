@@ -28,7 +28,9 @@ const ToastService = {
         }
     },
 
-    show(message, type = 'success') {
+    show(message, type = 'success', duration = 3000) {
+        this.init(); // Ensure container exists
+
         const toast = document.createElement('div');
         const typeConfig = this.toastTypes[type];
 
@@ -48,7 +50,7 @@ const ToastService = {
             toast.style.animation = 'slideIn 0.3s ease forwards';
         });
 
-        // Set up removal
+        // Set up removal function
         const removeToast = () => {
             toast.style.animation = 'fadeOut 0.3s ease forwards';
             toast.addEventListener('animationend', () => {
@@ -56,30 +58,48 @@ const ToastService = {
             }, { once: true });
         };
 
-        // Remove after delay
-        const timeout = setTimeout(removeToast, 3000);
+        // Add close button for all toasts
+        const closeBtn = document.createElement('button');
+        closeBtn.className = 'toast-close';
+        closeBtn.innerHTML = '&times;';
+        closeBtn.addEventListener('click', removeToast);
+        toast.appendChild(closeBtn);
 
-        // Clear timeout if toast is removed early
-        toast.addEventListener('click', () => {
-            clearTimeout(timeout);
-            removeToast();
-        });
+        // Set timeout for auto-dismissal if duration is provided
+        if (duration > 0) {
+            const timeout = setTimeout(removeToast, duration);
+
+            // Clear timeout if toast is removed early
+            toast.addEventListener('click', (e) => {
+                if (e.target !== closeBtn) { // Don't trigger on close button click
+                    clearTimeout(timeout);
+                    removeToast();
+                }
+            });
+        }
+
+        return toast; // Return toast element for possible further manipulation
     },
 
-    success(message) {
-        this.show(message, 'success');
+    success(message, duration = 3000) {
+        return this.show(message, 'success', duration);
     },
 
-    error(message) {
-        this.show(message, 'error');
+    error(message, duration = 5000) { // Longer duration for errors
+        return this.show(message, 'error', duration);
     },
 
-    warning(message) {
-        this.show(message, 'warning');
+    warning(message, duration = 4000) { // Medium duration for warnings
+        return this.show(message, 'warning', duration);
     },
 
-    info(message) {
-        this.show(message, 'info');
+    info(message, duration = 3000) {
+        return this.show(message, 'info', duration);
+    },
+
+    // New method for persistent toasts
+    persistent(message, type = 'info') {
+        return this.show(message, type, 0); // 0 means persistent
     }
 };
 

@@ -2,6 +2,7 @@
 import authService from '../../services/authService.js';
 import NotificationMonitor from '../../services/notificationMonitor.js';
 import ToastService from '../../services/toastService.js';
+import MessageProvider from '../../services/messageProvider.js';
 
 const AuthComponent = {
     // DOM elements
@@ -45,14 +46,13 @@ const AuthComponent = {
     handleAuthStateChanged(user) {
         if (user) {
             this.showTasksView();
-            ToastService.success(`Welcome back, ${user.displayName}! 👋`);
+            ToastService.success(MessageProvider.getWelcomeBackMessage(user.displayName));
             // Handle initial checks properly
             setTimeout(async () => {
                 try {
-                    await NotificationMonitor.initialCheck();
+                    await NotificationMonitor.init();
                 } catch (error) {
-                    console.error('Error during initial checks:', error);
-                    ToastService.error('Failed to check notifications');
+                    ToastService.error(MessageProvider.getErrorMessage('general'));
                 }
             }, 1500);
         } else {
@@ -77,7 +77,8 @@ const AuthComponent = {
         try {
             await authService.signInWithGoogle();
         } catch (error) {
-            alert(`Sign in error: ${error.message}`);
+            ToastService.error(MessageProvider.getErrorMessage('signIn'));
+            console.error('Sign in error:', error);
         }
     },
 
@@ -86,7 +87,8 @@ const AuthComponent = {
         try {
             await authService.signOut();
         } catch (error) {
-            alert(`Logout error: ${error.message}`);
+            ToastService.error(MessageProvider.getErrorMessage('logout'));
+            console.error('Logout error:', error);
         }
     }
 };
