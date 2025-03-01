@@ -1,6 +1,7 @@
 {
   "name": "Taskify",
-  "short": [
+  "short_name": "Taskify",
+  "icons": [
     {
       "src": "/icons/android-chrome-192x192.png",
       "sizes": "192x192",
