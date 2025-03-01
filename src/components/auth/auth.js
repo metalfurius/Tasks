@@ -10,6 +10,7 @@ const AuthComponent = {
     tasksContainer: null,
     signInButton: null,
     logoutButton: null,
+    lastLoginTime: null,
 
     // Initialize auth component
     init() {
@@ -43,20 +44,56 @@ const AuthComponent = {
     },
 
     // Handle auth state changes
-    handleAuthStateChanged(user) {
+    async handleAuthStateChanged(user) {
         if (user) {
-            this.showTasksView();
-            ToastService.success(MessageProvider.getWelcomeBackMessage(user.displayName));
-            // Handle initial checks properly
-            setTimeout(async () => {
-                try {
-                    await NotificationMonitor.init();
-                } catch (error) {
-                    ToastService.error(MessageProvider.getErrorMessage('general'));
+            this.showTasksView()
+            await NotificationMonitor.init();
+
+            // Check if this is a return visit
+            const now = new Date();
+            const storedTime = localStorage.getItem('lastLoginTime');
+            if (storedTime) {
+                const lastTime = new Date(parseInt(storedTime));
+                const hoursSinceLastVisit = (now - lastTime) / (1000 * 60 * 60);
+
+                if (hoursSinceLastVisit > 2) {
+                    // Format time as "2 hours ago" or "Yesterday at 2 PM"
+                    const timeString = this.formatTimeSince(lastTime);
+                    ToastService.info(MessageProvider.getToastWelcomeBackMessage(timeString));
+                } else {
+                    // Regular greeting based on time of day
+                    const hour = new Date().getHours();
+                    if (hour >= 5 && hour < 12) {
+                        ToastService.success(MessageProvider.getMorningGreeting(user.displayName));
+                    } else if (hour >= 17 || hour < 5) {
+                        ToastService.success(MessageProvider.getEveningGreeting(user.displayName));
+                    } else {
+                        ToastService.success(MessageProvider.getWelcomeBackMessage(user.displayName));
+                    }
                 }
-            }, 1500);
+            }
+
+            // Update last login time
+            localStorage.setItem('lastLoginTime', now.getTime().toString());
+
+            // Rest of your code...
         } else {
             this.showAuthView();
+        }
+    },
+    formatTimeSince(date) {
+        const now = new Date();
+        const diffHours = Math.floor((now - date) / (1000 * 60 * 60));
+
+        if (diffHours < 24) {
+            return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+        } else {
+            return `${date.toLocaleDateString(undefined, { 
+                weekday: 'long'
+            })} at ${date.toLocaleTimeString(undefined, {
+                hour: 'numeric',
+                minute: '2-digit'
+            })}`;
         }
     },
 

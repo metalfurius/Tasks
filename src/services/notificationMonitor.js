@@ -86,9 +86,11 @@ const NotificationMonitor = {
                 // Show overdue tasks as persistent (won't auto-dismiss)
                 ToastService.persistent(message, notificationType);
             } else if (upcomingTasks.length > 0) {
-                message = upcomingTasks.length === 1
-                    ? MessageProvider.getUpcomingTaskMessage(upcomingTasks[0])
-                    : MessageProvider.getMultipleUpcomingTasksMessage(upcomingTasks.length);
+                if (upcomingTasks.length === 1) {
+                    message = MessageProvider.getToastUpcomingTaskMessage(upcomingTasks[0]);
+                } else {
+                    message = MessageProvider.getMultipleUpcomingTasksMessage(upcomingTasks.length);
+                }
                 notificationType = 'warning';
 
                 // Show upcoming tasks as persistent (won't auto-dismiss)

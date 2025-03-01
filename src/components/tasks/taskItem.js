@@ -2,6 +2,7 @@
 import taskService from '../../services/taskService.js';
 import historyService from '../../services/historyService.js';
 import ToastService from '../../services/toastService.js';
+import MessageProvider from "../../services/messageProvider.js";
 
 const TaskItem = {
     updateTimeout: null,
@@ -64,7 +65,16 @@ const TaskItem = {
 
             // Show success toast with appropriate message
             if (isCompleted) {
-                ToastService.success(`✓ Task "${taskService.truncateText(taskText)}" completed!`);
+                // Check if this is a milestone
+                const completedCount = taskService.getCompletedTasks().length;
+                if (completedCount > 0 && completedCount % 5 === 0) {
+                    // Show achievement toast for every 5 completed tasks
+                    ToastService.success(MessageProvider.getToastAchievementMessage(completedCount), {
+                        priority: 3 // Higher priority
+                    });
+                } else {
+                    ToastService.success(MessageProvider.getTaskCompletionMessage(task));
+                }
             } else {
                 ToastService.info(`Task "${taskService.truncateText(taskText)}" marked as pending`);
             }

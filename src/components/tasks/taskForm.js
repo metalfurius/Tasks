@@ -2,6 +2,7 @@
 import taskService from '../../services/taskService.js';
 import historyService from '../../services/historyService.js';
 import ToastService from "../../services/toastService.js";
+import MessageProvider from "../../services/messageProvider.js";
 
 const TaskForm = {
     // DOM elements
@@ -41,10 +42,14 @@ const TaskForm = {
 
         try {
             // Add task
-            await taskService.addTask(taskText, dueDate);
+            const taskId = await taskService.addTask(taskText, dueDate);
+            const task = taskService.getTask(taskId);
 
             // Log to history
             await historyService.logAction('Task created', taskText);
+
+            // Show creation message
+            ToastService.success(MessageProvider.getTaskCreationMessage(task || {text: taskText}));
 
             // Reset form
             this.resetForm();

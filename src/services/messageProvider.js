@@ -321,13 +321,6 @@ const MessageProvider = {
         'You believe you can complete "{task}"? Fascinating hypothesis. Testing begins now.'
     ],
 
-    // Get a message for a single upcoming task
-    getUpcomingTaskMessage(task) {
-        const message = this._getRandomMessage(this.upcomingTaskMessages);
-        return message.replace('{task}', task.text);
-    },
-
-    // Get a message for multiple upcoming tasks
     getMultipleUpcomingTasksMessage(count) {
         const message = this._getRandomMessage(this.multipleUpcomingTasksMessages);
         return message.replace('{count}', count);
