@@ -17,6 +17,9 @@ export const Validator = {
         if (typeof data.order !== 'number' || !Number.isFinite(data.order)) {
             throw new Error('Invalid task order');
         }
+        if (!data.timestamp || !(data.timestamp instanceof Date)) {
+            throw new Error('Invalid timestamp');
+        }
 
         // Enhanced due date validation
         if (data.dueDate) {

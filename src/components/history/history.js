@@ -2,24 +2,50 @@
 import historyService from '../../services/historyService.js';
 
 const HistoryView = {
-    // DOM elements
     historyContainer: null,
+    loadMoreBtn: null,
+    loading: false,
 
-    // Initialize history view
     init() {
-        // Get DOM elements
         this.historyContainer = document.getElementById('history-tasks');
+        this.createLoadMoreButton();
 
         if (!this.historyContainer) {
             console.error('History container not found');
             return;
         }
 
-        // Listen for history changes
         historyService.onHistoryChanged(this.renderHistory.bind(this));
     },
 
-    // Render history items
+    createLoadMoreButton() {
+        this.loadMoreBtn = document.createElement('button');
+        this.loadMoreBtn.textContent = 'Load More';
+        this.loadMoreBtn.className = 'load-more-btn';
+        this.loadMoreBtn.addEventListener('click', this.handleLoadMore.bind(this));
+    },
+
+    async handleLoadMore() {
+        if (this.loading) return;
+
+        this.loading = true;
+        this.loadMoreBtn.textContent = 'Loading...';
+        this.loadMoreBtn.disabled = true;
+
+        try {
+            const hasMore = await historyService.loadMoreHistory();
+            if (!hasMore) {
+                this.loadMoreBtn.remove();
+            }
+        } catch (error) {
+            console.error('Error loading more history:', error);
+        } finally {
+            this.loading = false;
+            this.loadMoreBtn.textContent = 'Load More';
+            this.loadMoreBtn.disabled = false;
+        }
+    },
+
     renderHistory(historyItems) {
         if (historyItems.length === 0) {
             this.historyContainer.innerHTML = '<div class="empty-state">No history yet</div>';
@@ -29,9 +55,13 @@ const HistoryView = {
         this.historyContainer.innerHTML = historyItems
             .map(this.createHistoryItemHtml)
             .join('');
+
+        // Append load more button if not already present
+        if (!this.historyContainer.contains(this.loadMoreBtn)) {
+            this.historyContainer.appendChild(this.loadMoreBtn);
+        }
     },
 
-    // Create history item HTML
     createHistoryItemHtml(historyItem) {
         const date = historyItem.timestamp.toDate();
         const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;

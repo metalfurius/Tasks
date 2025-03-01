@@ -9,6 +9,8 @@ import {
     orderBy, writeBatch, getDocs, limit
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
+const PAGE_SIZE = 20;
+let lastDoc = null;
 const MAX_HISTORY_AGE = 30 * 24 * 60 * 60 * 1000; // 30 days
 const historyService = {
     historyItems: [],
@@ -53,21 +55,34 @@ const historyService = {
 
         try {
             const cutoffDate = new Date(Date.now() - MAX_HISTORY_AGE);
-            const q = query(
-                collection(db, 'history'),
-                where('userId', '==', userId),
-                where('timestamp', '<=', cutoffDate)
-            );
+            const batchSize = 500; // Tamaño máximo del lote
+            let totalDeleted = 0;
 
-            const snapshot = await getDocs(q);
-            const batch = writeBatch(db);
+            while (true) {
+                const q = query(
+                    collection(db, 'history'),
+                    where('userId', '==', userId),
+                    where('timestamp', '<=', cutoffDate),
+                    limit(batchSize)
+                );
 
-            snapshot.docs.forEach(doc => {
-                batch.delete(doc.ref);
-            });
+                const snapshot = await getDocs(q);
+                if (snapshot.empty) break;
 
-            await batch.commit();
-            ToastService.info('History cleanup completed');
+                const batch = writeBatch(db);
+                snapshot.docs.forEach(doc => {
+                    batch.delete(doc.ref);
+                    totalDeleted++;
+                });
+
+                await batch.commit();
+
+                if (snapshot.docs.length < batchSize) break;
+            }
+
+            if (totalDeleted > 0) {
+                ToastService.info(`Cleaned up ${totalDeleted} history items`);
+            }
         } catch (error) {
             console.error('Error cleaning up history:', error);
             ToastService.error('Failed to cleanup history');
@@ -102,7 +117,6 @@ const historyService = {
         if (!userId) return;
 
         try {
-            // Only load last 30 days of history
             const thirtyDaysAgo = new Date();
             thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
 
@@ -111,18 +125,27 @@ const historyService = {
                 where('userId', '==', userId),
                 where('timestamp', '>=', thirtyDaysAgo),
                 orderBy('timestamp', 'desc'),
-                limit(50) // Reduce initial load
+                limit(50)
             );
 
             if (this.unsubscribe) {
                 this.unsubscribe();
             }
 
-            // Use cache-first strategy
+            // Usar getDocsFromCache primero
             this.unsubscribe = onSnapshot(q, {
-                includeMetadataChanges: true
-            }, (snapshot) => {
-                if (!snapshot.metadata.hasPendingWrites) {
+                includeMetadataChanges: true,
+                source: 'cache' // Priorizar cache
+            }, async (snapshot) => {
+                if (snapshot.empty && !snapshot.metadata.fromCache) {
+                    // Solo buscar en servidor si cache está vacío
+                    const serverSnapshot = await getDocs(q);
+                    this.historyItems = serverSnapshot.docs.map(doc => ({
+                        id: doc.id,
+                        ...doc.data()
+                    }));
+                    this.notifyObservers();
+                } else if (!snapshot.metadata.hasPendingWrites) {
                     this.historyItems = snapshot.docs.map(doc => ({
                         id: doc.id,
                         ...doc.data()
@@ -133,6 +156,40 @@ const historyService = {
         } catch (error) {
             console.error('Error loading history:', error);
             ToastService.error('Failed to load history');
+        }
+    },
+    async loadMoreHistory() {
+        const userId = authService.getCurrentUserId();
+        if (!userId || this.loading) return;
+
+        this.loading = true;
+        try {
+            let q = query(
+                collection(db, 'history'),
+                where('userId', '==', userId),
+                orderBy('timestamp', 'desc'),
+                limit(PAGE_SIZE)
+            );
+
+            if (lastDoc) {
+                q = query(q, startAfter(lastDoc));
+            }
+
+            const snapshot = await getDocs(q);
+            lastDoc = snapshot.docs[snapshot.docs.length - 1];
+
+            const newItems = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+
+            this.historyItems = [...this.historyItems, ...newItems];
+            this.notifyObservers();
+        } catch (error) {
+            console.error('Error loading more history:', error);
+            ToastService.error('Failed to load more history');
+        } finally {
+            this.loading = false;
         }
     },
 

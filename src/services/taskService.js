@@ -90,18 +90,31 @@ const taskService = {
         try {
             RateLimiter.checkLimit('addTask', userId);
 
+            // Find minimum order value for uncompleted tasks
+            const uncompletedTasks = this.tasks.filter(t => !t.completed);
+            const minOrder = uncompletedTasks.length > 0
+                ? Math.min(...uncompletedTasks.map(t => t.order))
+                : 0;
+
+            // Convert dueDate string to Firestore timestamp if provided
             const taskData = {
-                text,
-                completed: false,
+                text: text.trim(),
                 userId,
-                order: this.tasks.length,
-                dueDate: dueDate ? new Date(dueDate) : null
+                completed: false,
+                timestamp: new Date(),
+                order: minOrder - 1
             };
 
+            if (dueDate) {
+                taskData.dueDate = new Date(dueDate);
+            }
+
+            // Validate task data
             Validator.task(taskData);
 
+            // Add task to Firestore
             await addDoc(collection(db, 'tasks'), taskData);
-            ToastService.success('Task added successfully');
+
         } catch (error) {
             console.error('Error adding task:', error);
             ToastService.error(error.message);
@@ -121,9 +134,23 @@ const taskService = {
 
             if (!task) throw new Error('Task not found');
 
-            const updatedTask = { ...task, ...updates };
-            Validator.task(updatedTask);
+            // If completing/uncompleting task, update order
+            if ('completed' in updates && updates.completed !== task.completed) {
+                const tasksInTargetState = this.tasks.filter(t => t.completed === updates.completed);
+                const minOrder = tasksInTargetState.length > 0
+                    ? Math.min(...tasksInTargetState.map(t => t.order))
+                    : 0;
+                updates.order = minOrder - 1;
+            }
 
+            // Include the original timestamp in the validation
+            const updatedTask = {
+                ...task,
+                ...updates,
+                timestamp: task.timestamp.toDate()
+            };
+
+            Validator.task(updatedTask);
             await updateDoc(taskRef, updates);
         } catch (error) {
             console.error('Error updating task:', error);
@@ -131,6 +158,7 @@ const taskService = {
             throw error;
         }
     },
+
     truncateText(text, maxLength = 20) {
         if (text.length <= maxLength) return text;
         return text.substring(0, maxLength) + '...';

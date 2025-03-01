@@ -2,10 +2,10 @@
 export const RateLimiter = {
     operations: new Map(),
     limits: {
-        addTask: { max: 5, window: 60000, message: 'Please wait before adding more tasks' },
-        updateTask: { max: 10, window: 60000, message: 'Too many updates. Please wait' },
-        deleteTask: { max: 3, window: 60000, message: 'Too many deletions. Please wait' },
-        logHistory: { max: 20, window: 60000, message: 'Too many history entries' }
+        addTask: { max: 15, window: 60000, message: 'Please wait before adding more tasks' },
+        updateTask: { max: 15, window: 60000, message: 'Too many updates. Please wait' },
+        deleteTask: { max: 15, window: 60000, message: 'Too many deletions. Please wait' },
+        logHistory: { max: 25, window: 60000, message: 'Too many history entries' }
     },
 
     checkLimit(operationType, userId) {
