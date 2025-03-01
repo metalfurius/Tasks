@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Add PWA support with updated manifest, enhance favicon links, and improve icon paths">
+    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Update favicon paths and manifest for relative URLs, enhance start URL configuration">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/icons/apple-touch-icon.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/manifest.json" beforeDir="false" afterPath="$PROJECT_DIR$/manifest.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -94,7 +94,7 @@
       <workItem from="1740603294932" duration="1102000" />
       <workItem from="1740644744766" duration="6568000" />
       <workItem from="1740788884358" duration="8931000" />
-      <workItem from="1740827693960" duration="5429000" />
+      <workItem from="1740827693960" duration="6083000" />
     </task>
     <task id="LOCAL-00001" summary="Add due date styling and overdue check functionality">
       <option name="closed" value="true" />
@@ -264,7 +264,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740835253894</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Update favicon paths and manifest for relative URLs, enhance start URL configuration">
+      <option name="closed" value="true" />
+      <created>1740835508660</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1740835508660</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -301,6 +309,7 @@
     <MESSAGE value="Add message provider for dynamic notifications, enhance toast service with close button, and implement load more functionality for task lists" />
     <MESSAGE value="Add PWA support with manifest, enhance task editing with toast notifications, and improve task loading logic" />
     <MESSAGE value="Add PWA support with updated manifest, enhance favicon links, and improve icon paths" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add PWA support with updated manifest, enhance favicon links, and improve icon paths" />
+    <MESSAGE value="Update favicon paths and manifest for relative URLs, enhance start URL configuration" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update favicon paths and manifest for relative URLs, enhance start URL configuration" />
   </component>
 </project>
