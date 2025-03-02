@@ -290,12 +290,6 @@ const taskService = {
             throw error;
         }
     },
-
-    truncateText(text, maxLength = 20) {
-        if (text.length <= maxLength) return text;
-        return text.substring(0, maxLength) + '...';
-    },
-
     // Delete task
     async deleteTask(taskId) {
         try {
@@ -357,13 +351,13 @@ const taskService = {
     getPendingTasks() {
         return Array.from(this.tasks.values())
             .filter(task => !task.completed)
-            .sort((a, b) => b.timestamp - a.timestamp); // Ordenar por timestamp descendente
+            .sort((a, b) => a.order - b.order); // Sort by order ascending
     },
 
     getCompletedTasks() {
         return Array.from(this.tasks.values())
             .filter(task => task.completed)
-            .sort((a, b) => b.timestamp - a.timestamp); // Ya estaba correcto
+            .sort((a, b) => a.order - b.order); // Sort by order ascending
     },
 
     async getTotalPendingCount() {
