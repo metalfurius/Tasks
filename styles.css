@@ -1064,3 +1064,22 @@ input[type="text"]:focus, input[type="date"]:focus {
 .dropdown-item#delete-all-data i {
     color: var(--delete-red);
 }
+
+.drag-handle {
+    cursor: grab;
+    padding: 0 8px;
+    font-size: 18px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    user-select: none;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+/* Hide drag handles in completed tasks */
+.task-item.completed .drag-handle {
+    visibility: hidden;
+}

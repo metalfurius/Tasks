@@ -16,7 +16,7 @@ const SortableManager = {
 
         const defaultOptions = {
             animation: 150,
-            handle: '.task-item',
+            handle: '.drag-handle', // Update this to use the drag handle
             onEnd: this.handleSortEnd.bind(this, containerId)
         };
 

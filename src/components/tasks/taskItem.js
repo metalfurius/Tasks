@@ -96,6 +96,7 @@ const TaskItem = {
         return `
         <div class="task-item ${task.completed ? 'completed' : ''}" data-id="${task.id}">
             <div class="task-item-main">
+                <div class="drag-handle">⋮⋮</div>
                 <input type="checkbox" ${task.completed ? 'checked' : ''} data-id="${task.id}">
                 <div class="task-content ${task.completed ? '' : 'editable'}" ${task.completed ? '' : 'contenteditable="true"'} data-id="${task.id}">${sanitizedText.replace(/\n/g, '<br>')}</div>
                 <div class="task-actions">
