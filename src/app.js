@@ -9,6 +9,7 @@ import HistoryView from './components/history/history.js';
 import ToastService from './services/toastService.js';
 import NotificationMonitor from './services/notificationMonitor.js';
 import ConfigMenu from './components/ui/configMenu.js';
+import DataCleanupService from "./services/dataCleanupService.js";
 
 // App initialization
 const App = {
@@ -32,6 +33,14 @@ const App = {
 
         // Initialize history view
         HistoryView.init();
+
+        // Add event listener for the delete all data button
+        document.getElementById('delete-all-data').addEventListener('click', async () => {
+            await DataCleanupService.deleteAllUserData();
+
+            // Close the config menu after operation completes
+            document.getElementById('config-menu').classList.remove('show');
+        });
 
         console.log('App initialized successfully');
     },

@@ -961,15 +961,21 @@ input[type="text"]:focus, input[type="date"]:focus {
     }
 }
 
-/* Configuration button and dropdown */
+/* Configuration Menu */
 .config-container {
     position: relative;
     display: inline-block;
 }
 
+/* Config Button */
 #config-button {
+    background: transparent;
+    border: none;
     color: var(--text);
-    transition: transform 0.3s ease;
+    font-size: 1.2rem;
+    padding: var(--spacing-sm);
+    cursor: pointer;
+    transition: all 0.3s ease;
 }
 
 #config-button:hover {
@@ -977,48 +983,57 @@ input[type="text"]:focus, input[type="date"]:focus {
     color: var(--primary);
 }
 
-#config-menu {
+/* Dropdown Menu */
+.dropdown-menu {
     position: absolute;
-    top: 100%;
+    top: calc(100% + 5px);
     right: 0;
-    min-width: 180px;
+    width: 220px;
     background: var(--container-bg);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
     z-index: 100;
     overflow: hidden;
-    transition: all 0.2s ease;
+    transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+
+.dropdown-menu.hidden {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(10px) scale(0.95);
     pointer-events: none;
 }
 
-#config-menu.show {
+.dropdown-menu.show {
     opacity: 1;
-    transform: translateY(0);
-    pointer-events: all;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
 }
 
+/* Dropdown Header */
 .dropdown-header {
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--spacing-md);
     font-weight: 600;
+    font-size: 0.9rem;
     color: var(--text-muted);
     border-bottom: 1px solid var(--border);
+    background-color: var(--hover-bg);
 }
 
+/* Dropdown Items */
 .dropdown-item {
     display: flex;
     align-items: center;
     gap: var(--spacing-sm);
     width: 100%;
-    padding: var(--spacing-sm) var(--spacing-md);
+    padding: var(--spacing-md);
     background: none;
     border: none;
     text-align: left;
     color: var(--text);
     cursor: pointer;
-    transition: background 0.2s ease;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
 }
 
 .dropdown-item:hover {
@@ -1029,4 +1044,23 @@ input[type="text"]:focus, input[type="date"]:focus {
 .dropdown-item i {
     width: 16px;
     text-align: center;
+    font-size: 1rem;
+}
+
+/* Danger Item */
+.dropdown-item#delete-all-data {
+    margin-top: var(--spacing-sm);
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border);
+    color: var(--delete-red);
+    font-weight: 500;
+}
+
+.dropdown-item#delete-all-data:hover {
+    background: rgba(255, 59, 48, 0.1);
+    color: var(--delete-red);
+}
+
+.dropdown-item#delete-all-data i {
+    color: var(--delete-red);
 }
