@@ -34,6 +34,18 @@
         <div class="header-controls">
             <button class="theme-toggle" aria-label="Toggle theme">🌙</button>
             <button id="logout-btn">Logout</button>
+            <div class="config-container">
+                <button id="config-button" aria-label="Configuration"></button>
+                    <i class="fas fa-cog"></i>
+                <div id="config-menu" class="dropdown-menu hidden">
+                    <div class="dropdown-header">Configuration</div>
+                    <button id="clear-history" class="dropdown-item">
+                        <i class="fas fa-trash"></i>
+                        Clear History
+                    </button>
+                    <!-- Add more configuration options here in the future -->
+                </div>
+            </div>
         </div>
     </header>
 

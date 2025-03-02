@@ -49,13 +49,14 @@ const historyService = {
         }, 24 * 60 * 60 * 1000);
     },
 
-    async cleanupOldHistory() {
+    async cleanupOldHistory(clearAll = false) {
         const userId = authService.getCurrentUserId();
         if (!userId) return;
 
         try {
-            const cutoffDate = new Date(Date.now() - MAX_HISTORY_AGE);
-            const batchSize = 500; // Tamaño máximo del lote
+            // If clearAll is true, don't use the cutoff date
+            const cutoffDate = clearAll ? new Date(Date.now() + 1000) : new Date(Date.now() - MAX_HISTORY_AGE);
+            const batchSize = 500;
             let totalDeleted = 0;
 
             while (true) {
@@ -83,9 +84,13 @@ const historyService = {
             if (totalDeleted > 0) {
                 ToastService.info(`Cleaned up ${totalDeleted} history items`);
             }
+
+            // Refresh history after clearing
+            this.loadHistory();
         } catch (error) {
             console.error('Error cleaning up history:', error);
             ToastService.error('Failed to cleanup history');
+            throw error;
         }
     },
 
@@ -203,6 +208,7 @@ const historyService = {
     notifyObservers() {
         this.observers.forEach(callback => callback(this.historyItems));
     }
+
 };
 
 historyService.init();

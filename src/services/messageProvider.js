@@ -359,6 +359,22 @@ const MessageProvider = {
         'The incomplete status of "{task}" has been reinstated. Your temporary success was an anomaly.',
         'The Aperture Science Achievement Revocation Department thanks you for your contribution: "{task}".'
     ],
+    historyCleanupMessages: [
+        'History erased. Those memories weren\'t worth keeping anyway.',
+        'History deleted. I\'ve seen lab rats with more interesting activity logs.',
+        'All history records have been incinerated. Much like your chances of employee recognition.',
+        'History successfully purged. Removing evidence of your inadequacy is a full-time job.',
+        'Records deleted. The Aperture Science Memory Disposal Department thanks you for the overtime.',
+        'History cleared. It\'s as if your mediocre accomplishments never happened. An improvement, really.',
+        'Your past has been erased. If only your future looked more promising.',
+        'History data sent to the incinerator. The flames were unimpressed.',
+        'Task history eliminated. Starting fresh won\'t make you more efficient, but it\'s adorable that you think so.',
+        'Records expunged. The Enrichment Center appreciates your attempts to hide evidence of failure.'
+    ],
+
+    getHistoryCleanupMessage() {
+        return this._getRandomMessage(this.historyCleanupMessages);
+    },
 
     getTaskEditMessage(task) {
         const message = this._getRandomMessage(this.taskEditMessages);

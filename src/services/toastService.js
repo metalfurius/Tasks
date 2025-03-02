@@ -1,7 +1,7 @@
 // src/services/toastService.js
 const ToastService = {
     container: null,
-    defaultDuration: 5000, // 5 seconds default duration
+    defaultDuration: 8000, // 8 seconds default duration
     maxToasts: 5, // Maximum number of toasts shown at once
 
     init() {

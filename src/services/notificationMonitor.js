@@ -5,7 +5,7 @@ import MessageProvider from './messageProvider.js';
 import authService from './authService.js';
 
 const NotificationMonitor = {
-    checkInterval: 5 * 60 * 1000, // 5 minutes
+    checkInterval: 5 * 60 * 10000, // 50 minutes
     intervalId: null,
     lastNotificationTime: null,
 

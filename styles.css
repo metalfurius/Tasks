@@ -37,7 +37,9 @@
     --success-green: #33D69F;
 
     /* Effects */
+    /* Effects */
     --shadow: 0 10px 20px rgba(124, 93, 250, 0.1);
+    --hover-bg: rgba(124, 93, 250, 0.05);
     --transition-standard: all 0.3s ease;
 
     /* Spacing */
@@ -65,6 +67,7 @@
     --text-muted: #888EB0;
     --input-bg: #252945;
     --border: #252945;
+    --hover-bg: rgba(255, 255, 255, 0.05);
     --shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
 }
 
@@ -78,6 +81,7 @@
     --text-muted: #A0522D;
     --input-bg: #FAEBD7;
     --border: #DEB887;
+    --hover-bg: rgba(139, 69, 19, 0.05);
     --shadow: 0 10px 20px rgba(139, 69, 19, 0.1);
     --google-blue: #8B4513;
     --google-blue-hover: #A0522D;
@@ -96,6 +100,7 @@
     --text-muted: #718096;
     --input-bg: #222436;
     --border: #2D3748;
+    --hover-bg: rgba(74, 144, 226, 0.08);
     --shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
     --google-blue: #4A90E2;
     --google-blue-hover: #5DA0E2;
@@ -954,4 +959,74 @@ input[type="text"]:focus, input[type="date"]:focus {
         0%, 100% { box-shadow: 0 0 0 rgba(124, 93, 250, 0); }
         50% { box-shadow: 0 0 15px rgba(124, 93, 250, 0.4); }
     }
+}
+
+/* Configuration button and dropdown */
+.config-container {
+    position: relative;
+    display: inline-block;
+}
+
+#config-button {
+    color: var(--text);
+    transition: transform 0.3s ease;
+}
+
+#config-button:hover {
+    transform: rotate(45deg);
+    color: var(--primary);
+}
+
+#config-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    min-width: 180px;
+    background: var(--container-bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+    z-index: 100;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+}
+
+#config-menu.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+.dropdown-header {
+    padding: var(--spacing-sm) var(--spacing-md);
+    font-weight: 600;
+    color: var(--text-muted);
+    border-bottom: 1px solid var(--border);
+}
+
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    width: 100%;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: none;
+    border: none;
+    text-align: left;
+    color: var(--text);
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background: var(--hover-bg);
+    color: var(--primary);
+}
+
+.dropdown-item i {
+    width: 16px;
+    text-align: center;
 }

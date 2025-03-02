@@ -8,6 +8,7 @@ import ThemeManager from './components/ui/theme.js';
 import HistoryView from './components/history/history.js';
 import ToastService from './services/toastService.js';
 import NotificationMonitor from './services/notificationMonitor.js';
+import ConfigMenu from './components/ui/configMenu.js';
 
 // App initialization
 const App = {
@@ -24,6 +25,7 @@ const App = {
         // Initialize task components
         TaskForm.init();
         TaskList.init();
+        ConfigMenu.init();
 
         // Setup task item event listeners
         this.setupTaskItemListeners();

@@ -4,11 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Enhance authentication flow with last login tracking, improve toast notifications for user greetings, and refactor task completion messages">
+    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Add configuration menu for clearing history and enhance toast notifications">
+      <changelist_data name="metalfurius" email="75508084+metalfurius@users.noreply.github.com" automatic="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/ui/configMenu.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/tasks/taskItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tasks/taskItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/historyService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/historyService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/services/messageProvider.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/messageProvider.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/taskService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/taskService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/notificationMonitor.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/notificationMonitor.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/toastService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/toastService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -23,6 +29,11 @@
     </option>
   </component>
   <component name="Git.Settings">
+    <option name="PREVIOUS_COMMIT_AUTHORS">
+      <list>
+        <option value="Metal" />
+      </list>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="GitHubPullRequestSearchHistory">{
@@ -99,6 +110,7 @@
       <workItem from="1740837453108" duration="5851000" />
       <workItem from="1740843534926" duration="264000" />
       <workItem from="1740852496149" duration="630000" />
+      <workItem from="1740921751386" duration="2068000" />
     </task>
     <task id="LOCAL-00001" summary="Add due date styling and overdue check functionality">
       <option name="closed" value="true" />
@@ -341,6 +353,7 @@
     <MESSAGE value="Update favicon paths and manifest for crossorigin support, enhance task list management" />
     <MESSAGE value="Enhance toast notifications with new message types, improve error handling in task management, and update styles for better UI consistency" />
     <MESSAGE value="Enhance authentication flow with last login tracking, improve toast notifications for user greetings, and refactor task completion messages" />
-    <option name="LAST_COMMIT_MESSAGE" value="Enhance authentication flow with last login tracking, improve toast notifications for user greetings, and refactor task completion messages" />
+    <MESSAGE value="Add configuration menu for clearing history and enhance toast notifications" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add configuration menu for clearing history and enhance toast notifications" />
   </component>
 </project>
