@@ -4,9 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Update drag handle implementation for task sorting and enhance styles for better user interaction">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/taskService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/taskService.js" afterDir="false" />
+    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Refactor task creation to use Firestore timestamps and improve error handling in task addition">
+      <change beforePath="$PROJECT_DIR$/src/utils/validation.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/validation.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,7 +102,7 @@
       <workItem from="1740843534926" duration="264000" />
       <workItem from="1740852496149" duration="630000" />
       <workItem from="1740921751386" duration="2938000" />
-      <workItem from="1741011602634" duration="1917000" />
+      <workItem from="1741011602634" duration="2098000" />
     </task>
     <task id="LOCAL-00001" summary="Add due date styling and overdue check functionality">
       <option name="closed" value="true" />
@@ -329,7 +328,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740928944207</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Refactor task creation to use Firestore timestamps and improve error handling in task addition">
+      <option name="closed" value="true" />
+      <created>1741014993575</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1741014993575</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -347,7 +354,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Enhance task item styling and structure with due date integration" />
     <MESSAGE value="Enhance task item styling with improved word break handling" />
     <MESSAGE value="Enhance delete button styling and disable functionality for completed tasks" />
     <MESSAGE value="Refactor task order management and enhance task state updates" />
@@ -372,6 +378,7 @@
     <MESSAGE value="Add configuration menu for clearing history and enhance toast notifications" />
     <MESSAGE value="Refactor task sorting logic to use order property and remove unused truncateText function" />
     <MESSAGE value="Update drag handle implementation for task sorting and enhance styles for better user interaction" />
-    <option name="LAST_COMMIT_MESSAGE" value="Update drag handle implementation for task sorting and enhance styles for better user interaction" />
+    <MESSAGE value="Refactor task creation to use Firestore timestamps and improve error handling in task addition" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor task creation to use Firestore timestamps and improve error handling in task addition" />
   </component>
 </project>

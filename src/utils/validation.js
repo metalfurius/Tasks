@@ -17,7 +17,7 @@ export const Validator = {
         if (typeof data.order !== 'number' || !Number.isFinite(data.order)) {
             throw new Error('Invalid task order');
         }
-        if (!data.timestamp || !(data.timestamp instanceof Date)) {
+        if (!data.timestamp) {
             throw new Error('Invalid timestamp');
         }
 
