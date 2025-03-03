@@ -6,7 +6,8 @@ import { RateLimiter } from './rateLimiter.js';
 import { Validator } from '../utils/validation.js';
 import {
     collection, addDoc, query, where, onSnapshot,
-    updateDoc, deleteDoc, doc, orderBy, writeBatch, limit, startAfter, getDocs
+    updateDoc, deleteDoc, doc, orderBy, writeBatch, limit, startAfter, getDocs,
+    serverTimestamp, Timestamp
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const TASKS_PER_PAGE = 20;
@@ -239,8 +240,9 @@ const taskService = {
                 completed: false,
                 userId,
                 order: lastTask.order + 1000,
-                timestamp: new Date(),
-                dueDate: dueDate ? new Date(dueDate) : null
+                timestamp: serverTimestamp(), // Use serverTimestamp instead of new Date()
+                dueDate: dueDate ? Timestamp.fromDate(new Date(dueDate)) : null, // Convert to Firestore Timestamp
+                priority: 'none'
             };
 
             Validator.task(taskData);
@@ -249,7 +251,7 @@ const taskService = {
 
         } catch (error) {
             console.error('Error adding task:', error);
-            ToastService.error('Failed to add task');
+            ToastService.error(`Error adding task: ${error.message}`);
             throw error;
         }
     },

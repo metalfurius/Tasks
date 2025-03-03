@@ -4,10 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Refactor task sorting logic to use order property and remove unused truncateText function">
-      <change beforePath="$PROJECT_DIR$/src/components/tasks/taskItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tasks/taskItem.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/sortable.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/sortable.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/styles.css" afterDir="false" />
+    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Update drag handle implementation for task sorting and enhance styles for better user interaction">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/taskService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/taskService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,23 +54,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "last_opened_file_path": "E:/Pc antiguo/hacke/Tasks",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "run.code.analysis.last.selected.profile": "pProject Default",
-    "settings.editor.selected.configurable": "settings.qodana",
-    "ts.external.directory.path": "E:\\WebStorm 2024.3.2.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;last_opened_file_path&quot;: &quot;E:/Pc antiguo/hacke/Tasks&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;run.code.analysis.last.selected.profile&quot;: &quot;pProject Default&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;vcs.Git&quot;,
+    &quot;ts.external.directory.path&quot;: &quot;E:\\WebStorm 2024.3.2.1\\plugins\\javascript-plugin\\jsLanguageServicesImpl\\external&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\Pc antiguo\hacke\Tasks" />
@@ -104,6 +103,7 @@
       <workItem from="1740843534926" duration="264000" />
       <workItem from="1740852496149" duration="630000" />
       <workItem from="1740921751386" duration="2938000" />
+      <workItem from="1741011602634" duration="1917000" />
     </task>
     <task id="LOCAL-00001" summary="Add due date styling and overdue check functionality">
       <option name="closed" value="true" />
@@ -321,7 +321,15 @@
       <option name="project" value="LOCAL" />
       <updated>1740928563150</updated>
     </task>
-    <option name="localTasksCounter" value="28" />
+    <task id="LOCAL-00028" summary="Update drag handle implementation for task sorting and enhance styles for better user interaction">
+      <option name="closed" value="true" />
+      <created>1740928944207</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1740928944207</updated>
+    </task>
+    <option name="localTasksCounter" value="29" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -339,7 +347,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add due date styling and overdue check functionality" />
     <MESSAGE value="Enhance task item styling and structure with due date integration" />
     <MESSAGE value="Enhance task item styling with improved word break handling" />
     <MESSAGE value="Enhance delete button styling and disable functionality for completed tasks" />
@@ -364,6 +371,7 @@
     <MESSAGE value="Enhance authentication flow with last login tracking, improve toast notifications for user greetings, and refactor task completion messages" />
     <MESSAGE value="Add configuration menu for clearing history and enhance toast notifications" />
     <MESSAGE value="Refactor task sorting logic to use order property and remove unused truncateText function" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactor task sorting logic to use order property and remove unused truncateText function" />
+    <MESSAGE value="Update drag handle implementation for task sorting and enhance styles for better user interaction" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update drag handle implementation for task sorting and enhance styles for better user interaction" />
   </component>
 </project>
