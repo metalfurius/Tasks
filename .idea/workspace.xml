@@ -5,12 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Implement search functionality with UI and service integration for task filtering">
-      <change afterPath="$PROJECT_DIR$/src/components/search/search.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/services/searchService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/history/history.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/history/history.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/search/search.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/search/search.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/components/tasks/taskList.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tasks/taskList.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/searchService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/searchService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/taskService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/taskService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

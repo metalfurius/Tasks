@@ -389,6 +389,46 @@ const taskService = {
             console.error('Error getting total pending count:', error);
             return 0;
         }
+    },
+
+    async searchAllTasks(searchTerm) {
+        const userId = authService.getCurrentUserId();
+        if (!userId) return { pending: [], completed: [] };
+
+        try {
+            // Get all tasks for the user
+            const tasksQuery = query(
+                collection(db, 'tasks'),
+                where('userId', '==', userId)
+            );
+
+            const snapshot = await getDocs(tasksQuery);
+            const allTasks = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+
+            // Filter tasks that contain the search term (case-insensitive)
+            const term = searchTerm.toLowerCase();
+            const matchingTasks = allTasks.filter(task =>
+                task.text.toLowerCase().includes(term)
+            );
+
+            // Split into pending and completed
+            const pendingTasks = matchingTasks
+                .filter(task => !task.completed)
+                .sort((a, b) => a.order - b.order);
+
+            const completedTasks = matchingTasks
+                .filter(task => task.completed)
+                .sort((a, b) => a.order - b.order);
+
+            return { pending: pendingTasks, completed: completedTasks };
+        } catch (error) {
+            console.error('Error searching all tasks:', error);
+            ToastService.error('Failed to search tasks');
+            return { pending: [], completed: [] };
+        }
     }
 };
 

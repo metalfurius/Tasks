@@ -33,9 +33,58 @@ const TaskList = {
     },
 
     // Render tasks
-    renderTasks() {
-        this.renderPendingTasks();
-        this.renderCompletedTasks();
+    async renderTasks() {
+        const searchTerm = searchService.getSearchTerm();
+
+        if (searchTerm) {
+            // Add a loading indicator that doesn't replace content
+            const pendingLoading = document.createElement('div');
+            pendingLoading.className = 'search-loading';
+            pendingLoading.textContent = 'Searching...';
+
+            const completedLoading = document.createElement('div');
+            completedLoading.className = 'search-loading';
+            completedLoading.textContent = 'Searching...';
+
+            // Append loading indicators without removing content
+            if (!this.pendingTasksContainer.querySelector('.search-loading')) {
+                this.pendingTasksContainer.appendChild(pendingLoading);
+            }
+
+            if (!this.completedTasksContainer.querySelector('.search-loading')) {
+                this.completedTasksContainer.appendChild(completedLoading);
+            }
+
+            // Apply subtle opacity to existing content to show it's being refreshed
+            const pendingItems = this.pendingTasksContainer.querySelectorAll('.task-item');
+            const completedItems = this.completedTasksContainer.querySelectorAll('.task-item');
+
+            pendingItems.forEach(item => item.style.opacity = '0.5');
+            completedItems.forEach(item => item.style.opacity = '0.5');
+
+            // Perform global search
+            const searchResults = await searchService.performGlobalSearch();
+
+            // Remove loading indicators
+            const loadingElements = document.querySelectorAll('.search-loading');
+            loadingElements.forEach(el => el.remove());
+
+            if (searchResults) {
+                // Render search results only if search term is still active
+                if (searchService.getSearchTerm() === searchTerm) {
+                    this.renderPendingTasksFromSearch(searchResults.pending);
+                    this.renderCompletedTasksFromSearch(searchResults.completed);
+                }
+            } else {
+                // Fallback to local filtering if global search failed
+                this.renderPendingTasks();
+                this.renderCompletedTasks();
+            }
+        } else {
+            // Normal pagination rendering
+            this.renderPendingTasks();
+            this.renderCompletedTasks();
+        }
     },
 
     // Render pending tasks
@@ -144,6 +193,34 @@ const TaskList = {
                 SortableManager.instances['pending-tasks'] = null;
             }
         }
+    },
+
+    renderPendingTasksFromSearch(pendingTasks) {
+        if (pendingTasks.length === 0) {
+            const searchTerm = searchService.getSearchTerm();
+            this.pendingTasksContainer.innerHTML = `<div class="empty-state">No pending tasks matching "${searchTerm}" 🔍</div>`;
+            return;
+        }
+
+        this.pendingTasksContainer.innerHTML = pendingTasks
+            .map((task) => TaskItem.createTaskHtml(task))
+            .join('');
+
+        // No "Load More" button for search results
+    },
+
+    renderCompletedTasksFromSearch(completedTasks) {
+        if (completedTasks.length === 0) {
+            const searchTerm = searchService.getSearchTerm();
+            this.completedTasksContainer.innerHTML = `<div class="empty-state">No completed tasks matching "${searchTerm}" 🔍</div>`;
+            return;
+        }
+
+        this.completedTasksContainer.innerHTML = completedTasks
+            .map((task) => TaskItem.createTaskHtml(task))
+            .join('');
+
+        // No "Load More" button for search results
     }
 };
 

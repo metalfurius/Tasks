@@ -56,10 +56,19 @@ const SearchComponent = {
 
     handleSearchInput(e) {
         const term = e.target.value;
-        searchService.setSearchTerm(term);
 
-        // Show/hide clear button
+        // Clear previous timeout
+        if (this.searchTimeout) {
+            clearTimeout(this.searchTimeout);
+        }
+
+        // Update UI immediately
         this.clearButton.style.display = term ? 'block' : 'none';
+
+        // Set a delay before triggering search (only when user stops typing)
+        this.searchTimeout = setTimeout(() => {
+            searchService.setSearchTerm(term);
+        }, 500); // Increased to 500ms for better user experience
     },
 
     clearSearch() {
