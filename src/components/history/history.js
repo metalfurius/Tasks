@@ -1,5 +1,6 @@
 // src/components/history/history.js
 import historyService from '../../services/historyService.js';
+import searchService from '../../services/searchService.js';
 
 const HistoryView = {
     historyContainer: null,
@@ -16,6 +17,10 @@ const HistoryView = {
         }
 
         historyService.onHistoryChanged(this.renderHistory.bind(this));
+
+        searchService.onSearchChanged(() => {
+            historyService.onHistoryChanged(this.renderHistory.bind(this));
+        });
     },
 
     createLoadMoreButton() {
@@ -47,12 +52,20 @@ const HistoryView = {
     },
 
     renderHistory(historyItems) {
-        if (historyItems.length === 0) {
-            this.historyContainer.innerHTML = '<div class="empty-state">No history yet</div>';
+        // Filter by search term if present
+        const filteredItems = searchService.filterBySearchTerm(historyItems, 'taskText');
+
+        if (filteredItems.length === 0) {
+            const searchTerm = searchService.getSearchTerm();
+            if (searchTerm) {
+                this.historyContainer.innerHTML = `<div class="empty-state">No history matching "${searchTerm}" 🔍</div>`;
+            } else {
+                this.historyContainer.innerHTML = '<div class="empty-state">No history yet</div>';
+            }
             return;
         }
 
-        this.historyContainer.innerHTML = historyItems
+        this.historyContainer.innerHTML = filteredItems
             .map(this.createHistoryItemHtml)
             .join('');
 

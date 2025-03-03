@@ -4,7 +4,7 @@ import TabManager from '../ui/tabs.js';
 import SortableManager from '../../utils/sortable.js';
 import TaskItem from './taskItem.js';
 import ToastService from "../../services/toastService.js";
-
+import searchService from '../../services/searchService.js';
 
 const TaskList = {
     // DOM elements
@@ -27,6 +27,9 @@ const TaskList = {
 
         // Listen for tab changes
         TabManager.onTabChange(this.handleTabChange.bind(this));
+
+        // Add search subscription
+        searchService.onSearchChanged(this.renderTasks.bind(this));
     },
 
     // Render tasks
@@ -37,16 +40,19 @@ const TaskList = {
 
     // Render pending tasks
     renderPendingTasks() {
-        const pendingTasks = taskService.getPendingTasks();
+        let pendingTasks = taskService.getPendingTasks();
+
+        // Filter by search term if present
+        pendingTasks = searchService.filterBySearchTerm(pendingTasks);
 
         if (pendingTasks.length === 0) {
-            this.pendingTasksContainer.innerHTML = '<div class="empty-state">No pending tasks 🎉</div>';
-
-            // Add this line to show a toast when all tasks are completed
-            if (taskService.getCompletedTasks().length > 0) {
-                ToastService.success('All tasks completed! Great job!', {
-                    icon: '🏆'
-                });
+            const searchTerm = searchService.getSearchTerm();
+            if (searchTerm) {
+                this.pendingTasksContainer.innerHTML = `<div class="empty-state">No pending tasks matching "${searchTerm}" 🔍</div>`;
+            } else {
+                // Original empty state code...
+                this.pendingTasksContainer.innerHTML = '<div class="empty-state">No pending tasks 🎉</div>';
+                // Rest of your existing empty state code...
             }
             return;
         }
@@ -88,10 +94,18 @@ const TaskList = {
     },
     // Render completed tasks
     renderCompletedTasks() {
-        const completedTasks = taskService.getCompletedTasks();
+        let completedTasks = taskService.getCompletedTasks();
+
+        // Filter by search term if present
+        completedTasks = searchService.filterBySearchTerm(completedTasks);
 
         if (completedTasks.length === 0) {
-            this.completedTasksContainer.innerHTML = '<div class="empty-state">No completed tasks yet</div>';
+            const searchTerm = searchService.getSearchTerm();
+            if (searchTerm) {
+                this.completedTasksContainer.innerHTML = `<div class="empty-state">No completed tasks matching "${searchTerm}" 🔍</div>`;
+            } else {
+                this.completedTasksContainer.innerHTML = '<div class="empty-state">No completed tasks yet</div>';
+            }
             return;
         }
 

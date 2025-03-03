@@ -10,6 +10,7 @@ import ToastService from './services/toastService.js';
 import NotificationMonitor from './services/notificationMonitor.js';
 import ConfigMenu from './components/ui/configMenu.js';
 import DataCleanupService from "./services/dataCleanupService.js";
+import SearchComponent from './components/search/search.js';
 
 // App initialization
 const App = {
@@ -18,6 +19,7 @@ const App = {
         ToastService.init();
         ThemeManager.init();
         TabManager.init();
+        SearchComponent.init();
         await NotificationMonitor.init();
 
         // Initialize auth
