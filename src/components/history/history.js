@@ -56,8 +56,8 @@ const HistoryView = {
             .map(this.createHistoryItemHtml)
             .join('');
 
-        // Append load more button if not already present
-        if (!this.historyContainer.contains(this.loadMoreBtn)) {
+        // Only append the load more button if there are more items to load
+        if (historyService.hasMoreHistory()) {
             this.historyContainer.appendChild(this.loadMoreBtn);
         }
     },

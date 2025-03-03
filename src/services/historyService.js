@@ -9,8 +9,9 @@ import {
     orderBy, writeBatch, getDocs, limit, startAfter
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-const PAGE_SIZE = 20;
-let lastDoc = null;
+const HISTORY_PER_PAGE = 20;
+let lastHistoryDoc = null;
+let hasMore = true;
 const MAX_HISTORY_AGE = 30 * 24 * 60 * 60 * 1000; // 30 days
 const historyService = {
     historyItems: [],
@@ -165,23 +166,23 @@ const historyService = {
     },
     async loadMoreHistory() {
         const userId = authService.getCurrentUserId();
-        if (!userId || this.loading) return;
+        if (!userId) return false;
 
-        this.loading = true;
         try {
             let q = query(
                 collection(db, 'history'),
                 where('userId', '==', userId),
                 orderBy('timestamp', 'desc'),
-                limit(PAGE_SIZE)
+                limit(HISTORY_PER_PAGE)
             );
 
-            if (lastDoc) {
-                q = query(q, startAfter(lastDoc));
+            if (lastHistoryDoc) {
+                q = query(q, startAfter(lastHistoryDoc));
             }
 
             const snapshot = await getDocs(q);
-            lastDoc = snapshot.docs[snapshot.docs.length - 1];
+            lastHistoryDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+            hasMore = snapshot.docs.length === HISTORY_PER_PAGE;
 
             const newItems = snapshot.docs.map(doc => ({
                 id: doc.id,
@@ -190,11 +191,11 @@ const historyService = {
 
             this.historyItems = [...this.historyItems, ...newItems];
             this.notifyObservers();
+
+            return hasMore;
         } catch (error) {
             console.error('Error loading more history:', error);
-            ToastService.error('Failed to load more history');
-        } finally {
-            this.loading = false;
+            return false;
         }
     },
 
@@ -203,6 +204,10 @@ const historyService = {
         return () => {
             this.observers = this.observers.filter(observer => observer !== callback);
         };
+    },
+
+    hasMoreHistory() {
+        return hasMore;
     },
 
     notifyObservers() {

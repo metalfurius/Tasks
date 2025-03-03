@@ -5,7 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Refactor task creation to use Firestore timestamps and improve error handling in task addition">
-      <change beforePath="$PROJECT_DIR$/src/utils/validation.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/validation.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/history/history.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/history/history.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/historyService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/historyService.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/taskService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/taskService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

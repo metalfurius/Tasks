@@ -81,16 +81,15 @@ const taskService = {
                     this.loadCompletedTasks()
                 ]);
 
-                // Set up real-time listener only after initial load
+                // Set up real-time listener only for updates, not initial loading
                 const q = query(
                     collection(db, 'tasks'),
-                    where('userId', '==', userId)
+                    where('userId', '==', userId),
+                    where('timestamp', '>', new Date()) // Only listen for new tasks
                 );
 
                 this.unsubscribe = onSnapshot(q, (snapshot) => {
-                    if (!isLoading) { // Only process updates after initial load
-                        this.handleSnapshotChanges(snapshot);
-                    }
+                    this.handleSnapshotChanges(snapshot);
                 });
             })();
 
@@ -142,7 +141,7 @@ const taskService = {
                 collection(db, 'tasks'),
                 where('userId', '==', userId),
                 where('completed', '==', false),
-                orderBy('timestamp', 'desc'), // Cambiado a timestamp descendente
+                orderBy('order', 'asc'),
                 limit(TASKS_PER_PAGE)
             );
 
@@ -154,18 +153,24 @@ const taskService = {
             lastPendingDoc = snapshot.docs[snapshot.docs.length - 1] || null;
             hasMorePending = snapshot.docs.length === TASKS_PER_PAGE;
 
+            // For first page, replace pending tasks. For subsequent pages, add to them
             const newTasks = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             }));
 
-            // Mantener tareas existentes y agregar nuevas
-            const newTaskIds = newTasks.map(t => t.id);
-            const existingPendingTasks = this.tasks.filter(t => !t.completed && !newTaskIds.includes(t.id));
-            const existingCompletedTasks = this.tasks.filter(t => t.completed);
-            this.tasks = [...existingPendingTasks, ...newTasks, ...existingCompletedTasks];
-            this.notifyObservers();
+            if (!lastPendingDoc || snapshot.docs.length === 0) {
+                // First load - replace pending tasks
+                const completedTasks = this.tasks.filter(t => t.completed);
+                this.tasks = [...newTasks, ...completedTasks];
+            } else {
+                // Subsequent loads - add to existing tasks
+                const existingCompletedTasks = this.tasks.filter(t => t.completed);
+                const existingPendingTasks = this.tasks.filter(t => !t.completed);
+                this.tasks = [...existingPendingTasks, ...newTasks, ...existingCompletedTasks];
+            }
 
+            this.notifyObservers();
             return hasMorePending;
         } catch (error) {
             console.error('Error loading pending tasks:', error);
@@ -185,7 +190,7 @@ const taskService = {
                 collection(db, 'tasks'),
                 where('userId', '==', userId),
                 where('completed', '==', true),
-                orderBy('timestamp', 'desc'), // Cambiado a timestamp descendente
+                orderBy('order', 'asc'),
                 limit(TASKS_PER_PAGE)
             );
 
@@ -202,13 +207,18 @@ const taskService = {
                 ...doc.data()
             }));
 
-            // Mantener tareas existentes y agregar nuevas
-            const newTaskIds = newTasks.map(t => t.id);
-            const existingCompletedTasks = this.tasks.filter(t => t.completed && !newTaskIds.includes(t.id));
-            const existingPendingTasks = this.tasks.filter(t => !t.completed);
-            this.tasks = [...existingPendingTasks, ...existingCompletedTasks, ...newTasks];
-            this.notifyObservers();
+            if (!lastCompletedDoc || snapshot.docs.length === 0) {
+                // First load - replace completed tasks
+                const pendingTasks = this.tasks.filter(t => !t.completed);
+                this.tasks = [...pendingTasks, ...newTasks];
+            } else {
+                // Subsequent loads - add to existing tasks
+                const existingPendingTasks = this.tasks.filter(t => !t.completed);
+                const existingCompletedTasks = this.tasks.filter(t => t.completed);
+                this.tasks = [...existingPendingTasks, ...existingCompletedTasks, ...newTasks];
+            }
 
+            this.notifyObservers();
             return hasMoreCompleted;
         } catch (error) {
             console.error('Error loading completed tasks:', error);
