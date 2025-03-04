@@ -9,7 +9,7 @@ import {
     orderBy, writeBatch, getDocs, limit, startAfter
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-const HISTORY_PER_PAGE = 20;
+const HISTORY_PER_PAGE = 5;
 let lastHistoryDoc = null;
 let hasMore = true;
 const MAX_HISTORY_AGE = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -131,7 +131,7 @@ const historyService = {
                 where('userId', '==', userId),
                 where('timestamp', '>=', thirtyDaysAgo),
                 orderBy('timestamp', 'desc'),
-                limit(50)
+                limit(HISTORY_PER_PAGE)
             );
 
             if (this.unsubscribe) {

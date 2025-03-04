@@ -10,7 +10,7 @@ import {
     serverTimestamp, Timestamp
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-const TASKS_PER_PAGE = 20;
+const TASKS_PER_PAGE = 5;
 let lastPendingDoc = null;
 let lastCompletedDoc = null;
 let hasMorePending = true;
@@ -64,10 +64,7 @@ const taskService = {
 
     // Load tasks from Firebase
     async loadTasks() {
-        // If already loading, return existing promise
-        if (isLoading) {
-            return loadingPromise;
-        }
+        if (isLoading) return loadingPromise;
 
         const userId = authService.getCurrentUserId();
         if (!userId) return;
@@ -75,15 +72,19 @@ const taskService = {
         try {
             isLoading = true;
             loadingPromise = (async () => {
-                // Load initial tasks
+                // Load initial paginated tasks
                 await Promise.all([
                     this.loadPendingTasks(),
                     this.loadCompletedTasks()
                 ]);
 
+                // Only listen for changes to tasks we've already loaded
+                const taskIds = this.tasks.map(task => task.id);
+
                 const q = query(
                     collection(db, 'tasks'),
-                    where('userId', '==', userId)
+                    where('userId', '==', userId),
+                    where('__name__', 'in', taskIds.length ? taskIds : ['dummy-id'])
                 );
 
                 this.unsubscribe = onSnapshot(q, (snapshot) => {
@@ -148,27 +149,34 @@ const taskService = {
             }
 
             const snapshot = await getDocs(q);
-            lastPendingDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+
+            // No more results
+            if (snapshot.empty) {
+                hasMorePending = false;
+                return false;
+            }
+
+            lastPendingDoc = snapshot.docs[snapshot.docs.length - 1];
             hasMorePending = snapshot.docs.length === TASKS_PER_PAGE;
 
-            // For first page, replace pending tasks. For subsequent pages, add to them
+            // Extract new tasks and ensure no duplicates
             const newTasks = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             }));
 
-            if (!lastPendingDoc || snapshot.docs.length === 0) {
-                // First load - replace pending tasks
-                const completedTasks = this.tasks.filter(t => t.completed);
-                this.tasks = [...newTasks, ...completedTasks];
-            } else {
-                // Subsequent loads - add to existing tasks
-                const existingCompletedTasks = this.tasks.filter(t => t.completed);
-                const existingPendingTasks = this.tasks.filter(t => !t.completed);
-                this.tasks = [...existingPendingTasks, ...newTasks, ...existingCompletedTasks];
-            }
+            // Get existing tasks, filtering out any that would be duplicates
+            const existingCompletedTasks = this.tasks.filter(t => t.completed);
+            const existingPendingTasks = this.tasks.filter(t => !t.completed);
 
+            // Create a set of IDs for efficient duplicate checking
+            const existingIds = new Set(existingPendingTasks.map(t => t.id));
+            const uniqueNewTasks = newTasks.filter(task => !existingIds.has(task.id));
+
+            // Merge tasks, preserving order
+            this.tasks = [...existingPendingTasks, ...uniqueNewTasks, ...existingCompletedTasks];
             this.notifyObservers();
+
             return hasMorePending;
         } catch (error) {
             console.error('Error loading pending tasks:', error);
@@ -197,26 +205,34 @@ const taskService = {
             }
 
             const snapshot = await getDocs(q);
-            lastCompletedDoc = snapshot.docs[snapshot.docs.length - 1] || null;
+
+            // No more results
+            if (snapshot.empty) {
+                hasMoreCompleted = false;
+                return false;
+            }
+
+            lastCompletedDoc = snapshot.docs[snapshot.docs.length - 1];
             hasMoreCompleted = snapshot.docs.length === TASKS_PER_PAGE;
 
+            // Extract new tasks and ensure no duplicates
             const newTasks = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             }));
 
-            if (!lastCompletedDoc || snapshot.docs.length === 0) {
-                // First load - replace completed tasks
-                const pendingTasks = this.tasks.filter(t => !t.completed);
-                this.tasks = [...pendingTasks, ...newTasks];
-            } else {
-                // Subsequent loads - add to existing tasks
-                const existingPendingTasks = this.tasks.filter(t => !t.completed);
-                const existingCompletedTasks = this.tasks.filter(t => t.completed);
-                this.tasks = [...existingPendingTasks, ...existingCompletedTasks, ...newTasks];
-            }
+            // Get existing tasks, filtering out any that would be duplicates
+            const existingPendingTasks = this.tasks.filter(t => !t.completed);
+            const existingCompletedTasks = this.tasks.filter(t => t.completed);
 
+            // Create a set of IDs for efficient duplicate checking
+            const existingIds = new Set(existingCompletedTasks.map(t => t.id));
+            const uniqueNewTasks = newTasks.filter(task => !existingIds.has(task.id));
+
+            // Merge tasks, preserving order
+            this.tasks = [...existingPendingTasks, ...existingCompletedTasks, ...uniqueNewTasks];
             this.notifyObservers();
+
             return hasMoreCompleted;
         } catch (error) {
             console.error('Error loading completed tasks:', error);

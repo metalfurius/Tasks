@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Implement global search functionality with loading indicators and improved UI for task filtering">
+    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Enhance task item updates and improve real-time task listener functionality">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/tasks/taskItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tasks/taskItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/services/historyService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/historyService.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/services/taskService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/taskService.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -105,7 +105,7 @@
       <workItem from="1740852496149" duration="630000" />
       <workItem from="1740921751386" duration="2938000" />
       <workItem from="1741011602634" duration="2098000" />
-      <workItem from="1741103878098" duration="2036000" />
+      <workItem from="1741103878098" duration="3102000" />
     </task>
     <task id="LOCAL-00001" summary="Add due date styling and overdue check functionality">
       <option name="closed" value="true" />
@@ -355,7 +355,15 @@
       <option name="project" value="LOCAL" />
       <updated>1741021988907</updated>
     </task>
-    <option name="localTasksCounter" value="32" />
+    <task id="LOCAL-00032" summary="Enhance task item updates and improve real-time task listener functionality">
+      <option name="closed" value="true" />
+      <created>1741106516685</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1741106516685</updated>
+    </task>
+    <option name="localTasksCounter" value="33" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -373,7 +381,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Refactor task item HTML structure and enhance edit functionality" />
     <MESSAGE value="Enhance task item editing functionality and improve HTML structure with due date input" />
     <MESSAGE value="Enhance styling and layout for task items, inputs, and buttons; improve responsiveness and visual feedback" />
     <MESSAGE value="Enhance task item animations and improve delete button styling; add visual feedback for task completion" />
@@ -398,6 +405,7 @@
     <MESSAGE value="Refactor history and task services to improve pagination logic and enhance task loading behavior" />
     <MESSAGE value="Implement search functionality with UI and service integration for task filtering" />
     <MESSAGE value="Implement global search functionality with loading indicators and improved UI for task filtering" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implement global search functionality with loading indicators and improved UI for task filtering" />
+    <MESSAGE value="Enhance task item updates and improve real-time task listener functionality" />
+    <option name="LAST_COMMIT_MESSAGE" value="Enhance task item updates and improve real-time task listener functionality" />
   </component>
 </project>
