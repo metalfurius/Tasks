@@ -961,7 +961,7 @@ input[type="text"]:focus, input[type="date"]:focus {
     }
 }
 
-/* Configuration Menu */
+/* Configuration Menu - Redesigned */
 .config-container {
     position: relative;
     display: inline-block;
@@ -970,100 +970,189 @@ input[type="text"]:focus, input[type="date"]:focus {
 /* Config Button */
 #config-button {
     background: transparent;
+    color: var(--text-secondary);
+    font-size: 1.25rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: none;
-    color: var(--text);
-    font-size: 1.2rem;
-    padding: var(--spacing-sm);
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: none;
 }
 
 #config-button:hover {
-    transform: rotate(45deg);
+    background-color: var(--hover-bg);
     color: var(--primary);
+    transform: rotate(30deg);
 }
 
 /* Dropdown Menu */
 .dropdown-menu {
     position: absolute;
-    top: calc(100% + 5px);
-    right: 0;
-    width: 220px;
+    top: calc(100% + 8px);
+    right: -10px;
+    width: 240px;
     background: var(--container-bg);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-md);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1),
+    0 5px 10px rgba(0, 0, 0, 0.05);
     z-index: 100;
     overflow: hidden;
-    transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+    transform-origin: top right;
+    transition: all 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+    border: 1px solid var(--border);
+}
+
+.dropdown-menu::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    right: 20px;
+    width: 10px;
+    height: 10px;
+    background: var(--container-bg);
+    transform: rotate(45deg);
+    border-top: 1px solid var(--border);
+    border-left: 1px solid var(--border);
 }
 
 .dropdown-menu.hidden {
     opacity: 0;
-    transform: translateY(10px) scale(0.95);
+    transform: translateY(-5px) scale(0.95);
     pointer-events: none;
+    visibility: hidden;
 }
 
 .dropdown-menu.show {
     opacity: 1;
     transform: translateY(0) scale(1);
     pointer-events: auto;
+    visibility: visible;
 }
 
 /* Dropdown Header */
 .dropdown-header {
-    padding: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
     font-weight: 600;
-    font-size: 0.9rem;
-    color: var(--text-muted);
+    font-size: 0.95rem;
+    color: var(--text);
     border-bottom: 1px solid var(--border);
-    background-color: var(--hover-bg);
+    background-color: var(--background);
+    position: relative;
+}
+
+.dropdown-header::after {
+    content: '';
+    position: absolute;
+    left: var(--spacing-lg);
+    bottom: -1px;
+    width: 40px;
+    height: 3px;
+    background-color: var(--primary);
+    border-radius: var(--radius-sm);
 }
 
 /* Dropdown Items */
 .dropdown-item {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
+    justify-content: center;
+    gap: var(--spacing-md);
     width: 100%;
-    padding: var(--spacing-md);
+    padding: var(--spacing-md) var(--spacing-lg);
     background: none;
     border: none;
-    text-align: left;
     color: var(--text);
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
+    font-weight: 500;
     transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 .dropdown-item:hover {
     background: var(--hover-bg);
-    color: var(--primary);
+    padding-left: calc(var(--spacing-lg) + 4px);
 }
 
 .dropdown-item i {
-    width: 16px;
-    text-align: center;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 1rem;
+    color: var(--text-secondary);
+    transition: all 0.2s ease;
 }
 
-/* Danger Item */
+.dropdown-item:hover i {
+    color: var(--primary);
+    transform: scale(1.1);
+}
+
+/* Danger Items */
 .dropdown-item#delete-all-data {
     margin-top: var(--spacing-sm);
+}
+
+.dropdown-item#delete-all-data {
     padding-top: var(--spacing-md);
     border-top: 1px solid var(--border);
     color: var(--delete-red);
-    font-weight: 500;
 }
 
 .dropdown-item#delete-all-data:hover {
-    background: rgba(255, 59, 48, 0.1);
-    color: var(--delete-red);
+    background: rgba(236, 87, 87, 0.08);
 }
 
 .dropdown-item#delete-all-data i {
     color: var(--delete-red);
 }
+
+/* Separator line */
+.dropdown-separator {
+    height: 1px;
+    background-color: var(--border);
+    margin: var(--spacing-xs) var(--spacing-md);
+    opacity: 0.7;
+}
+
+/* Animation for menu items - fixed without --item-index */
+@keyframes menuItemFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Using nth-child for staggered animation instead of --item-index */
+.dropdown-menu.show .dropdown-item {
+    animation: menuItemFadeIn 0.3s forwards;
+    opacity: 0;
+}
+
+.dropdown-menu.show .dropdown-item:nth-child(1) { animation-delay: 0.05s; }
+.dropdown-menu.show .dropdown-item:nth-child(2) { animation-delay: 0.10s; }
+.dropdown-menu.show .dropdown-item:nth-child(3) { animation-delay: 0.15s; }
+.dropdown-menu.show .dropdown-item:nth-child(4) { animation-delay: 0.20s; }
+.dropdown-menu.show .dropdown-item:nth-child(5) { animation-delay: 0.25s; }
+.dropdown-menu.show .dropdown-item:nth-child(6) { animation-delay: 0.30s; }
+.dropdown-menu.show .dropdown-item:nth-child(7) { animation-delay: 0.35s; }
+.dropdown-menu.show .dropdown-item:nth-child(8) { animation-delay: 0.40s; }
+
+/* ==================== */
+/* Drag Handle Styling   */
+/* ==================== */
 
 .drag-handle {
     cursor: grab;

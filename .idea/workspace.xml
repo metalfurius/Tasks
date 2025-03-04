@@ -4,13 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Refactor pagination logic in history and task services to improve loading behavior and reduce items per page">
+    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Add clear pending tasks functionality with confirmation dialog and loading feedback">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/dataCleanupService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/dataCleanupService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/services/taskService.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/services/taskService.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/utils/validation.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/validation.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,7 +107,7 @@
       <workItem from="1741011602634" duration="2098000" />
       <workItem from="1741103878098" duration="3524000" />
       <workItem from="1741118048260" duration="2259000" />
-      <workItem from="1741128823750" duration="1441000" />
+      <workItem from="1741128823750" duration="2951000" />
     </task>
     <task id="LOCAL-00001" summary="Add due date styling and overdue check functionality">
       <option name="closed" value="true" />
@@ -376,7 +373,15 @@
       <option name="project" value="LOCAL" />
       <updated>1741107581846</updated>
     </task>
-    <option name="localTasksCounter" value="34" />
+    <task id="LOCAL-00034" summary="Add clear pending tasks functionality with confirmation dialog and loading feedback">
+      <option name="closed" value="true" />
+      <created>1741130297871</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1741130297871</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -394,7 +399,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Enhance styling and layout for task items, inputs, and buttons; improve responsiveness and visual feedback" />
     <MESSAGE value="Enhance task item animations and improve delete button styling; add visual feedback for task completion" />
     <MESSAGE value="Refactor input focus styles and update workspace configuration for task item animations" />
     <MESSAGE value="Add due date styling and overdue check functionality for task items" />
@@ -419,6 +423,7 @@
     <MESSAGE value="Implement global search functionality with loading indicators and improved UI for task filtering" />
     <MESSAGE value="Enhance task item updates and improve real-time task listener functionality" />
     <MESSAGE value="Refactor pagination logic in history and task services to improve loading behavior and reduce items per page" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactor pagination logic in history and task services to improve loading behavior and reduce items per page" />
+    <MESSAGE value="Add clear pending tasks functionality with confirmation dialog and loading feedback" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add clear pending tasks functionality with confirmation dialog and loading feedback" />
   </component>
 </project>
