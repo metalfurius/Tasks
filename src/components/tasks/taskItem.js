@@ -3,6 +3,7 @@ import taskService from '../../services/taskService.js';
 import historyService from '../../services/historyService.js';
 import ToastService from '../../services/toastService.js';
 import MessageProvider from "../../services/messageProvider.js";
+import TabManager from "../ui/tabs.js";
 
 const TaskItem = {
     updateTimeout: null,
@@ -57,6 +58,14 @@ const TaskItem = {
             await new Promise(resolve => setTimeout(resolve, 500));
 
             await taskService.updateTask(taskId, { completed: isCompleted });
+
+            // Update local task object
+            const taskIndex = taskService.tasks.findIndex(t => t.id === taskId);
+            if (taskIndex !== -1) {
+                taskService.tasks[taskIndex].completed = isCompleted;
+                taskService.notifyObservers(); // Force UI update
+            }
+
             await historyService.logAction(
                 isCompleted ? 'Task completed' : 'Task marked incomplete',
                 task.text
@@ -67,11 +76,11 @@ const TaskItem = {
                 // Check if this is a milestone
                 const completedCount = taskService.getCompletedTasks().length;
                 if (completedCount > 0 && completedCount % 5 === 0) {
-                    // Show achievement toast for every 5 completed tasks
                     ToastService.success(MessageProvider.getToastAchievementMessage(completedCount));
                 } else {
                     ToastService.success(MessageProvider.getTaskCompletionMessage(task));
                 }
+
             } else {
                 ToastService.info(MessageProvider.getTaskUnmarkingMessage(task));
             }

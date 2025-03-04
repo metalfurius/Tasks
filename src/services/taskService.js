@@ -81,11 +81,9 @@ const taskService = {
                     this.loadCompletedTasks()
                 ]);
 
-                // Set up real-time listener only for updates, not initial loading
                 const q = query(
                     collection(db, 'tasks'),
-                    where('userId', '==', userId),
-                    where('timestamp', '>', new Date()) // Only listen for new tasks
+                    where('userId', '==', userId)
                 );
 
                 this.unsubscribe = onSnapshot(q, (snapshot) => {
