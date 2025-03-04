@@ -271,6 +271,16 @@ const taskService = {
 
             Validator.task(taskData);
             const docRef = await addDoc(collection(db, 'tasks'), taskData);
+
+            const localTaskData = {
+                ...taskData,
+                id: docRef.id,
+                timestamp: Timestamp.fromDate(new Date()) // Use local timestamp for immediate display
+            };
+
+            this.tasks.push(localTaskData);
+            this.notifyObservers(); // Notify observers about the change
+
             return docRef.id;
 
         } catch (error) {

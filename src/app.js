@@ -39,9 +39,15 @@ const App = {
         // Add event listener for the delete all data button
         document.getElementById('delete-all-data').addEventListener('click', async () => {
             await DataCleanupService.deleteAllUserData();
-
-            // Close the config menu after operation completes
             document.getElementById('config-menu').classList.remove('show');
+        });
+
+        document.getElementById('clear-pending-tasks').addEventListener('click', async () => {
+            // Show confirmation dialog
+            if (confirm('Are you sure you want to delete all pending tasks? This cannot be undone.')) {
+                await DataCleanupService.clearPendingTasks();
+                document.getElementById('config-menu').classList.remove('show');
+            }
         });
 
         console.log('App initialized successfully');

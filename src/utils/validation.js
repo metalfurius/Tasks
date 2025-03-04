@@ -57,7 +57,11 @@ export const Validator = {
         if (data.taskText.length > 500) {
             throw new Error('History text too long');
         }
-        const validActions = ['Task created', 'Task completed', 'Task edited', 'Task deleted', 'Task marked incomplete'];
+        const validActions = [
+            'Task created', 'Task completed', 'Task edited',
+            'Task deleted', 'Task marked incomplete',
+            'Cleared all pending tasks' // Add this new action type
+        ];
         if (!validActions.includes(data.action)) {
             throw new Error('Invalid history action');
         }

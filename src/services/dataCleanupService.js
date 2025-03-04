@@ -2,6 +2,15 @@
 import taskService from './taskService.js';
 import historyService from './historyService.js';
 import ToastService from './toastService.js';
+import authService from "./authService.js";
+import {
+    collection,
+    query,
+    where,
+    getDocs,
+    writeBatch
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import {db} from "./firebase.js";
 
 const DataCleanupService = {
     async deleteAllUserData() {
@@ -15,7 +24,7 @@ const DataCleanupService = {
         }
 
         try {
-            ToastService.info("Deleting all your data. Please wait...", 0, true);
+            ToastService.info("Deleting all your data. Please wait...", 0);
 
             // Delete all tasks first
             await this.deleteAllTasks();
@@ -41,6 +50,58 @@ const DataCleanupService = {
         }
 
         await Promise.all(deletePromises);
+    },
+
+    async clearPendingTasks() {
+        try {
+            const userId = authService.getCurrentUserId();
+            if (!userId) return;
+
+            // Show loading toast
+            ToastService.info("Clearing all pending tasks. Please wait...", 0);
+
+            // Query all pending tasks directly from Firestore
+            const pendingTasksQuery = query(
+                collection(db, 'tasks'),
+                where('userId', '==', userId),
+                where('completed', '==', false)
+            );
+
+            // Get all pending tasks
+            const snapshot = await getDocs(pendingTasksQuery);
+
+            if (snapshot.empty) {
+                ToastService.info("No pending tasks to clear.");
+                return;
+            }
+
+            // Count the number of tasks to delete
+            const taskCount = snapshot.size;
+
+            // Create batch delete operation
+            const batch = writeBatch(db);
+            snapshot.docs.forEach(doc => {
+                batch.delete(doc.ref);
+            });
+
+            // Execute batch delete
+            await batch.commit();
+
+            // Log action in history
+            await historyService.logAction('Cleared all pending tasks', `${taskCount} tasks deleted`);
+
+            // Show success message
+            ToastService.warning(`${taskCount} pending tasks have been deleted.`);
+
+            // Force refresh of tasks list
+            taskService.notifyObservers();
+
+            return true;
+        } catch (error) {
+            console.error('Error clearing pending tasks:', error);
+            ToastService.error('Failed to clear pending tasks');
+            throw error;
+        }
     }
 };
 
