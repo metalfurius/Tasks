@@ -1,11 +1,9 @@
-// src/components/search/search.js
+// Modified code for src/components/search/search.js
 import searchService from '../../services/searchService.js';
-import taskService from '../../services/taskService.js';
 import TabManager from '../ui/tabs.js';
 
 const SearchComponent = {
     searchInput: null,
-    clearButton: null,
     searchContainer: null,
 
     init() {
@@ -25,12 +23,6 @@ const SearchComponent = {
         this.searchInput.placeholder = 'Search tasks...';
         this.searchInput.autocomplete = 'off';
 
-        // Create clear button
-        this.clearButton = document.createElement('button');
-        this.clearButton.className = 'search-clear-btn';
-        this.clearButton.innerHTML = '&times;';
-        this.clearButton.style.display = 'none';
-
         // Create search icon
         const searchIcon = document.createElement('span');
         searchIcon.className = 'search-icon';
@@ -39,16 +31,15 @@ const SearchComponent = {
         // Assemble components
         this.searchContainer.appendChild(searchIcon);
         this.searchContainer.appendChild(this.searchInput);
-        this.searchContainer.appendChild(this.clearButton);
 
-        // Add to DOM - insert before tabs container
+        // Add to DOM - insert AFTER tabs container and BEFORE tab content
         const tabsContainer = document.getElementById('tabs');
-        tabsContainer.parentNode.insertBefore(this.searchContainer, tabsContainer);
+        const firstTabContent = document.querySelector('.tab-content');
+        tabsContainer.parentNode.insertBefore(this.searchContainer, firstTabContent);
     },
 
     setupListeners() {
         this.searchInput.addEventListener('input', this.handleSearchInput.bind(this));
-        this.clearButton.addEventListener('click', this.clearSearch.bind(this));
 
         // Listen for tab changes to maintain search context
         TabManager.onTabChange(this.handleTabChange.bind(this));
@@ -62,20 +53,10 @@ const SearchComponent = {
             clearTimeout(this.searchTimeout);
         }
 
-        // Update UI immediately
-        this.clearButton.style.display = term ? 'block' : 'none';
-
-        // Set a delay before triggering search (only when user stops typing)
+        // Set a delay before triggering search
         this.searchTimeout = setTimeout(() => {
             searchService.setSearchTerm(term);
-        }, 500); // Increased to 500ms for better user experience
-    },
-
-    clearSearch() {
-        this.searchInput.value = '';
-        searchService.clearSearch();
-        this.clearButton.style.display = 'none';
-        this.searchInput.focus();
+        }, 500);
     },
 
     handleTabChange() {

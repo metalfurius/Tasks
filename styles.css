@@ -1234,37 +1234,6 @@ input[type="text"]:focus, input[type="date"]:focus {
     opacity: 0.7;
 }
 
-/* Clear button */
-.search-clear-btn {
-    /* Reset browser styles */
-    background: none;
-    border: none;
-
-    /* Layout and sizing */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    padding: 0;
-    margin-left: 0.5rem;
-
-    /* Styling */
-    color: var(--text-secondary);
-    opacity: 0.7;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.search-clear-btn:hover,
-.search-clear-btn:focus {
-    opacity: 1;
-    background-color: var(--hover-bg);
-    transform: scale(1.1);
-    box-shadow: none;
-}
-
 /* Search loading indicator */
 .search-loading {
     position: absolute;
