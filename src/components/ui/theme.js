@@ -89,8 +89,31 @@ const ThemeManager = {
         const isHidden = this.themeSelector.classList.contains('hidden');
 
         if (isHidden) {
-            this.themeSelector.style.top = `${buttonRect.bottom + 10}px`;
-            this.themeSelector.style.right = `${window.innerWidth - buttonRect.right}px`;
+            // Get selector dimensions
+            const selectorHeight = 190;
+            const selectorWidth = 180;
+
+            // Always position above the button
+            let topPosition = buttonRect.top - selectorHeight - 5; // 5px gap
+
+            // Position more to the right to avoid sidebar
+            let leftPosition = buttonRect.left + 20; // Shift right by 20px
+
+            // Check if we're too close to the right edge
+            if (leftPosition + selectorWidth > window.innerWidth - 10) {
+                leftPosition = window.innerWidth - selectorWidth - 10;
+            }
+
+            // Check if we're too close to the top edge
+            if (topPosition < 10) {
+                // Fall back to positioning below the button with offset
+                topPosition = buttonRect.bottom + 5;
+                leftPosition = buttonRect.left + 20;
+            }
+
+            // Apply calculated position
+            this.themeSelector.style.top = `${topPosition}px`;
+            this.themeSelector.style.left = `${leftPosition}px`;
         }
 
         this.themeSelector.classList.toggle('hidden');
