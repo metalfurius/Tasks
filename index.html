@@ -18,60 +18,109 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<!-- Auth Container -->
-<div id="auth-container" class="container">
-    <h1>Welcome to Taskify</h1>
-    <button id="google-signin-btn" class="google-btn">
-        <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google logo">
-        Sign in with Google
-    </button>
-</div>
+<div class="app-container">
+    <!-- Sidebar -->
+    <div class="sidebar collapsed" id="app-sidebar">
+        <div class="sidebar-header">
+            <button class="sidebar-toggle" id="sidebar-toggle" aria-label="Toggle sidebar">
+                <span class="toggle-icon"></span>
+            </button>
+            <div class="logo">Taskify</div>
+        </div>
 
-<!-- Tasks Container -->
-<div id="tasks-container" class="container hidden">
-    <header>
-        <h1>Taskify</h1>
-        <div class="header-controls">
-            <button class="theme-toggle" aria-label="Toggle theme">🌙</button>
-            <button id="logout-btn">Logout</button>
-            <div class="config-container">
-                <button id="config-button" aria-label="Configuration"></button>
-                    <i class="fas fa-cog"></i>
-                <div id="config-menu" class="dropdown-menu hidden">
-                    <div class="dropdown-header">Configuration</div>
-                    <button id="clear-history" class="dropdown-item">
-                        Clear History
-                    </button>
-                    <button id="clear-pending-tasks" class="dropdown-item">
-                        Clear Pending Tasks
-                    </button>
-                    <div class="dropdown-item" id="delete-all-data">
-                        Delete All Data
-                    </div>
-                    <!-- Add more configuration options here in the future -->
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="nav-item active" data-mode="home">
+                    <a href="#"><span class="nav-icon">🏠</span> <span class="nav-text">Home</span></a>
+                </li>
+                <li class="nav-item" data-mode="calendar">
+                    <a href="#"><span class="nav-icon">📅</span> <span class="nav-text">Calendar</span></a>
+                </li>
+                <li class="nav-item" data-mode="kanban">
+                    <a href="#"><span class="nav-icon">📋</span> <span class="nav-text">Kanban</span></a>
+                </li>
+                <li class="nav-item" data-mode="collaboration">
+                    <a href="#"><span class="nav-icon">👥</span> <span class="nav-text">Collaboration</span></a>
+                </li>
+            </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="language-selector">
+                <button class="language-btn">
+                    <span class="nav-icon">🌐</span>
+                    <span class="nav-text">Language</span>
+                </button>
+                <div class="language-options hidden">
+                    <button data-lang="en">English</button>
+                    <button data-lang="es">Español</button>
+                    <button data-lang="fr">Français</button>
                 </div>
             </div>
+
+            <div class="theme-toggle-wrapper">
+                <button class="theme-toggle" aria-label="Toggle theme">🌙</button>
+            </div>
         </div>
-    </header>
-
-    <form id="task-form">
-        <label for="task-input" class="hidden">Task description</label>
-        <input type="text" id="task-input" placeholder="Add a new task..." required>
-        <label for="due-date-input" class="hidden">Due date</label>
-        <input type="date" id="due-date-input">
-        <button type="submit">Add Task</button>
-    </form>
-
-    <div id="tabs">
-        <button class="tab-button active" data-tab="pending">Pending</button>
-        <button class="tab-button" data-tab="completed">Completed</button>
-        <button class="tab-button" data-tab="history">History</button>
     </div>
 
-    <div class="tab-content active" id="pending-tasks"></div>
-    <div class="tab-content" id="completed-tasks"></div>
-    <div class="tab-content" id="history-tasks"></div>
+    <!-- Main Content Area -->
+    <div class="main-content" id="main-content">
+        <!-- Auth Container -->
+        <div id="auth-container" class="container">
+            <h1>Welcome to Taskify</h1>
+            <button id="google-signin-btn" class="google-btn">
+                <img src="https://fonts.gstatic.com/s/i/productlogos/googleg/v6/24px.svg" alt="Google logo">
+                Sign in with Google
+            </button>
+        </div>
 
+        <!-- Tasks Container -->
+        <div id="tasks-container" class="container hidden">
+            <header>
+                <h1>Taskify</h1>
+                <div class="header-controls">
+                    <button class="theme-toggle" aria-label="Toggle theme">🌙</button>
+                    <button id="logout-btn">Logout</button>
+                    <div class="config-container">
+                        <button id="config-button" aria-label="Configuration"></button>
+                        <i class="fas fa-cog"></i>
+                        <div id="config-menu" class="dropdown-menu hidden">
+                            <div class="dropdown-header">Configuration</div>
+                            <button id="clear-history" class="dropdown-item">
+                                Clear History
+                            </button>
+                            <button id="clear-pending-tasks" class="dropdown-item">
+                                Clear Pending Tasks
+                            </button>
+                            <div class="dropdown-item" id="delete-all-data">
+                                Delete All Data
+                            </div>
+                            <!-- Add more configuration options here in the future -->
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <form id="task-form">
+                <label for="task-input" class="hidden">Task description</label>
+                <input type="text" id="task-input" placeholder="Add a new task..." required>
+                <label for="due-date-input" class="hidden">Due date</label>
+                <input type="date" id="due-date-input">
+                <button type="submit">Add Task</button>
+            </form>
+
+            <div id="tabs">
+                <button class="tab-button active" data-tab="pending">Pending</button>
+                <button class="tab-button" data-tab="completed">Completed</button>
+                <button class="tab-button" data-tab="history">History</button>
+            </div>
+
+            <div class="tab-content active" id="pending-tasks"></div>
+            <div class="tab-content" id="completed-tasks"></div>
+            <div class="tab-content" id="history-tasks"></div>
+        </div>
+    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>

@@ -4,8 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Refactor search component by removing clear button and adjusting DOM insertion for improved layout">
+    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Update task reminder messages for improved clarity and tone">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/app.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/app.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -108,7 +110,7 @@
       <workItem from="1741128823750" duration="2980000" />
       <workItem from="1741189427783" duration="3442000" />
       <workItem from="1741203370207" duration="1831000" />
-      <workItem from="1741459022295" duration="18000" />
+      <workItem from="1741459022295" duration="1384000" />
     </task>
     <task id="LOCAL-00001" summary="Add due date styling and overdue check functionality">
       <option name="closed" value="true" />
@@ -398,7 +400,15 @@
       <option name="project" value="LOCAL" />
       <updated>1741191052897</updated>
     </task>
-    <option name="localTasksCounter" value="37" />
+    <task id="LOCAL-00037" summary="Update task reminder messages for improved clarity and tone">
+      <option name="closed" value="true" />
+      <created>1741459371845</created>
+      <option name="number" value="00037" />
+      <option name="presentableId" value="LOCAL-00037" />
+      <option name="project" value="LOCAL" />
+      <updated>1741459371845</updated>
+    </task>
+    <option name="localTasksCounter" value="38" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -416,7 +426,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add due date styling and overdue check functionality for task items" />
     <MESSAGE value="Add multiple theme support with styling and toggle functionality" />
     <MESSAGE value="Add toast notification service and update task feedback messages" />
     <MESSAGE value="Add content security policy, rate limiting, and validation for tasks and history" />
@@ -441,6 +450,7 @@
     <MESSAGE value="Add clear pending tasks functionality with confirmation dialog and loading feedback" />
     <MESSAGE value="Redesign configuration menu and enhance dropdown styling for improved user experience" />
     <MESSAGE value="Refactor search component by removing clear button and adjusting DOM insertion for improved layout" />
-    <option name="LAST_COMMIT_MESSAGE" value="Refactor search component by removing clear button and adjusting DOM insertion for improved layout" />
+    <MESSAGE value="Update task reminder messages for improved clarity and tone" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update task reminder messages for improved clarity and tone" />
   </component>
 </project>

@@ -11,6 +11,7 @@ import NotificationMonitor from './services/notificationMonitor.js';
 import ConfigMenu from './components/ui/configMenu.js';
 import DataCleanupService from "./services/dataCleanupService.js";
 import SearchComponent from './components/search/search.js';
+import SidebarManager from './components/ui/sidebar.js';
 
 // App initialization
 const App = {
@@ -49,6 +50,8 @@ const App = {
                 document.getElementById('config-menu').classList.remove('show');
             }
         });
+
+        SidebarManager.init();
 
         console.log('App initialized successfully');
     },
