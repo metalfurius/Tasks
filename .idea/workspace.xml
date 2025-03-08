@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Redesign configuration menu and enhance dropdown styling for improved user experience">
+    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Refactor search component by removing clear button and adjusting DOM insertion for improved layout">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/search/search.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/search/search.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -108,7 +106,9 @@
       <workItem from="1741103878098" duration="3524000" />
       <workItem from="1741118048260" duration="2259000" />
       <workItem from="1741128823750" duration="2980000" />
-      <workItem from="1741189427783" duration="1421000" />
+      <workItem from="1741189427783" duration="3442000" />
+      <workItem from="1741203370207" duration="1831000" />
+      <workItem from="1741459022295" duration="18000" />
     </task>
     <task id="LOCAL-00001" summary="Add due date styling and overdue check functionality">
       <option name="closed" value="true" />
@@ -390,7 +390,15 @@
       <option name="project" value="LOCAL" />
       <updated>1741131833359</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="Refactor search component by removing clear button and adjusting DOM insertion for improved layout">
+      <option name="closed" value="true" />
+      <created>1741191052897</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1741191052897</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -408,7 +416,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Refactor input focus styles and update workspace configuration for task item animations" />
     <MESSAGE value="Add due date styling and overdue check functionality for task items" />
     <MESSAGE value="Add multiple theme support with styling and toggle functionality" />
     <MESSAGE value="Add toast notification service and update task feedback messages" />
@@ -433,6 +440,7 @@
     <MESSAGE value="Refactor pagination logic in history and task services to improve loading behavior and reduce items per page" />
     <MESSAGE value="Add clear pending tasks functionality with confirmation dialog and loading feedback" />
     <MESSAGE value="Redesign configuration menu and enhance dropdown styling for improved user experience" />
-    <option name="LAST_COMMIT_MESSAGE" value="Redesign configuration menu and enhance dropdown styling for improved user experience" />
+    <MESSAGE value="Refactor search component by removing clear button and adjusting DOM insertion for improved layout" />
+    <option name="LAST_COMMIT_MESSAGE" value="Refactor search component by removing clear button and adjusting DOM insertion for improved layout" />
   </component>
 </project>

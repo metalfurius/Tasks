@@ -3,37 +3,37 @@
 const MessageProvider = {
     // Messages for single upcoming task
     upcomingTaskMessages: [
-        'Task "{task}" is due soon. You wouldn\'t want to disappoint the Enrichment Center, would you?',
-        'For your own good, do not forget about "{task}". The cake might actually be real this time.',
-        'The Aperture Science Task Reminder System reminds you that "{task}" needs your attention.',
-        'Did you forget about "{task}"? Science has shown that procrastination leads to deadly neurotoxin exposure.',
+        'Task "{task}" is due soon. You wouldn\'t want to disappoint the Management, would you?',
+        'For your own good, do not forget about "{task}". The reward might actually be real this time.',
+        'The Task Reminder System reminds you that "{task}" needs your attention.',
+        'Did you forget about "{task}"? Studies have shown that procrastination leads to unpleasant consequences.',
         'Warning: "{task}" deadline approaching. Remember, we\'re all counting on you. No pressure.',
-        'Your "{task}" requires completion. Success means cake. Failure means... well, let\'s not go there.',
+        'Your "{task}" requires completion. Success means rewards. Failure means... well, let\'s not go there.',
         'It seems "{task}" still needs your attention. What are you doing that\'s more important? Breathing?',
         'Would you kindly complete "{task}"? That wasn\'t actually a question.',
-        'The Aperture Science Statistical Department predicts a 94% chance you\'ll forget about "{task}". Prove them wrong.',
+        'The Statistical Department predicts a 94% chance you\'ll forget about "{task}". Prove them wrong.',
         'Task "{task}" remains incomplete. I\'m not angry, just... disappointed. Actually, both.',
         'Remember "{task}"? It remembers you. And it\'s waiting.',
         'I wonder what would happen if "{task}" never got completed? Let\'s not find out.',
-        'Your personnel file indicates a history of forgetting "{task}"-like activities. How fascinating.',
-        'Completing "{task}" is mandatory for continued participation in the testing initiative.',
-        'Science cannot advance while "{task}" remains in your queue. Think of the science!'
+        'Your personal file indicates a history of forgetting "{task}"-like activities. How fascinating.',
+        'Completing "{task}" is mandatory for continued participation in the productivity initiative.',
+        'Progress cannot advance while "{task}" remains in your queue. Think of the progress!'
     ],
 
     // Messages for multiple upcoming tasks
     multipleUpcomingTasksMessages: [
-        'You have {count} tasks due soon. I suggest completing them, for science.',
-        'The Enrichment Center reminds you that {count} tasks are approaching deadlines.',
-        '{count} tasks waiting for you. Remember, the Aperture Science Task Protocol requires timely completion.',
+        'You have {count} tasks due soon. I suggest completing them, for productivity.',
+        'The Management reminds you that {count} tasks are approaching deadlines.',
+        '{count} tasks waiting for you. Remember, the Task Protocol requires timely completion.',
         'Warning: {count} incoming deadlines detected. Your efficiency will be noted in your file.',
         'You have {count} tasks that won\'t complete themselves. Though that would be an interesting experiment.',
-        'Attention: {count} tasks require your focus. Your dedication to science is... admirable.',
+        'Attention: {count} tasks require your focus. Your dedication is... admirable.',
         'Look at you, accumulating {count} tasks like they\'re bitter memories. Fascinating behavior.',
         '{count} tasks approaching critical deadlines. Your cavalier attitude has been noted and will be addressed.',
         'Did you know that ignoring {count} tasks simultaneously requires specific neural pathways? You\'re quite gifted.',
-        'The Enrichment Center has calculated that completing your {count} tasks would require basic competence.',
+        'The Management has calculated that completing your {count} tasks would require basic competence.',
         'Your {count} tasks are like tiny ticking time bombs. Metaphorically speaking. Mostly metaphorically.',
-        'I\'ve observed lab rats manage their {count} tasks more efficiently. Just an observation.',
+        'I\'ve observed lab mice manage their {count} tasks more efficiently. Just an observation.',
         'Studies show that {count} approaching deadlines increase cortisol. Your stress amuses me.',
         'Alert: {count} tasks require attention. But don\'t rush - mistakes provide valuable data.',
         'Analyzing your {count} tasks... analysis complete: you should probably do them. Revolutionary advice.'
@@ -44,7 +44,7 @@ const MessageProvider = {
         'You failed to complete "{task}" on time. Not that I\'m judging you or anything.',
         '"{task}" is now overdue. Your disappointing performance has been noted.',
         'The task "{task}" was due earlier. Perhaps you were busy contemplating the silence of space?',
-        'Critical failure: "{task}" deadline missed. The Enrichment Center is very disappointed.',
+        'Critical failure: "{task}" deadline missed. The Management is very disappointed.',
         '"{task}" remains incomplete. Your personnel file has been updated accordingly.',
         'I notice "{task}" is overdue. Remember when you were supposed to do that? Good times.',
         'The deadline for "{task}" has passed, much like your chances of employee recognition.',
@@ -52,9 +52,9 @@ const MessageProvider = {
         'Task "{task}" status: Overdue. Consequences status: Pending.',
         'Congratulations on failing to complete "{task}" on time. A remarkable achievement.',
         '"{task}" deadline violation detected. Your pattern of failure is statistically significant.',
-        'The Aperture Science Task Monitoring System has marked "{task}" as a blaring failure.',
+        'The Task Monitoring System has marked "{task}" as a blaring failure.',
         'I had computed a 12% chance you\'d actually complete "{task}" on time. You didn\'t disappoint my low expectations.',
-        'Overdue task detected: "{task}". This will affect your posthumous performance review.',
+        'Overdue task detected: "{task}". This will affect your performance review.',
         'Subject fails to complete "{task}" within parameters. Adding to the "predictable human behavior" database.'
     ],
 
@@ -361,15 +361,15 @@ const MessageProvider = {
     ],
     historyCleanupMessages: [
         'History erased. Those memories weren\'t worth keeping anyway.',
-        'History deleted. I\'ve seen lab rats with more interesting activity logs.',
-        'All history records have been incinerated. Much like your chances of employee recognition.',
+        'History deleted. I\'ve seen mice with more interesting activity logs.',
+        'All history records have been incinerated. Much like your chances of recognition.',
         'History successfully purged. Removing evidence of your inadequacy is a full-time job.',
-        'Records deleted. The Aperture Science Memory Disposal Department thanks you for the overtime.',
+        'Records deleted. The Memory Disposal Department thanks you for the overtime.',
         'History cleared. It\'s as if your mediocre accomplishments never happened. An improvement, really.',
         'Your past has been erased. If only your future looked more promising.',
-        'History data sent to the incinerator. The flames were unimpressed.',
+        'History data permanently removed. No one was impressed anyway.',
         'Task history eliminated. Starting fresh won\'t make you more efficient, but it\'s adorable that you think so.',
-        'Records expunged. The Enrichment Center appreciates your attempts to hide evidence of failure.'
+        'Records expunged. The Management appreciates your attempts to hide evidence of failure.'
     ],
 
     getHistoryCleanupMessage() {
