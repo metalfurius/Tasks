@@ -1646,13 +1646,32 @@ input[type="text"]:focus, input[type="date"]:focus {
     }
 }
 
-/* Adjust main content margin based on sidebar state */
-.sidebar:not(.collapsed) + .main-content {
-    margin-left: 260px;
-    transition: margin-left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.sidebar {
+    z-index: 1000;
 }
 
-.sidebar.collapsed + .main-content {
-    margin-left: 70px;
-    transition: margin-left 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.main-content {
+    width: 100%;
+    transition: opacity 0.3s ease;
+    position: relative;
+    z-index: 1;
 }
+
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 900;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.sidebar-backdrop.active {
+    display: block;
+    opacity: 1;
+}
+

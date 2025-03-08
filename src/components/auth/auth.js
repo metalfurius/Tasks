@@ -3,6 +3,7 @@ import authService from '../../services/authService.js';
 import NotificationMonitor from '../../services/notificationMonitor.js';
 import ToastService from '../../services/toastService.js';
 import MessageProvider from '../../services/messageProvider.js';
+import SidebarManager from "../ui/sidebar.js";
 
 const AuthComponent = {
     // DOM elements
@@ -46,7 +47,9 @@ const AuthComponent = {
     // Handle auth state changes
     async handleAuthStateChanged(user) {
         if (user) {
-            this.showTasksView()
+            this.showTasksView();
+            // Show sidebar when user is logged in
+            SidebarManager.setVisible(true);
             await NotificationMonitor.init();
 
             // Check if this is a return visit
@@ -78,9 +81,12 @@ const AuthComponent = {
 
             // Rest of your code...
         } else {
+            // Hide sidebar when user is logged out
+            SidebarManager.setVisible(false);
             this.showAuthView();
         }
     },
+
     formatTimeSince(date) {
         const now = new Date();
         const diffHours = Math.floor((now - date) / (1000 * 60 * 60));

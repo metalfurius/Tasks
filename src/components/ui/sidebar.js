@@ -16,11 +16,25 @@ const SidebarManager = {
 
         if (!this.sidebar || !this.toggleBtn) return;
 
+        this.setVisible(false);
+
         this.setupListeners();
         this.loadSidebarState();
 
         // Set initial mode
         this.setActiveMode(this.currentMode);
+    },
+
+    setVisible(isVisible) {
+        if (!this.sidebar) return;
+
+        if (isVisible) {
+            this.sidebar.style.display = 'flex';
+            document.body.classList.add('has-sidebar');
+        } else {
+            this.sidebar.style.display = 'none';
+            document.body.classList.remove('has-sidebar');
+        }
     },
 
     setupListeners() {
@@ -77,9 +91,36 @@ const SidebarManager = {
         }
     },
 
+    createBackdrop() {
+        // Create backdrop element if it doesn't exist
+        if (!document.querySelector('.sidebar-backdrop')) {
+            const backdrop = document.createElement('div');
+            backdrop.className = 'sidebar-backdrop';
+            document.body.appendChild(backdrop);
+
+            // Close sidebar when clicking backdrop
+            backdrop.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    this.sidebar.classList.remove('expanded');
+                    backdrop.classList.remove('active');
+                }
+            });
+        }
+
+        return document.querySelector('.sidebar-backdrop');
+    },
+
+// Modify the toggleSidebar method to handle backdrop
     toggleSidebar() {
+        const backdrop = this.createBackdrop();
+
         if (window.innerWidth <= 768) {
             this.sidebar.classList.toggle('expanded');
+            if (this.sidebar.classList.contains('expanded')) {
+                backdrop.classList.add('active');
+            } else {
+                backdrop.classList.remove('active');
+            }
         } else {
             this.sidebar.classList.toggle('collapsed');
             localStorage.setItem('sidebarCollapsed', this.sidebar.classList.contains('collapsed'));

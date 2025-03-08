@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Add sidebar component with navigation and language selection functionality">
+    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Move theme toggle and logout button to sidebar; enhance sidebar styling and responsiveness">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/components/ui/theme.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/theme.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/auth/auth.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/auth/auth.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ui/sidebar.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ui/sidebar.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/styles.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -111,7 +111,7 @@
       <workItem from="1741128823750" duration="2980000" />
       <workItem from="1741189427783" duration="3442000" />
       <workItem from="1741203370207" duration="1831000" />
-      <workItem from="1741459022295" duration="3312000" />
+      <workItem from="1741459022295" duration="4230000" />
     </task>
     <task id="LOCAL-00001" summary="Add due date styling and overdue check functionality">
       <option name="closed" value="true" />
@@ -417,7 +417,15 @@
       <option name="project" value="LOCAL" />
       <updated>1741462223722</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="Move theme toggle and logout button to sidebar; enhance sidebar styling and responsiveness">
+      <option name="closed" value="true" />
+      <created>1741464675775</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1741464675775</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -435,7 +443,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Add toast notification service and update task feedback messages" />
     <MESSAGE value="Add content security policy, rate limiting, and validation for tasks and history" />
     <MESSAGE value="Enhance history and task services with cache-first strategy, limit history to last 30 days, and optimize task updates" />
     <MESSAGE value="Add load more functionality to history view, enhance history cleanup, and improve task order management" />
@@ -460,6 +467,7 @@
     <MESSAGE value="Refactor search component by removing clear button and adjusting DOM insertion for improved layout" />
     <MESSAGE value="Update task reminder messages for improved clarity and tone" />
     <MESSAGE value="Add sidebar component with navigation and language selection functionality" />
-    <option name="LAST_COMMIT_MESSAGE" value="Add sidebar component with navigation and language selection functionality" />
+    <MESSAGE value="Move theme toggle and logout button to sidebar; enhance sidebar styling and responsiveness" />
+    <option name="LAST_COMMIT_MESSAGE" value="Move theme toggle and logout button to sidebar; enhance sidebar styling and responsiveness" />
   </component>
 </project>
