@@ -1,62 +1,98 @@
-﻿/* ==================== */
-/* TABLE OF CONTENTS    */
-/* ==================== */
-/* 1. Variables & Theming
- * 2. Base Elements & Layout
- * 3. Components
- *    - Buttons
- *    - Forms
- *    - Tasks & Items
- *    - Tabs
- *    - Toast Notifications
- * 4. Utility Classes
- * 5. Animations
- * 6. Media Queries
+﻿/* ==========================================================================
+Table of Contents: Streamlined & Enhanced Readability
+========================================================================== */
+/**
+ * 1.  VARIABLES & THEMING
+ *     - Color Palette (Core, Functional)
+ *     - Spacing & Layout
+ *     - Typography & Text
+ *     - Effects & Transitions
+ *     - Breakpoints (Media Queries - implicit here, defined in 6.)
+ *
+ * 2.  BASE STYLES & LAYOUT
+ *     - Root & Body Styles (Global resets, theme application)
+ *     - Container & Core Layout Elements (Wrapper, header)
+ *     - Typography (Headings, text defaults)
+ *
+ * 3.  COMPONENTS
+ *     - Buttons (General, specific types)
+ *     - Forms & Inputs (General form elements)
+ *     - Task Items (List items, states, actions)
+ *     - Tabs (Navigation tabs)
+ *     - Toasts (Notifications)
+ *     - Theme Selector & Dropdowns (UI Selectors)
+ *     - Search & Sidebar (Layout Components)
+ *
+ * 4.  UTILITIES
+ *     - Helper Classes (Hidden, empty state)
+ *     - Reusable Snippets (Flexbox, Grid - implicit, used throughout)
+ *
+ * 5.  ANIMATIONS
+ *     - Keyframe Animations (Descriptive names)
+ *     - Transition Defaults (Defined in variables, applied globally)
+ *
+ * 6.  RESPONSIVE DESIGN - MEDIA QUERIES
+ *     - Mobile Adjustments (Smaller screens)
+ *     - Breakpoint-Specific Overrides
+ *
+ *  ---
+ *  - NOTE:  This CSS is structured for scalability and theming.
+ *           Variables are used extensively for consistency.
+ *           Component-based organization for easier maintenance.
+ *  ---
  */
 
-/* ==================== */
-/* 1. VARIABLES & THEMING */
-/* ==================== */
+/* ==========================================================================
+1. VARIABLES & THEMING:  Centralized Theme Control
+========================================================================== */
 :root {
-    /* Core colors */
-    --primary: #7C5DFA;
-    --primary-light: #9277FF;
-    --container-bg: #F8F9FF;
-    --background: #F8F8FB;
-    --text: #0C0E16;
-    --text-secondary: #7E88C3;
-    --text-muted: #888EB0;
-    --input-bg: #FFFFFF;
-    --border: #DFE3FA;
+    /* --- COLOR PALETTE --- */
+    /* ** Core Colors ** */
+    --primary: #7C5DFA;           /* Main brand color */
+    --primary-light: #9277FF;     /* Lighter shade of primary */
+    --container-bg: #F8F9FF;      /* Background for containers/cards */
+    --background: #F8F8FB;        /* Main page background */
+    --text: #0C0E16;              /* Primary text color */
+    --text-secondary: #7E88C3;     /* Secondary/lighter text */
+    --text-muted: #888EB0;        /* Muted/hint text */
+    --input-bg: #FFFFFF;          /* Input field background */
+    --border: #DFE3FA;            /* Default border color */
 
-    /* Functional colors */
-    --google-blue: #7C5DFA;
-    --google-blue-hover: #9277FF;
-    --delete-red: #EC5757;
-    --delete-red-hover: #FF9797;
-    --success-green: #33D69F;
+    /* ** Functional Colors ** */
+    --google-blue: #7C5DFA;       /* Google/Social button color (reusing primary for consistency) */
+    --google-blue-hover: #9277FF; /* Hover for Google button */
+    --delete-red: #EC5757;        /* Delete/Error color */
+    --delete-red-hover: #FF9797;  /* Hover for delete */
+    --success-green: #33D69F;      /* Success/Positive action color */
 
-    /* Effects */
-    /* Effects */
-    --shadow: 0 10px 20px rgba(124, 93, 250, 0.1);
-    --hover-bg: rgba(124, 93, 250, 0.05);
-    --transition-standard: all 0.3s ease;
+    /* --- SPACING & LAYOUT --- */
+    --spacing-xs: 0.25rem;        /* Extra small spacing */
+    --spacing-sm: 0.5rem;         /* Small spacing */
+    --spacing-md: 1rem;          /* Medium spacing (base unit) */
+    --spacing-lg: 1.5rem;         /* Large spacing */
+    --spacing-xl: 2rem;          /* Extra large spacing */
+    --spacing-xxl: 2.5rem;        /* Extra extra large spacing */
 
-    /* Spacing */
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    --spacing-xxl: 2.5rem;
+    /* --- TYPOGRAPHY & TEXT --- */
+    /* (Font family is set in body, can add font sizes here if needed for variables) */
 
-    /* Border radius */
-    --radius-sm: 4px;
-    --radius-md: 8px;
-    --radius-lg: 16px;
-    --radius-pill: 24px;
+    /* --- EFFECTS & TRANSITIONS --- */
+    --shadow: 0 10px 20px rgba(124, 93, 250, 0.1); /* Standard box shadow */
+    --hover-bg: rgba(124, 93, 250, 0.05);        /* Hover background overlay */
+    --transition-standard: all 0.3s ease;          /* Default transition for smooth effects */
+
+    /* --- BORDER RADIUS --- */
+    --radius-sm: 4px;             /* Small border radius */
+    --radius-md: 8px;             /* Medium border radius */
+    --radius-lg: 16px;            /* Large border radius */
+    --radius-pill: 24px;          /* Pill-shaped border radius */
 }
 
+
+/* --- THEME VARIATIONS --- */
+/* Consider using a more structured approach for themes in larger projects (e.g., SCSS maps/mixins) */
+
+/* Dark Theme */
 [data-theme="dark"] {
     --primary: #7C5DFA;
     --primary-light: #9277FF;
@@ -71,6 +107,7 @@
     --shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
 }
 
+/* Sepia Theme */
 [data-theme="sepia"] {
     --primary: #8B4513;
     --primary-light: #A0522D;
@@ -90,6 +127,7 @@
     --success-green: #2E8B57;
 }
 
+/* Midnight Theme */
 [data-theme="midnight"] {
     --primary: #4A90E2;
     --primary-light: #5DA0E2;
@@ -109,75 +147,84 @@
     --success-green: #48BB78;
 }
 
-/* ==================== */
-/* 2. BASE ELEMENTS & LAYOUT */
-/* ==================== */
+
+/* ==========================================================================
+2. BASE STYLES & LAYOUT:  Foundation of the Application
+========================================================================== */
+/* --- ROOT & BODY --- */
 body {
-    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+    font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; /* Modern, system-aware font stack */
     background-color: var(--background);
     color: var(--text);
-    margin: 10px;
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    transition: var(--transition-standard);
-    line-height: 1.5;
-    letter-spacing: -0.015em;
+    margin: 10px; /* Add some default margin around the body */
+    min-height: 100vh; /* Ensure body takes full viewport height */
+    display: grid;      /* Use grid for simple vertical centering */
+    place-items: center; /* Center content vertically and horizontally */
+    transition: var(--transition-standard); /* Smooth theme transitions */
+    line-height: 1.5;    /* Comfortable line height for readability */
+    letter-spacing: -0.015em; /* Slight letter spacing adjustment for cleaner text */
 }
 
+/* --- CONTAINER & CORE LAYOUT --- */
 .container {
     background: var(--container-bg);
     padding: var(--spacing-xxl);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow);
     width: 100%;
-    max-width: 550px;
-    transition: transform 0.3s ease;
-    text-align: center;
+    max-width: 550px; /* Limit container width for readability on larger screens */
+    transition: transform 0.3s ease; /* Subtle transition for interactions */
+    text-align: center; /* Default text alignment inside container */
 }
 
+/* --- TYPOGRAPHY - HEADINGS --- */
 h1 {
     font-weight: 700;
-    font-size: 1.75rem;
+    font-size: 1.75rem; /* Size for main heading */
     letter-spacing: -0.025em;
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-lg); /* Spacing below heading */
 }
 
+/* --- HEADER --- */
 header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--spacing-xl);
+    justify-content: space-between; /* Distribute space between header elements */
+    align-items: center;        /* Vertically align header items */
+    margin-bottom: var(--spacing-xl); /* Spacing below header */
 }
 
 .header-controls {
     display: flex;
-    gap: var(--spacing-sm);
-    align-items: center;
+    gap: var(--spacing-sm);    /* Spacing between header controls */
+    align-items: center;        /* Vertically align controls */
 }
 
+/* --- AUTH CONTAINER & THEME TOGGLE POSITIONING --- */
 #auth-container {
-    position: relative;
+    position: relative; /* For positioning theme toggle */
 }
 
 #auth-container .theme-toggle {
     position: absolute;
     top: var(--spacing-md);
-    right: var(--spacing-md);
+    right: var(--spacing-md); /* Position theme toggle within auth container */
 }
 
-/* ==================== */
-/* 3. COMPONENTS        */
-/* ==================== */
 
-/* ----- Theme Selector ----- */
+/* ==========================================================================
+3. COMPONENTS:  Reusable UI Elements
+========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Theme Selector
+   -------------------------------------------------------------------------- */
 .theme-selector {
-    position: fixed;
+    position: fixed; /* Fixed position for dropdown */
     background: var(--container-bg);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow);
     padding: 8px;
-    z-index: 1000;
+    z-index: 1000; /* Ensure it's above other content */
     min-width: 160px;
     border: 1px solid var(--border);
 }
@@ -192,43 +239,28 @@ header {
     cursor: pointer;
     border-radius: var(--radius-md);
     transition: var(--transition-standard);
-    margin-bottom: 4px;
+    margin-bottom: 4px; /* Spacing between theme options */
 }
 
 .theme-option:last-child {
-    margin-bottom: 0;
+    margin-bottom: 0; /* Remove bottom margin for last option */
 }
 
 .theme-option:hover {
-    transform: translateX(2px);
-    border-color: var(--primary);
+    transform: translateX(2px); /* Subtle hover animation */
+    border-color: var(--primary); /* Highlight on hover */
 }
 
-/* Theme option variations */
-.theme-option[data-theme="light"] {
-    background: #FFFFFF;
-    color: #0C0E16;
-}
-
-.theme-option[data-theme="sepia"] {
-    background: #F4ECD8;
-    color: #8B4513;
-}
-
-.theme-option[data-theme="dark"] {
-    background: #1E2139;
-    color: #FFFFFF;
-}
-
-.theme-option[data-theme="midnight"] {
-    background: #13141F;
-    color: #E2E8F0;
-}
+/* Theme option variations (consider using classes and modifiers for better scalability) */
+.theme-option[data-theme="light"] { background: #FFFFFF; color: #0C0E16; }
+.theme-option[data-theme="sepia"] { background: #F4ECD8; color: #8B4513; }
+.theme-option[data-theme="dark"]  { background: #1E2139; color: #FFFFFF; }
+.theme-option[data-theme="midnight"] { background: #13141F; color: #E2E8F0; }
 
 .theme-icon {
     font-size: 1.2em;
     width: 24px;
-    text-align: center;
+    text-align: center; /* Center icon in its space */
 }
 
 .theme-name {
@@ -236,126 +268,142 @@ header {
     font-weight: 500;
 }
 
-/* ----- Buttons ----- */
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
 button {
-    background: var(--google-blue);
-    color: var(--container-bg);
-    border: none;
+    background: var(--google-blue); /* Default button background */
+    color: var(--container-bg);     /* Default button text color */
+    border: none;                 /* Remove default button border */
     font-weight: 600;
-    padding: 0.8rem 1.75rem;
-    border-radius: var(--radius-pill);
-    cursor: pointer;
-    box-shadow: 0 3px 8px rgba(124, 93, 250, 0.15);
-    transition: var(--transition-standard);
+    padding: 0.8rem 1.75rem;      /* Standard button padding */
+    border-radius: var(--radius-pill); /* Pill-shaped buttons */
+    cursor: pointer;              /* Indicate interactive element */
+    box-shadow: 0 3px 8px rgba(124, 93, 250, 0.15); /* Subtle shadow */
+    transition: var(--transition-standard); /* Smooth hover effects */
 }
 
 button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(124, 93, 250, 0.2);
+    transform: translateY(-2px); /* Lift effect on hover */
+    box-shadow: 0 5px 10px rgba(124, 93, 250, 0.2); /* Enhanced shadow on hover */
 }
 
 button:active {
-    transform: translateY(0);
+    transform: translateY(0); /* Reset transform on active state */
 }
 
+
+/* Specific Button Types - Consider using modifier classes for more variations */
 .google-btn {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 12px;
     padding: 12px 24px;
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-md); /* Slightly less rounded for google button */
     font-weight: 500;
-    width: 100%;
+    width: 100%; /* Full width within parent */
 }
 
 .google-btn:hover {
-    background: var(--google-blue-hover);
+    background: var(--google-blue-hover); /* Hover specific to google button */
 }
 
+
 .delete-btn {
-    background-color: var(--delete-red);
+    background-color: var(--delete-red); /* Red background for delete */
     width: 36px;
     height: 36px;
     padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: 50%; /* Circular delete button */
     font-size: 1.2rem;
 }
 
 .delete-btn:hover {
-    background-color: var(--delete-red-hover);
-    transform: scale(1.1);
+    background-color: var(--delete-red-hover); /* Hover for delete */
+    transform: scale(1.1); /* Scale up slightly on hover */
 }
 
 .delete-btn.disabled {
-    background-color: var(--text-muted);
+    background-color: var(--text-muted); /* Muted color for disabled state */
     opacity: 0.5;
-    cursor: not-allowed;
+    cursor: not-allowed;      /* Indicate non-interactive */
 }
 
 .delete-btn.disabled:hover {
-    background-color: var(--text-muted);
-    transform: none;
+    background-color: var(--text-muted); /* Maintain color on disabled hover */
+    transform: none;             /* Disable hover transform */
 }
 
 .delete-btn.confirm-delete {
-    animation: shake 0.5s, pulse 1.5s infinite;
+    animation: shake 0.5s, pulse 1.5s infinite; /* Visual feedback for delete confirmation */
 }
+
 
 .load-more-btn {
     width: 100%;
     margin-top: var(--spacing-md);
     padding: 0.75rem;
-    background: var(--input-bg);
-    color: var(--text);
+    background: var(--input-bg); /* Background same as input */
+    color: var(--text);         /* Text color */
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
 }
 
 .load-more-btn:hover {
-    background: var(--primary);
-    color: white;
+    background: var(--primary); /* Primary color on hover */
+    color: white;             /* White text on hover */
 }
 
 .load-more-btn:disabled {
     opacity: 0.5;
-    cursor: not-allowed;
+    cursor: not-allowed;      /* Indicate disabled */
 }
 
 .load-more-btn:disabled:hover {
-    background: var(--input-bg);
-    color: var(--text);
-    transform: none;
+    background: var(--input-bg); /* Revert to default background on disabled hover */
+    color: var(--text);         /* Revert to default text color */
+    transform: none;             /* Disable hover transform */
 }
 
-/* ----- Form Elements ----- */
+
+/* --------------------------------------------------------------------------
+   Form Elements
+   -------------------------------------------------------------------------- */
 #task-form {
     display: flex;
-    gap: var(--spacing-sm);
-    margin-bottom: var(--spacing-lg);
+    gap: var(--spacing-sm);    /* Spacing between form elements */
+    margin-bottom: var(--spacing-lg); /* Spacing below form */
 }
 
-input[type="text"], input[type="date"] {
+/* Input Fields - Group common input styles */
+input[type="text"],
+input[type="date"] {
     padding: var(--spacing-md);
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-pill); /* Pill-shaped inputs */
     border: 1px solid var(--border);
     font-size: 0.95rem;
     transition: var(--transition-standard);
-    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+    box-shadow: inset 0 1px 2px rgba(0,0,0,0.05); /* Subtle inner shadow */
     background: var(--input-bg);
     color: var(--text);
 }
 
-input[type="text"]:focus, input[type="date"]:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(124, 93, 250, 0.1);
+input[type="text"]:focus,
+input[type="date"]:focus {
+    outline: none; /* Remove default focus outline */
+    border-color: var(--primary); /* Highlight border on focus */
+    box-shadow: 0 0 0 3px rgba(124, 93, 250, 0.1); /* Focus ring effect */
 }
 
-/* ----- Due Date Styling ----- */
+
+/* --------------------------------------------------------------------------
+   Due Date Styling
+   -------------------------------------------------------------------------- */
 .due-date {
     font-size: 0.75rem;
     color: var(--text-muted);
@@ -363,181 +411,198 @@ input[type="text"]:focus, input[type="date"]:focus {
     padding: var(--spacing-xs) var(--spacing-sm);
     border-radius: var(--radius-sm);
     border: 1px solid var(--border);
-    white-space: nowrap;
+    white-space: nowrap; /* Prevent text wrapping */
 }
 
 .due-date::before {
-    content: "📅";
+    content: "📅";        /* Calendar icon before due date */
     margin-right: var(--spacing-xs);
 }
 
 .due-date.overdue {
-    color: var(--delete-red);
-    border-color: var(--delete-red);
+    color: var(--delete-red); /* Red color for overdue dates */
+    border-color: var(--delete-red); /* Red border for overdue dates */
 }
 
-/* ----- Task Items ----- */
+
+/* --------------------------------------------------------------------------
+   Task Items
+   -------------------------------------------------------------------------- */
 .task-item {
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* Stack content vertically */
     background: var(--background);
     border-radius: var(--radius-md);
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.75rem;   /* Spacing between task items */
     padding: var(--spacing-md);
-    cursor: move;
+    cursor: move;             /* Indicate draggable */
     transition: var(--transition-standard);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-    border-left: 4px solid transparent;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04); /* Subtle shadow for task items */
+    border-left: 4px solid transparent; /* Left border for visual cues */
 }
 
 .task-item:hover {
-    border-left-color: var(--primary);
+    border-left-color: var(--primary); /* Highlight left border on hover */
 }
 
 .task-item-main {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
+    gap: var(--spacing-md);    /* Spacing within task item main section */
     width: 100%;
 }
 
+/* Task Item States (Completing, Uncompleting, Completed, Dragging) */
 .task-item.completing {
-    background: var(--background);
-    border-left-color: var(--success-green);
-    transform: translateX(10px);
+    background: var(--background); /* Maintain background during completion animation */
+    border-left-color: var(--success-green); /* Green border for completing state */
+    transform: translateX(10px);    /* Slight slide animation on completing */
 }
 
 .task-item.uncompleting {
-    transform: translateX(-10px);
-    border-left-color: transparent;
+    transform: translateX(-10px);   /* Slide back animation on uncompleting */
+    border-left-color: transparent; /* Remove left border on uncompleting */
 }
 
 .task-item.completed .task-content {
-    text-decoration: line-through;
-    opacity: 0.6;
-    border-left-color: var(--success-green);
+    text-decoration: line-through; /* Strike-through for completed tasks */
+    opacity: 0.6;                 /* Reduce opacity for completed tasks */
+    border-left-color: var(--success-green); /* Inherit green border if needed, though likely redundant */
 }
 
 .task-item.dragging {
-    opacity: 0.5;
-    transform: scale(0.98);
-    box-shadow: var(--shadow);
+    opacity: 0.5;                  /* Reduce opacity during drag */
+    transform: scale(0.98);        /* Slightly scale down during drag */
+    box-shadow: var(--shadow);      /* Add shadow during drag */
 }
 
+
 .task-content {
-    flex: 1;
+    flex: 1;                      /* Allow content to expand */
     padding: var(--spacing-sm);
     margin: 0;
     font-size: 0.95rem;
     line-height: 1.6;
-    min-width: 0;
-    white-space: pre-wrap;
-    word-break: break-word;
-    overflow-wrap: break-word;
+    min-width: 0;                 /* Allow content to shrink below default width */
+    white-space: pre-wrap;         /* Preserve whitespace and wrap text */
+    word-break: break-word;        /* Break words to prevent overflow */
+    overflow-wrap: break-word;    /* Alternative for word-break */
     transition: var(--transition-standard);
 }
 
 .task-content:focus {
-    outline: 2px solid var(--primary);
-    background: var(--container-bg);
+    outline: 2px solid var(--primary); /* Focus outline for task content */
+    background: var(--container-bg);  /* Background on focus */
     border-radius: var(--radius-sm);
     padding: var(--spacing-sm);
 }
 
+
 .task-meta {
     display: flex;
     width: 100%;
-    justify-content: space-between;
+    justify-content: space-between; /* Space between meta elements */
     margin-top: var(--spacing-sm);
     align-items: center;
-    padding-left: 2.5rem;
+    padding-left: 2.5rem;         /* Indent meta to align with content */
 }
 
+
+/* Checkbox Styling (Custom checkbox) */
 .task-item input[type="checkbox"] {
-    appearance: none;
-    -webkit-appearance: none;
+    appearance: none;         /* Remove default checkbox appearance */
+    -webkit-appearance: none; /* For Safari */
     width: 22px;
     height: 22px;
     border: 2px solid var(--border);
     border-radius: 6px;
-    position: relative;
+    position: relative;       /* For checkmark positioning */
     cursor: pointer;
     transition: var(--transition-standard);
 }
 
 .task-item input[type="checkbox"]:checked {
-    background-color: var(--success-green);
-    border-color: var(--success-green);
+    background-color: var(--success-green); /* Green background when checked */
+    border-color: var(--success-green);     /* Green border when checked */
 }
 
 .task-item input[type="checkbox"]:checked::after {
-    content: "✓";
+    content: "✓";           /* Checkmark symbol */
     font-size: 14px;
     color: white;
     position: absolute;
     top: 50%;
     left: 50%;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%); /* Center checkmark */
 }
 
+
+/* Task Actions (Edit, Delete) */
 .task-actions {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: column; /* Stack actions vertically */
+    align-items: center;    /* Center actions horizontally */
     gap: var(--spacing-sm);
-    width: 80px;
+    width: 80px;             /* Fixed width for actions column */
 }
+
 
 .edit-indicator {
     font-size: 0.8rem;
     color: var(--primary);
     text-align: center;
     padding: 2px 5px;
-    font-style: italic;
+    font-style: italic; /* Subtle italic style */
     transition: opacity 0.3s ease;
 }
 
 .editable:focus {
-    outline: 1px solid var(--primary);
+    outline: 1px solid var(--primary); /* Focus outline for editable elements */
     padding: 2px;
     border-radius: 3px;
 }
 
-/* ----- Tabs ----- */
+
+/* --------------------------------------------------------------------------
+   Tabs
+   -------------------------------------------------------------------------- */
 #tabs {
     display: flex;
     background: var(--input-bg);
     border-radius: var(--radius-pill);
     padding: var(--spacing-xs);
-    gap: 10px;
-    margin: var(--spacing-xl) 0 var(--spacing-lg);
+    gap: 10px;                /* Spacing between tabs */
+    margin: var(--spacing-xl) 0 var(--spacing-lg); /* Margin around tabs */
 }
 
 .tab-button {
-    flex: 1;
+    flex: 1;                      /* Distribute space evenly among tabs */
     font-weight: 600;
     font-size: 0.9rem;
     padding: 0.75rem 1rem;
-    border-radius: 20px;
+    border-radius: 20px;         /* Rounded tab buttons */
 }
 
 .tab-button.active {
-    background: var(--primary);
-    color: white;
-    box-shadow: 0 3px 8px rgba(124, 93, 250, 0.15);
+    background: var(--primary); /* Active tab background */
+    color: white;             /* Active tab text color */
+    box-shadow: 0 3px 8px rgba(124, 93, 250, 0.15); /* Shadow for active tab */
 }
 
 .tab-content {
-    display: none;
+    display: none;              /* Initially hide tab content */
     border: none;
     padding: var(--spacing-sm) 0;
 }
 
 .tab-content.active {
-    display: block;
+    display: block;             /* Show active tab content */
 }
 
-/* ----- History ----- */
+
+/* --------------------------------------------------------------------------
+   History
+   -------------------------------------------------------------------------- */
 .history-item {
     padding: var(--spacing-md);
     margin: 0.75rem 0;
@@ -545,15 +610,15 @@ input[type="text"]:focus, input[type="date"]:focus {
     border-radius: var(--radius-md);
     font-size: 0.9rem;
     color: var(--text-muted);
-    border-left: 4px solid var(--primary-light);
+    border-left: 4px solid var(--primary-light); /* Left border for history items */
     transition: all 0.2s ease;
-    word-break: break-word;
-    overflow-wrap: break-word;
+    word-break: break-word;        /* Prevent long words from breaking layout */
+    overflow-wrap: break-word;    /* Alternative for word-break */
 }
 
 .history-item:hover {
-    transform: translateX(2px);
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    transform: translateX(2px); /* Subtle hover animation */
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05); /* Subtle shadow on hover */
 }
 
 .history-timestamp {
@@ -562,17 +627,20 @@ input[type="text"]:focus, input[type="date"]:focus {
     color: var(--text-muted);
 }
 
-/* ----- Toast Notifications ----- */
+
+/* --------------------------------------------------------------------------
+   Toast Notifications
+   -------------------------------------------------------------------------- */
 .toast-container {
     position: fixed;
     bottom: 20px;
     right: 20px;
     display: flex;
-    flex-direction: column;
-    gap: 10px;
-    z-index: 1000;
-    perspective: 1000px;
-    max-width: 400px;
+    flex-direction: column; /* Stack toasts vertically */
+    gap: 10px;                /* Spacing between toasts */
+    z-index: 1000;             /* Ensure toasts are on top */
+    perspective: 1000px;     /* For 3D animations if needed */
+    max-width: 400px;         /* Max width for toast container */
 }
 
 .toast {
@@ -583,27 +651,27 @@ input[type="text"]:focus, input[type="date"]:focus {
     box-shadow: var(--shadow);
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 12px;                /* Spacing between toast elements */
     min-width: 300px;
     max-width: 400px;
     transition: var(--transition-standard);
-    border-left: 4px solid;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-    opacity: 0;
-    transform: translateX(100%);
-    backface-visibility: hidden;
-    transform-style: preserve-3d;
+    border-left: 4px solid;   /* Left border for toast type indication */
+    cursor: pointer;          /* Indicate clickable (for closing) */
+    position: relative;       /* For progress bar positioning */
+    overflow: hidden;         /* Clip content that overflows */
+    opacity: 0;               /* Initially hidden */
+    transform: translateX(100%); /* Slide in from right */
+    backface-visibility: hidden; /* Improve animation performance */
+    transform-style: preserve-3d; /* For 3D animation context if needed */
 }
 
 .toast:hover {
-    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Enhanced shadow on hover */
 }
 
 .toast.show {
-    transform: translateX(0);
-    opacity: 1;
+    transform: translateX(0); /* Slide in animation */
+    opacity: 1;               /* Fade in animation */
 }
 
 .toast::after {
@@ -613,25 +681,26 @@ input[type="text"]:focus, input[type="date"]:focus {
     left: 0;
     width: 100%;
     height: 3px;
-    background: currentColor;
-    opacity: 0.2;
+    background: currentColor; /* Inherit border color for visual tie-in */
+    opacity: 0.2;           /* Subtle line under toast */
 }
 
-/* Toast types */
+/* Toast Types (Success, Error, Warning, Info) - Consider using modifier classes */
 .toast.success { border-color: var(--success-green); }
-.toast.error { border-color: var(--delete-red); }
+.toast.error   { border-color: var(--delete-red); }
 .toast.warning { border-color: var(--google-blue); }
-.toast.info { border-color: var(--primary); }
+.toast.info    { border-color: var(--primary); }
 
-/* Toast components */
+
+/* Toast Components (Icon, Content, Close Button) */
 .toast-icon {
     font-size: 1.2rem;
     min-width: 24px;
-    text-align: center;
+    text-align: center; /* Center icon in its space */
 }
 
 .toast-content {
-    flex: 1;
+    flex: 1;                      /* Allow content to expand */
     font-size: 0.9rem;
 }
 
@@ -643,13 +712,14 @@ input[type="text"]:focus, input[type="date"]:focus {
     cursor: pointer;
     opacity: 0.6;
     transition: opacity 0.2s ease;
-    box-shadow: none;
+    box-shadow: none;         /* Remove button shadow */
 }
 
 .toast-close:hover {
     opacity: 1;
-    transform: none;
+    transform: none;         /* Disable hover transform */
 }
+
 
 /* Toast Progress Bar */
 .toast-progress {
@@ -658,40 +728,27 @@ input[type="text"]:focus, input[type="date"]:focus {
     left: 0;
     width: 100%;
     height: 3px;
-    transform-origin: left;
-    animation: progress linear forwards;
+    transform-origin: left; /* Progress from left to right */
+    animation: progress linear forwards; /* Apply progress animation */
 }
 
 .toast:hover .toast-progress {
-    animation-play-state: paused;
+    animation-play-state: paused; /* Pause progress bar on hover */
 }
 
-/* Toast Progress Bar Colors */
-.toast.success .toast-progress {
-    background-color: var(--success-green);
-    opacity: 0.6;
-}
 
-.toast.error .toast-progress {
-    background-color: var(--delete-red);
-    opacity: 0.6;
-}
+/* Toast Progress Bar Colors - Match toast type colors */
+.toast.success .toast-progress { background-color: var(--success-green); opacity: 0.6; }
+.toast.error   .toast-progress { background-color: var(--delete-red);    opacity: 0.6; }
+.toast.warning .toast-progress { background-color: var(--google-blue);  opacity: 0.6; }
+.toast.info    .toast-progress { background-color: var(--primary);      opacity: 0.6; }
 
-.toast.warning .toast-progress {
-    background-color: var(--google-blue);
-    opacity: 0.6;
-}
 
-.toast.info .toast-progress {
-    background-color: var(--primary);
-    opacity: 0.6;
-}
-
-/* ==================== */
-/* 4. UTILITY CLASSES   */
-/* ==================== */
+/* ==========================================================================
+4. UTILITY CLASSES:  Helper classes for common styling
+========================================================================== */
 .hidden {
-    display: none;
+    display: none !important; /* Use !important for utility classes to ensure override */
 }
 
 .empty-state {
@@ -705,66 +762,68 @@ input[type="text"]:focus, input[type="date"]:focus {
 }
 
 .empty-state::before {
-    content: "📝";
+    content: "📝";             /* Icon for empty state */
     display: block;
     font-size: 2rem;
     margin-bottom: var(--spacing-md);
 }
 
-/* ==================== */
-/* 5. ANIMATIONS        */
-/* ==================== */
+
+/* ==========================================================================
+5. ANIMATIONS:  Reusable animations and transitions
+========================================================================== */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeOut {
     from { opacity: 1; }
-    to { opacity: 0; }
+    to   { opacity: 0; }
 }
 
 @keyframes slideIn {
     from { transform: translateX(100%); opacity: 0; }
-    to { transform: translateX(0); opacity: 1; }
+    to   { transform: translateX(0);     opacity: 1; }
 }
 
 @keyframes slideOut {
-    from { transform: translateX(0); opacity: 1; }
-    to { transform: translateX(100%); opacity: 0; }
+    from { transform: translateX(0);     opacity: 1; }
+    to   { transform: translateX(100%);   opacity: 0; }
 }
 
 @keyframes progress {
     from { transform: scaleX(1); }
-    to { transform: scaleX(0); }
+    to   { transform: scaleX(0); }
 }
 
 @keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.1); }
     100% { transform: scale(1); }
 }
 
 @keyframes shake {
-    0% { transform: translateX(0); }
-    25% { transform: translateX(5px); }
-    50% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
+    0%   { transform: translateX(0); }
+    25%  { transform: translateX(5px); }
+    50%  { transform: translateX(-5px); }
+    75%  { transform: translateX(5px); }
     100% { transform: translateX(0); }
 }
 
 @keyframes checkmark {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.2); }
+    0%   { transform: scale(1); }
+    50%  { transform: scale(1.2); }
     100% { transform: scale(1); }
 }
 
-/* ==================== */
-/* 6. MEDIA QUERIES     */
-/* ==================== */
-@media (max-width: 600px) {
+
+/* ==========================================================================
+6. RESPONSIVE DESIGN - MEDIA QUERIES:  Adapt layout for different screen sizes
+========================================================================== */
+@media (max-width: 600px) { /* Styles for screens smaller than 600px */
     :root {
-        /* Adjust spacing for mobile */
+        /* Adjust spacing for mobile - slightly smaller for tighter layouts */
         --spacing-lg: 1.25rem;
         --spacing-xl: 1.5rem;
         --spacing-xxl: 1.75rem;
@@ -772,50 +831,54 @@ input[type="text"]:focus, input[type="date"]:focus {
 
     .container {
         padding: var(--spacing-lg);
-        border-radius: 0;
-        box-shadow: none;
-        max-width: 100%;
+        border-radius: 0;        /* Remove container border radius on mobile */
+        box-shadow: none;         /* Remove container shadow on mobile */
+        max-width: 100%;         /* Container takes full width on mobile */
     }
 
     body {
-        padding: 0;
-        margin: 0;
-        display: block;
+        padding: 0;             /* Remove body padding on mobile */
+        margin: 0;              /* Remove body margin on mobile */
+        display: block;         /* Revert body to block display for mobile layout */
     }
 
+    /* Form Adjustments on Mobile */
     #task-form {
-        flex-direction: column;
+        flex-direction: column; /* Stack form elements vertically on mobile */
     }
 
     #task-form input[type="date"],
     #task-form input[type="text"],
     #task-form button {
-        width: 100%;
+        width: 100%;         /* Form elements take full width on mobile */
     }
 
+    /* Task Item Layout on Mobile */
     .task-item-main {
-        flex-wrap: wrap;
+        flex-wrap: wrap;      /* Allow task item main content to wrap on mobile */
     }
 
     .task-actions {
-        width: 100%;
-        flex-direction: row;
-        justify-content: flex-end;
-        margin-top: var(--spacing-sm);
+        width: 100%;         /* Task actions take full width on mobile */
+        flex-direction: row; /* Actions in a row on mobile */
+        justify-content: flex-end; /* Align actions to the right on mobile */
+        margin-top: var(--spacing-sm); /* Add top margin to actions on mobile */
     }
 
+    /* Toast Container Positioning on Mobile */
     .toast-container {
         bottom: 10px;
         right: 10px;
-        left: 10px;
+        left: 10px;           /* Toast container spans screen width on mobile */
     }
 
     .toast {
-        min-width: auto;
-        max-width: 100%;
-        width: 100%;
+        min-width: auto;      /* Auto width for toasts on mobile */
+        max-width: 100%;       /* Max width for toasts on mobile */
+        width: 100%;           /* Toasts take full width on mobile */
     }
-    /* Different positioning options */
+
+    /* Different Toast Positioning Options - Consider making these utility classes */
     .toast-container.position-top-right {
         top: 20px;
         bottom: auto;
@@ -840,12 +903,14 @@ input[type="text"]:focus, input[type="date"]:focus {
         bottom: auto;
         left: 50%;
         right: auto;
-        transform: translateX(-50%);
+        transform: translateX(-50%); /* Center toast container horizontally */
     }
 
+
+    /* --- TOAST THEMES & STYLES - Consider moving these to Component section or using modifier classes --- */
     /* GLaDOS theme for toasts */
     .toast.theme-aperture {
-        font-family: 'Arial', sans-serif;
+        font-family: 'Arial', sans-serif; /* Custom font for Aperture theme */
         letter-spacing: 0.01em;
         border: 2px solid;
         position: relative;
@@ -858,11 +923,11 @@ input[type="text"]:focus, input[type="date"]:focus {
         left: 0;
         right: 0;
         height: 4px;
-        background: linear-gradient(90deg, var(--primary), var(--primary-light));
+        background: linear-gradient(90deg, var(--primary), var(--primary-light)); /* Gradient top border */
     }
 
     .toast.theme-aperture .toast-icon {
-        border-radius: 50%;
+        border-radius: 50%; /* Circular icon for Aperture theme */
         width: 26px;
         height: 26px;
         display: flex;
@@ -871,17 +936,19 @@ input[type="text"]:focus, input[type="date"]:focus {
         font-weight: bold;
     }
 
-    /* Toast priority styles */
+
+    /* Toast priority styles - Consider using utility classes or modifier classes */
     .toast.priority-3 {
         z-index: 10;
         transform-origin: center;
     }
 
     .toast.priority-3.show {
-        animation: importantToast 0.5s ease forwards;
+        animation: importantToast 0.5s ease forwards; /* Apply important toast animation */
     }
 
-    /* Toast actions styling */
+
+    /* Toast actions styling - Consider making this a separate component or modifier classes */
     .toast-actions {
         display: flex;
         gap: 8px;
@@ -903,7 +970,7 @@ input[type="text"]:focus, input[type="date"]:focus {
         background: var(--primary);
         color: white;
         border-color: var(--primary);
-        transform: translateY(-1px);
+        transform: translateY(-1px); /* Slight lift on hover */
     }
 
     .toast-count {
@@ -912,59 +979,45 @@ input[type="text"]:focus, input[type="date"]:focus {
     }
 
     .toast.updated {
-        animation: pulse 0.3s ease;
+        animation: pulse 0.3s ease; /* Pulse animation on update */
     }
 
-    /* Toast types - GLaDOS themed */
-    .toast.success .toast-icon {
-        background-color: var(--success-green);
-        color: white;
-    }
 
-    .toast.error .toast-icon {
-        background-color: var(--delete-red);
-        color: white;
-    }
+    /* Toast types - GLaDOS themed - Consider modifier classes for toast types */
+    .toast.success .toast-icon   { background-color: var(--success-green); color: white; }
+    .toast.error   .toast-icon     { background-color: var(--delete-red);    color: white; }
+    .toast.warning .toast-icon   { background-color: #FF9800;          color: white; } /* Orange warning color */
+    .toast.deadline .toast-icon  { background-color: #FF5722;          color: white; } /* Deep orange deadline color */
+    .toast.achievement .toast-icon { background-color: #9C27B0;          color: white; } /* Purple achievement color */
 
-    .toast.warning .toast-icon {
-        background-color: #FF9800;
-        color: white;
-    }
 
-    .toast.deadline .toast-icon {
-        background-color: #FF5722;
-        color: white;
-    }
-
-    .toast.achievement .toast-icon {
-        background-color: #9C27B0;
-        color: white;
-    }
-
-    /* Animation for important toast */
+    /* Animation for important toast - Consider moving to Animations section */
     @keyframes importantToast {
         0%, 100% { transform: translateX(0); }
         10%, 30%, 50%, 70%, 90% { transform: translateX(-2px); }
         20%, 40%, 60%, 80% { transform: translateX(2px); }
     }
 
-    /* Highlight animation for tasks */
+    /* Highlight animation for tasks - Consider moving to Animations section */
     .task-item.highlight {
         animation: highlightTask 2s ease;
-        border-left: 4px solid var(--primary);
-        background-color: var(--container-bg);
+        border-left: 4px solid var(--primary); /* Highlight with primary color border */
+        background-color: var(--container-bg); /* Highlight background color */
     }
 
     @keyframes highlightTask {
         0%, 100% { box-shadow: 0 0 0 rgba(124, 93, 250, 0); }
-        50% { box-shadow: 0 0 15px rgba(124, 93, 250, 0.4); }
+        50%    { box-shadow: 0 0 15px rgba(124, 93, 250, 0.4); } /* Highlight shadow */
     }
 }
 
-/* Configuration Menu - Redesigned */
+
+/* ==========================================================================
+   Configuration Menu (Dropdown) - Reorganized Component
+   ========================================================================== */
 .config-container {
     position: relative;
-    display: inline-block;
+    display: inline-block; /* Allows dropdown to be positioned relative to button */
 }
 
 /* Config Button */
@@ -980,33 +1033,35 @@ input[type="text"]:focus, input[type="date"]:focus {
     justify-content: center;
     border: none;
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Custom easing for button transition */
+    box-shadow: none;         /* Remove button shadow */
 }
 
 #config-button:hover {
     background-color: var(--hover-bg);
     color: var(--primary);
-    transform: rotate(30deg);
+    transform: rotate(30deg); /* Rotate icon on hover */
 }
+
 
 /* Dropdown Menu */
 .dropdown-menu {
     position: absolute;
-    top: calc(100% + 8px);
-    right: -10px;
+    top: calc(100% + 8px);     /* Position below button */
+    right: -10px;             /* Align to the right of button */
     width: 240px;
     background: var(--container-bg);
     border-radius: var(--radius-lg);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1),
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), /* Multiple shadows for depth */
     0 5px 10px rgba(0, 0, 0, 0.05);
-    z-index: 100;
-    overflow: hidden;
-    transform-origin: top right;
-    transition: all 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+    z-index: 100;              /* Ensure dropdown is above other content */
+    overflow: hidden;          /* Clip content overflow */
+    transform-origin: top right; /* Animation origin from top right */
+    transition: all 0.2s cubic-bezier(0.19, 1, 0.22, 1); /* Custom easing for menu animation */
     border: 1px solid var(--border);
 }
 
+/* Arrow/Pointer for Dropdown */
 .dropdown-menu::before {
     content: '';
     position: absolute;
@@ -1015,24 +1070,26 @@ input[type="text"]:focus, input[type="date"]:focus {
     width: 10px;
     height: 10px;
     background: var(--container-bg);
-    transform: rotate(45deg);
+    transform: rotate(45deg); /* Rotate square to create diamond shape */
     border-top: 1px solid var(--border);
     border-left: 1px solid var(--border);
 }
 
+/* Dropdown Menu Visibility States */
 .dropdown-menu.hidden {
     opacity: 0;
-    transform: translateY(-5px) scale(0.95);
-    pointer-events: none;
-    visibility: hidden;
+    transform: translateY(-5px) scale(0.95); /* Slight scaling and translateY for hide animation */
+    pointer-events: none;     /* Prevent interaction when hidden */
+    visibility: hidden;       /* Hide from accessibility tree when hidden */
 }
 
 .dropdown-menu.show {
     opacity: 1;
-    transform: translateY(0) scale(1);
-    pointer-events: auto;
-    visibility: visible;
+    transform: translateY(0) scale(1);    /* Reset transform for show animation */
+    pointer-events: auto;      /* Allow interaction when shown */
+    visibility: visible;        /* Make visible in accessibility tree when shown */
 }
+
 
 /* Dropdown Header */
 .dropdown-header {
@@ -1042,7 +1099,7 @@ input[type="text"]:focus, input[type="date"]:focus {
     color: var(--text);
     border-bottom: 1px solid var(--border);
     background-color: var(--background);
-    position: relative;
+    position: relative;       /* For underline positioning */
 }
 
 .dropdown-header::after {
@@ -1052,15 +1109,16 @@ input[type="text"]:focus, input[type="date"]:focus {
     bottom: -1px;
     width: 40px;
     height: 3px;
-    background-color: var(--primary);
+    background-color: var(--primary); /* Primary color underline */
     border-radius: var(--radius-sm);
 }
+
 
 /* Dropdown Items */
 .dropdown-item {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start; /* Align items to the start */
     gap: var(--spacing-md);
     width: 100%;
     padding: var(--spacing-md) var(--spacing-lg);
@@ -1071,13 +1129,14 @@ input[type="text"]:focus, input[type="date"]:focus {
     font-size: 0.95rem;
     font-weight: 500;
     transition: all 0.2s ease;
-    position: relative;
-    overflow: hidden;
+    position: relative;       /* For animation positioning */
+    overflow: hidden;          /* Clip content overflow */
+    text-align: left;         /* Ensure text is left-aligned */
 }
 
 .dropdown-item:hover {
     background: var(--hover-bg);
-    padding-left: calc(var(--spacing-lg) + 4px);
+    padding-left: calc(var(--spacing-lg) + 4px); /* Indent slightly on hover */
 }
 
 .dropdown-item i {
@@ -1093,41 +1152,44 @@ input[type="text"]:focus, input[type="date"]:focus {
 
 .dropdown-item:hover i {
     color: var(--primary);
-    transform: scale(1.1);
+    transform: scale(1.1); /* Scale up icon on hover */
 }
 
-/* Danger Items */
+
+/* Danger Items (Delete actions) */
 .dropdown-item#delete-all-data {
-    margin-top: var(--spacing-sm);
+    margin-top: var(--spacing-sm); /* Add top margin to danger item */
 }
 
 .dropdown-item#delete-all-data {
     padding-top: var(--spacing-md);
-    border-top: 1px solid var(--border);
-    color: var(--delete-red);
+    border-top: 1px solid var(--border); /* Separator line above danger item */
+    color: var(--delete-red); /* Red color for danger item text */
 }
 
 .dropdown-item#delete-all-data:hover {
-    background: rgba(236, 87, 87, 0.08);
+    background: rgba(236, 87, 87, 0.08); /* Reddish hover background for danger item */
 }
 
 .dropdown-item#delete-all-data i {
-    color: var(--delete-red);
+    color: var(--delete-red); /* Red color for danger item icon */
 }
+
 
 /* Separator line */
 .dropdown-separator {
     height: 1px;
     background-color: var(--border);
-    margin: var(--spacing-xs) var(--spacing-md);
-    opacity: 0.7;
+    margin: var(--spacing-xs) var(--spacing-md); /* Spacing around separator */
+    opacity: 0.7;                 /* Slightly transparent separator */
 }
 
-/* Animation for menu items - fixed without --item-index */
+
+/* Animation for menu items - Staggered fade in */
 @keyframes menuItemFadeIn {
     from {
         opacity: 0;
-        transform: translateY(5px);
+        transform: translateY(5px); /* Slide up slightly during fade in */
     }
     to {
         opacity: 1;
@@ -1135,10 +1197,10 @@ input[type="text"]:focus, input[type="date"]:focus {
     }
 }
 
-/* Using nth-child for staggered animation instead of --item-index */
+/* Staggered animation using nth-child */
 .dropdown-menu.show .dropdown-item {
-    animation: menuItemFadeIn 0.3s forwards;
-    opacity: 0;
+    animation: menuItemFadeIn 0.3s forwards; /* Apply fade-in animation */
+    opacity: 0; /* Initially transparent for animation effect */
 }
 
 .dropdown-menu.show .dropdown-item:nth-child(1) { animation-delay: 0.05s; }
@@ -1148,35 +1210,35 @@ input[type="text"]:focus, input[type="date"]:focus {
 .dropdown-menu.show .dropdown-item:nth-child(5) { animation-delay: 0.25s; }
 .dropdown-menu.show .dropdown-item:nth-child(6) { animation-delay: 0.30s; }
 .dropdown-menu.show .dropdown-item:nth-child(7) { animation-delay: 0.35s; }
-.dropdown-menu.show .dropdown-item:nth-child(8) { animation-delay: 0.40s; }
+.dropdown-menu.show .dropdown-item:nth-child(8) { animation-delay: 0.40s; } /* Add more for longer menus */
 
-/* ==================== */
-/* Drag Handle Styling   */
-/* ==================== */
 
+/* ==========================================================================
+   Drag Handle Styling - For task item drag functionality
+   ========================================================================== */
 .drag-handle {
-    cursor: grab;
+    cursor: grab;               /* Grab cursor for drag handle */
     padding: 0 8px;
     font-size: 18px;
-    color: #888;
+    color: #888;                 /* Muted color for handle */
     display: flex;
     align-items: center;
-    user-select: none;
+    user-select: none;          /* Prevent text selection during drag */
 }
 
 .drag-handle:active {
-    cursor: grabbing;
+    cursor: grabbing;           /* Grabbing cursor when actively dragging */
 }
 
 /* Hide drag handles in completed tasks */
 .task-item.completed .drag-handle {
-    visibility: hidden;
+    visibility: hidden;         /* Hide handle for completed tasks */
 }
 
-/* ==================== */
-/* Search Component      */
-/* ==================== */
 
+/* ==========================================================================
+   Search Component - For task searching functionality
+   ========================================================================== */
 /* Search container */
 .search-container {
     /* Layout */
@@ -1184,33 +1246,35 @@ input[type="text"]:focus, input[type="date"]:focus {
     align-items: center;
     width: 100%;
     max-width: 500px;
-    margin: 1rem auto;
+    margin: 1rem auto;          /* Center search container horizontally */
 
     /* Styling */
     background-color: var(--background);
     border-radius: var(--radius-pill);
     padding: 0.75rem 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-    transition: box-shadow 0.2s ease, transform 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); /* Subtle shadow for search container */
+    transition: box-shadow 0.2s ease, transform 0.2s ease; /* Smooth transitions */
 }
 
 .search-container:focus-within {
-    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12);
-    transform: translateY(-1px);
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.12); /* Enhanced shadow on focus */
+    transform: translateY(-1px);    /* Slight lift effect on focus */
 }
+
 
 /* Search icon */
 .search-icon {
     color: var(--text-muted);
     margin-right: 0.75rem;
-    opacity: 0.7;
+    opacity: 0.7;                 /* Initially slightly transparent */
     transition: opacity 0.2s ease;
 }
 
 .search-container:focus-within .search-icon {
-    opacity: 1;
-    color: var(--primary);
+    opacity: 1;                   /* Fully opaque icon on focus */
+    color: var(--primary);        /* Primary color icon on focus */
 }
+
 
 /* Search input field */
 #search-input {
@@ -1220,7 +1284,7 @@ input[type="text"]:focus, input[type="date"]:focus {
     outline: none;
 
     /* Layout */
-    flex-grow: 1;
+    flex-grow: 1;                /* Allow input to expand */
     padding: 0.25rem 0;
 
     /* Typography */
@@ -1231,8 +1295,9 @@ input[type="text"]:focus, input[type="date"]:focus {
 
 #search-input::placeholder {
     color: var(--text-muted);
-    opacity: 0.7;
+    opacity: 0.7;                 /* Slightly transparent placeholder text */
 }
+
 
 /* Search loading indicator */
 .search-loading {
@@ -1250,28 +1315,20 @@ input[type="text"]:focus, input[type="date"]:focus {
     background-color: var(--primary);
     color: white;
     border-radius: var(--radius-sm);
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow for loading indicator */
 
     /* Animation */
-    animation: fadeIn 0.3s ease;
+    animation: fadeIn 0.3s ease;    /* Fade-in animation for loading indicator */
 }
 
-/* Animation for loading indicator */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-5px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
 
-/* ==================== */
-/* Sidebar Styling      */
-/* ==================== */
+/* Animation for loading indicator - Reused fadeIn animation from Animations section */
+/* @keyframes fadeIn { ... }  (Defined in section 5. ANIMATIONS) */
 
+
+/* ==========================================================================
+   Sidebar Styling - For application navigation and controls
+   ========================================================================== */
 .sidebar {
     background: var(--container-bg);
     width: 260px;
@@ -1279,26 +1336,27 @@ input[type="text"]:focus, input[type="date"]:focus {
     position: fixed;
     left: 0;
     top: 0;
-    z-index: 100;
+    z-index: 100;              /* Ensure sidebar is above main content */
     display: flex;
-    flex-direction: column;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    overflow-x: hidden;
-    border-right: 1px solid var(--border);
+    flex-direction: column; /* Stack sidebar content vertically */
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Custom easing for sidebar transition */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Subtle shadow for sidebar */
+    overflow-x: hidden;        /* Prevent horizontal scrollbar */
+    border-right: 1px solid var(--border); /* Right border for sidebar */
 }
 
 .sidebar.collapsed {
-    width: 70px;
+    width: 70px;              /* Collapsed sidebar width */
 }
+
 
 /* Sidebar Header */
 .sidebar-header {
     display: flex;
     align-items: center;
     padding: var(--spacing-md) var(--spacing-lg);
-    border-bottom: 1px solid var(--border);
-    height: 64px;
+    border-bottom: 1px solid var(--border); /* Bottom border for sidebar header */
+    height: 64px;              /* Fixed height for sidebar header */
 }
 
 .logo {
@@ -1306,18 +1364,19 @@ input[type="text"]:focus, input[type="date"]:focus {
     font-size: 1.3rem;
     color: var(--primary);
     margin-left: var(--spacing-md);
-    white-space: nowrap;
+    white-space: nowrap;         /* Prevent logo text wrapping */
     letter-spacing: -0.02em;
     transition: all 0.3s ease;
-    flex: 1;
-    overflow: hidden;
+    flex: 1;                      /* Allow logo to expand */
+    overflow: hidden;          /* Clip logo overflow */
 }
 
 .sidebar.collapsed .logo {
-    opacity: 0;
-    width: 0;
-    transform: translateX(-20px);
+    opacity: 0;                  /* Hide logo in collapsed sidebar */
+    width: 0;                    /* Reduce logo width to zero */
+    transform: translateX(-20px); /* Slide logo out on collapse */
 }
+
 
 /* Sidebar Toggle Button */
 .sidebar-toggle {
@@ -1330,17 +1389,19 @@ input[type="text"]:focus, input[type="date"]:focus {
     justify-content: center;
     cursor: pointer;
     padding: 0;
-    box-shadow: none;
+    box-shadow: none;         /* Remove button shadow */
     border-radius: 8px;
     transition: background 0.2s ease;
 }
 
 .sidebar-toggle:hover {
     background: var(--hover-bg);
-    transform: none;
-    box-shadow: none;
+    transform: none;             /* Disable hover transform */
+    box-shadow: none;         /* Remove button shadow on hover */
 }
 
+
+/* Toggle Icon (Hamburger/Close icon) */
 .toggle-icon {
     position: relative;
     width: 16px;
@@ -1361,33 +1422,37 @@ input[type="text"]:focus, input[type="date"]:focus {
 }
 
 .toggle-icon::before {
-    transform: translateY(-5px);
+    transform: translateY(-5px); /* Position top bar */
 }
 
 .toggle-icon::after {
-    transform: translateY(5px);
+    transform: translateY(5px);  /* Position bottom bar */
 }
 
+
+/* Collapsed Sidebar Toggle Icon State */
 .sidebar.collapsed .toggle-icon {
-    background: transparent;
+    background: transparent;     /* Hide middle bar in collapsed state */
 }
 
 .sidebar.collapsed .toggle-icon::before {
-    transform: rotate(45deg);
+    transform: rotate(45deg);   /* Rotate top bar to form 'X' */
 }
 
 .sidebar.collapsed .toggle-icon::after {
-    transform: rotate(-45deg);
+    transform: rotate(-45deg);  /* Rotate bottom bar to form 'X' */
 }
 
-/* Navigation */
+
+/* Navigation in Sidebar */
 .sidebar-nav {
-    flex: 1;
+    flex: 1;                      /* Allow nav to expand */
     padding: var(--spacing-md) 0;
-    overflow-y: auto;
-    overflow-x: hidden;
+    overflow-y: auto;           /* Enable vertical scroll if needed */
+    overflow-x: hidden;        /* Hide horizontal scrollbar */
 }
 
+/* Scrollbar styling (Webkit - Chrome, Safari) */
 .sidebar-nav::-webkit-scrollbar {
     width: 5px;
 }
@@ -1396,6 +1461,7 @@ input[type="text"]:focus, input[type="date"]:focus {
     background: var(--border);
     border-radius: 10px;
 }
+
 
 .sidebar-nav ul {
     list-style: none;
@@ -1407,76 +1473,85 @@ input[type="text"]:focus, input[type="date"]:focus {
     margin: 4px var(--spacing-md);
 }
 
+/* Navigation Links and Sidebar Buttons */
 .nav-item a,
 .sidebar-btn {
     display: flex;
     align-items: center;
     padding: var(--spacing-sm) var(--spacing-lg);
     color: var(--text);
-    text-decoration: none;
+    text-decoration: none;      /* Remove link underline */
     transition: all 0.2s ease;
     border-radius: var(--radius-md);
     font-weight: 500;
-    position: relative;
-    overflow: hidden;
+    position: relative;       /* For hover effect positioning if needed */
+    overflow: hidden;          /* Clip content overflow */
 }
 
 .nav-item a:hover,
 .sidebar-btn:hover {
     background: var(--hover-bg);
-    transform: translateX(2px);
-    box-shadow: none;
+    transform: translateX(2px); /* Slight slide on hover */
+    box-shadow: none;         /* Remove button shadow on hover */
 }
 
 .nav-item.active a {
-    background: var(--primary);
-    color: white;
+    background: var(--primary); /* Active nav item background */
+    color: white;             /* Active nav item text color */
 }
 
+
+/* Navigation Icon */
 .nav-icon {
     margin-right: var(--spacing-md);
     font-size: 1.2rem;
     width: 24px;
-    text-align: center;
+    text-align: center; /* Center icon in its space */
     transition: all 0.3s ease;
 }
 
+
+/* Navigation Text */
 .nav-text {
-    white-space: nowrap;
+    white-space: nowrap;         /* Prevent text wrapping */
     transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .sidebar.collapsed .nav-text {
-    opacity: 0;
-    transform: translateX(10px);
-    width: 0;
-    overflow: hidden;
+    opacity: 0;                  /* Hide text in collapsed sidebar */
+    transform: translateX(10px); /* Slide text out on collapse */
+    width: 0;                    /* Reduce text width to zero */
+    overflow: hidden;          /* Clip text overflow */
 }
 
+
+/* Collapsed Sidebar Nav Item Styling */
 .sidebar.collapsed .nav-item a,
 .sidebar.collapsed .sidebar-btn {
-    justify-content: center;
+    justify-content: center;  /* Center content in collapsed nav items */
     padding: var(--spacing-sm);
 }
 
 .sidebar.collapsed .nav-icon {
-    margin-right: 0;
+    margin-right: 0;              /* Remove icon margin in collapsed state */
     font-size: 1.3rem;
 }
 
+
 /* Sidebar Footer */
 .sidebar-footer {
-    border-top: 1px solid var(--border);
+    border-top: 1px solid var(--border); /* Top border for sidebar footer */
     padding: var(--spacing-md);
     display: flex;
-    flex-direction: column;
-    gap: var(--spacing-sm);
+    flex-direction: column; /* Stack footer content vertically */
+    gap: var(--spacing-sm);    /* Spacing between footer elements */
 }
+
 
 /* Language Selector */
 .language-selector {
-    position: relative;
-    margin-bottom: var(--spacing-sm);
+    position: relative;       /* For dropdown positioning */
+    margin-bottom: var(--spacing-sm); /* Spacing below language selector */
 }
 
 .language-btn {
@@ -1485,68 +1560,73 @@ input[type="text"]:focus, input[type="date"]:focus {
     width: 100%;
     background: transparent;
     color: var(--text);
-    box-shadow: none;
+    box-shadow: none;         /* Remove button shadow */
     padding: var(--spacing-sm) var(--spacing-lg);
-    justify-content: flex-start;
+    justify-content: flex-start; /* Align content to the start */
     border-radius: var(--radius-md);
     transition: all 0.2s ease;
 }
 
 .language-btn:hover {
     background: var(--hover-bg);
-    transform: none;
-    box-shadow: none;
+    transform: none;             /* Disable hover transform */
+    box-shadow: none;         /* Remove button shadow on hover */
 }
 
+
+/* Language Options Dropdown */
 .language-options {
     position: absolute;
-    bottom: 100%;
+    bottom: 100%;             /* Position above language button */
     left: 0;
     background: var(--container-bg);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
     box-shadow: var(--shadow);
-    z-index: 10;
+    z-index: 10;              /* Ensure options are above other content */
     min-width: 150px;
-    transform-origin: bottom left;
-    transition: all 0.2s cubic-bezier(0.19, 1, 0.22, 1);
+    transform-origin: bottom left; /* Animation origin for dropdown */
+    transition: all 0.2s cubic-bezier(0.19, 1, 0.22, 1); /* Custom easing for dropdown animation */
 }
 
+/* Language Options Dropdown Visibility States */
 .language-options.hidden {
     opacity: 0;
-    transform: scale(0.95);
-    visibility: hidden;
+    transform: scale(0.95);    /* Slight scaling for hide animation */
+    visibility: hidden;       /* Hide from accessibility tree when hidden */
 }
 
 .language-options button {
     display: block;
     width: 100%;
-    text-align: left;
+    text-align: left;         /* Align text to the left in options */
     background: transparent;
     color: var(--text);
     padding: var(--spacing-sm) var(--spacing-md);
     border-radius: var(--radius-sm);
-    box-shadow: none;
+    box-shadow: none;         /* Remove button shadow */
     transition: all 0.2s ease;
 }
 
 .language-options button:hover {
     background: var(--hover-bg);
-    transform: translateX(2px);
-    box-shadow: none;
+    transform: translateX(2px); /* Slight slide on hover */
+    box-shadow: none;         /* Remove button shadow on hover */
 }
 
-/* Theme Toggle */
+
+/* Theme Toggle Wrapper */
 .theme-toggle-wrapper {
     display: flex;
-    justify-content: center;
-    margin: var(--spacing-sm) 0;
+    justify-content: center;  /* Center theme toggle horizontally */
+    margin: var(--spacing-sm) 0; /* Spacing around theme toggle */
 }
 
+/* Theme Toggle Button */
 .theme-toggle {
     width: 100%;
     height: 38px;
-    min-width: unset;
+    min-width: unset;          /* Reset min-width */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1559,35 +1639,38 @@ input[type="text"]:focus, input[type="date"]:focus {
 
 .theme-toggle:hover {
     background: var(--hover-bg);
-    transform: translateY(-2px);
+    transform: translateY(-2px); /* Slight lift on hover */
+}
+
+
+/* Logout Button Wrapper */
+.logout-wrapper {
+    margin-top: var(--spacing-sm); /* Spacing above logout button */
 }
 
 /* Logout Button */
-.logout-wrapper {
-    margin-top: var(--spacing-sm);
-}
-
 #logout-btn {
     background: var(--input-bg);
     transition: all 0.2s ease;
     border-radius: var(--radius-md);
     width: 100%;
-    justify-content: flex-start;
+    justify-content: flex-start; /* Align content to the start */
 }
 
 #logout-btn:hover {
-    background: rgba(236, 87, 87, 0.1);
-    color: var(--delete-red);
-    transform: translateX(2px);
+    background: rgba(236, 87, 87, 0.1); /* Reddish hover background for logout */
+    color: var(--delete-red); /* Red color for logout text on hover */
+    transform: translateX(2px); /* Slight slide on hover */
 }
 
 #logout-btn .nav-icon {
-    color: var(--delete-red);
+    color: var(--delete-red); /* Red color for logout icon */
 }
 
-/* Collapsed Sidebar Adjustments */
+
+/* Collapsed Sidebar Footer Adjustments */
 .sidebar.collapsed .sidebar-footer {
-    align-items: center;
+    align-items: center;    /* Center footer content in collapsed sidebar */
     padding: var(--spacing-md) var(--spacing-sm);
 }
 
@@ -1597,81 +1680,87 @@ input[type="text"]:focus, input[type="date"]:focus {
     width: 40px;
     height: 40px;
     padding: 0;
-    justify-content: center;
-    border-radius: 50%;
+    justify-content: center;  /* Center content in collapsed state */
+    border-radius: 50%;       /* Circular buttons in collapsed state */
 }
 
 .sidebar.collapsed .language-btn .nav-text,
 .sidebar.collapsed #logout-btn .nav-text {
-    display: none;
+    display: none;              /* Hide text in collapsed state */
 }
 
-/* Responsive Adjustments */
-@media (max-width: 768px) {
+
+/* Responsive Adjustments for Sidebar (Mobile) */
+@media (max-width: 768px) { /* Styles for screens smaller than 768px */
     .sidebar {
-        transform: translateX(-100%);
-        box-shadow: none;
+        transform: translateX(-100%); /* Slide sidebar out to hide on mobile initially */
+        box-shadow: none;         /* Remove sidebar shadow on mobile */
     }
 
     .sidebar.collapsed {
-        width: 260px;
-        transform: translateX(-100%);
+        width: 260px;             /* Maintain full width in collapsed state on mobile for expandability */
+        transform: translateX(-100%); /* Keep collapsed state hidden off-screen */
     }
 
     .sidebar.expanded {
-        transform: translateX(0);
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        transform: translateX(0);    /* Slide sidebar in when expanded on mobile */
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* Add shadow when expanded on mobile */
     }
 
+    /* Mobile Sidebar Text Visibility in Collapsed State (for expand button) */
     .sidebar.collapsed .nav-text,
     .sidebar.collapsed .logo {
-        display: block;
-        opacity: 1;
-        width: auto;
-        transform: none;
+        display: block;             /* Show text and logo in collapsed state on mobile for expand button */
+        opacity: 1;                   /* Make text and logo opaque */
+        width: auto;                 /* Auto width for text and logo */
+        transform: none;             /* Reset transform */
     }
 
     .sidebar.collapsed .nav-item a,
     .sidebar.collapsed .sidebar-btn {
-        justify-content: flex-start;
-        padding: var(--spacing-sm) var(--spacing-lg);
+        justify-content: flex-start; /* Align content to start in collapsed mobile sidebar */
+        padding: var(--spacing-sm) var(--spacing-lg); /* Restore padding in collapsed mobile sidebar */
     }
 
     .sidebar.collapsed .nav-icon {
-        margin-right: var(--spacing-md);
+        margin-right: var(--spacing-md); /* Restore icon margin in collapsed mobile sidebar */
     }
 
     .main-content {
-        margin-left: 0 !important;
+        margin-left: 0 !important; /* Remove left margin on main content for mobile */
     }
 }
 
+
+/* Sidebar Z-index for overlaying content */
 .sidebar {
-    z-index: 1000;
+    z-index: 1000;             /* High z-index to overlay content */
 }
 
+/* Main Content Area - to shift aside when sidebar is open */
 .main-content {
     width: 100%;
-    transition: opacity 0.3s ease;
-    position: relative;
-    z-index: 1;
+    transition: opacity 0.3s ease; /* Smooth opacity transition */
+    position: relative;       /* For backdrop positioning */
+    z-index: 1;               /* Ensure main content is below backdrop */
 }
 
+
+/* Sidebar Backdrop - to overlay content when sidebar is open on mobile */
 .sidebar-backdrop {
-    display: none;
+    display: none;             /* Initially hidden */
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 900;
-    opacity: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black backdrop */
+    z-index: 900;              /* Backdrop below sidebar but above main content */
+    opacity: 0;               /* Initially transparent */
     transition: opacity 0.3s ease;
 }
 
 .sidebar-backdrop.active {
-    display: block;
-    opacity: 1;
+    display: block;            /* Show backdrop when active */
+    opacity: 1;               /* Make backdrop opaque when active */
 }
-
