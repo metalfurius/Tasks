@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Implement sidebar visibility toggle on authentication state change; enhance sidebar backdrop functionality">
+    <list default="true" id="8a800e5f-025b-49eb-a740-78621f46d93a" name="Changes" comment="Update workspace configuration to reflect sidebar visibility toggle and task updates">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/styles.css" beforeDir="false" afterPath="$PROJECT_DIR$/styles.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/tasks/taskItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/tasks/taskItem.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,7 +110,7 @@
       <workItem from="1741189427783" duration="3442000" />
       <workItem from="1741203370207" duration="1831000" />
       <workItem from="1741459022295" duration="4284000" />
-      <workItem from="1741522341677" duration="903000" />
+      <workItem from="1741522341677" duration="2036000" />
     </task>
     <task id="LOCAL-00001" summary="Add due date styling and overdue check functionality">
       <option name="closed" value="true" />
@@ -432,7 +432,15 @@
       <option name="project" value="LOCAL" />
       <updated>1741465585491</updated>
     </task>
-    <option name="localTasksCounter" value="41" />
+    <task id="LOCAL-00041" summary="Update workspace configuration to reflect sidebar visibility toggle and task updates">
+      <option name="closed" value="true" />
+      <created>1741524695877</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1741524695877</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -450,7 +458,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Enhance history and task services with cache-first strategy, limit history to last 30 days, and optimize task updates" />
     <MESSAGE value="Add load more functionality to history view, enhance history cleanup, and improve task order management" />
     <MESSAGE value="Add message provider for dynamic notifications, enhance toast service with close button, and implement load more functionality for task lists" />
     <MESSAGE value="Add PWA support with manifest, enhance task editing with toast notifications, and improve task loading logic" />
@@ -475,6 +482,7 @@
     <MESSAGE value="Add sidebar component with navigation and language selection functionality" />
     <MESSAGE value="Move theme toggle and logout button to sidebar; enhance sidebar styling and responsiveness" />
     <MESSAGE value="Implement sidebar visibility toggle on authentication state change; enhance sidebar backdrop functionality" />
-    <option name="LAST_COMMIT_MESSAGE" value="Implement sidebar visibility toggle on authentication state change; enhance sidebar backdrop functionality" />
+    <MESSAGE value="Update workspace configuration to reflect sidebar visibility toggle and task updates" />
+    <option name="LAST_COMMIT_MESSAGE" value="Update workspace configuration to reflect sidebar visibility toggle and task updates" />
   </component>
 </project>
