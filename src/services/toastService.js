@@ -23,10 +23,11 @@ const ToastService = {
     },
 
     show(message, type = 'info', duration = this.defaultDuration, isPersistent = false) {
+        const safeType = Object.prototype.hasOwnProperty.call(TOAST_ICONS, type) ? type : 'info';
         const toast = document.createElement('div');
-        toast.className = `toast ${type}`;
+        toast.className = `toast ${safeType}`;
 
-        const icon = TOAST_ICONS[type] || TOAST_ICONS.default;
+        const icon = TOAST_ICONS[safeType];
         const toastContent = createTextElement('div', message, 'toast-content');
         const closeButton = createTextElement('button', '\u00D7', 'toast-close');
         closeButton.type = 'button';
