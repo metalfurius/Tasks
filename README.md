@@ -49,6 +49,8 @@ npm run audit:dependencies
 
 `npm run test:emulator` starts only the local Firestore emulator with the disposable project ID `tasks-untrusted-test`, writes synthetic task/history documents, verifies exact Firestore round trips, and renders the returned values through the text-only DOM helpers. It does not use authentication, production data, or a production Firebase project.
 
+The browser entry and its local ESM graph carry the release query `?v=tasks-untrusted-content-rendering-v1`. This is a deterministic cache-bust for the proxied CDN so a deployed user journey fetches the same safe revision as the source. It complements, but does not replace, targeted purging and live verification of canonical no-query objects.
+
 ## License and Copyright
 
 © [metalfurius] 2025. All Rights Reserved.
