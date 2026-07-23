@@ -1,0 +1,18 @@
+{
+  "name": "taskify",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/unit/rendering-security.test.js tests/unit/source-sink-ratchet.test.js",
+    "lint": "node scripts/check-js-syntax.mjs",
+    "check:sinks": "node scripts/check-sinks.mjs",
+    "check:integrity": "node scripts/check-static-integrity.mjs",
+    "check": "npm run lint && npm test && npm run check:sinks && npm run check:integrity",
+    "test:browser": "node tests/browser/rendering-security.mjs",
+    "audit:dependencies": "npm audit --audit-level=high"
+  },
+  "devDependencies": {
+    "jsdom": "29.1.1",
+    "playwright": "1.61.1"
+  }
+}

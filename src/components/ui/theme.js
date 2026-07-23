@@ -1,4 +1,6 @@
 // src/components/ui/theme.js
+import { createTextElement } from '../../utils/dom.js';
+
 const ThemeManager = {
     themes: {
         light: {
@@ -37,13 +39,17 @@ const ThemeManager = {
         const selector = document.createElement('div');
         selector.className = 'theme-selector hidden';
 
-        selector.innerHTML = Object.entries(this.themes)
-            .map(([id, theme]) => `
-            <button class="theme-option" data-theme="${id}">
-                <span class="theme-icon">${theme.icon}</span>
-                <span class="theme-name">${theme.name}</span>
-            </button>
-        `).join('');
+        Object.entries(this.themes).forEach(([id, theme]) => {
+            const option = document.createElement('button');
+            option.type = 'button';
+            option.className = 'theme-option';
+            option.dataset.theme = id;
+            option.append(
+                createTextElement('span', theme.icon, 'theme-icon'),
+                createTextElement('span', theme.name, 'theme-name')
+            );
+            selector.appendChild(option);
+        });
 
         document.body.appendChild(selector);
         this.themeSelector = selector;

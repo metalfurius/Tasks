@@ -1,6 +1,8 @@
 // src/components/history/history.js
 import historyService from '../../services/historyService.js';
 import searchService from '../../services/searchService.js';
+import { createEmptyState, createSearchEmptyState } from '../../utils/dom.js';
+import { createHistoryItemElement } from './historyRenderer.js';
 
 const HistoryView = {
     historyContainer: null,
@@ -17,14 +19,12 @@ const HistoryView = {
         }
 
         historyService.onHistoryChanged(this.renderHistory.bind(this));
-
-        searchService.onSearchChanged(() => {
-            historyService.onHistoryChanged(this.renderHistory.bind(this));
-        });
+        searchService.onSearchChanged(() => this.renderHistory(historyService.historyItems));
     },
 
     createLoadMoreButton() {
         this.loadMoreBtn = document.createElement('button');
+        this.loadMoreBtn.type = 'button';
         this.loadMoreBtn.textContent = 'Load More';
         this.loadMoreBtn.className = 'load-more-btn';
         this.loadMoreBtn.addEventListener('click', this.handleLoadMore.bind(this));
@@ -51,41 +51,33 @@ const HistoryView = {
         }
     },
 
-    renderHistory(historyItems) {
-        // Filter by search term if present
+    renderHistory(historyItems = historyService.historyItems) {
         const filteredItems = searchService.filterBySearchTerm(historyItems, 'taskText');
 
         if (filteredItems.length === 0) {
             const searchTerm = searchService.getSearchTerm();
-            if (searchTerm) {
-                this.historyContainer.innerHTML = `<div class="empty-state">No history matching "${searchTerm}" 🔍</div>`;
-            } else {
-                this.historyContainer.innerHTML = '<div class="empty-state">No history yet</div>';
-            }
+            this.historyContainer.replaceChildren(
+                searchTerm
+                    ? createSearchEmptyState('No history', searchTerm)
+                    : createEmptyState('No history yet')
+            );
             return;
         }
 
-        this.historyContainer.innerHTML = filteredItems
-            .map(this.createHistoryItemHtml)
-            .join('');
+        this.historyContainer.replaceChildren(
+            ...filteredItems.map(historyItem => createHistoryItemElement(historyItem))
+        );
 
-        // Only append the load more button if there are more items to load
         if (historyService.hasMoreHistory()) {
             this.historyContainer.appendChild(this.loadMoreBtn);
+        } else {
+            this.loadMoreBtn.remove();
         }
     },
 
+    // Compatibility alias; history values are returned as nodes, never HTML strings.
     createHistoryItemHtml(historyItem) {
-        const date = historyItem.timestamp.toDate();
-        const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`;
-
-        return `
-            <div class="history-item">
-                <div><strong>${historyItem.action}</strong></div>
-                <div>${historyItem.taskText}</div>
-                <div class="history-timestamp">${formattedDate}</div>
-            </div>
-        `;
+        return createHistoryItemElement(historyItem);
     }
 };
 

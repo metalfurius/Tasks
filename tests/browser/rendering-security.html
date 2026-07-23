@@ -1,0 +1,52 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Taskify rendering security fixture</title>
+<body>
+<main id="fixture"></main>
+<script type="module">
+    import { createTaskElement } from '../../src/components/tasks/taskRenderer.js';
+    import { createHistoryItemElement } from '../../src/components/history/historyRenderer.js';
+    import { createSearchEmptyState } from '../../src/utils/dom.js';
+    import ToastService from '../../src/services/toastService.js';
+
+    const payloads = [
+        '<img src=x onerror="window.__executed=1">',
+        '<svg/onload="window.__executed=1">',
+        '" autofocus onfocus="window.__executed=1',
+        '&lt;script&gt;window.__executed=1&lt;/script&gt;',
+        '<div><span><img src=x onerror="window.__executed=1"></span></div>'
+    ];
+    const fixture = document.getElementById('fixture');
+    const results = [];
+
+    for (const payload of payloads) {
+        const task = createTaskElement({ id: payload, text: payload, completed: false });
+        fixture.appendChild(task);
+        const content = task.querySelector('.task-content');
+        results.push({
+            text: content.textContent,
+            hasElement: Boolean(content.querySelector('img,svg,script,iframe')),
+            hasHandler: Boolean(content.querySelector('[onerror],[onload],[onfocus]')),
+            id: task.dataset.id
+        });
+    }
+
+    const history = createHistoryItemElement({
+        action: 'Task edited',
+        taskText: payloads[4],
+        timestamp: new Date('2026-01-01T00:00:00Z')
+    });
+    fixture.appendChild(history);
+    fixture.appendChild(createSearchEmptyState('No history', payloads[0]));
+
+    ToastService.init();
+    const toast = ToastService.persistent(payloads[0], 'warning');
+
+    window.__securityResults = {
+        taskResults: results,
+        historyText: history.querySelector('.history-item > div:nth-child(2)').textContent,
+        toastText: toast.querySelector('.toast-content').textContent,
+        hasToastElement: Boolean(toast.querySelector('img,svg,script,iframe')),
+        executed: window.__executed || 0
+    };
+</script>
