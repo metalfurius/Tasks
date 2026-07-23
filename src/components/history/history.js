@@ -1,8 +1,8 @@
 // src/components/history/history.js
-import historyService from '../../services/historyService.js';
-import searchService from '../../services/searchService.js';
-import { createEmptyState, createSearchEmptyState } from '../../utils/dom.js';
-import { createHistoryItemElement } from './historyRenderer.js';
+import historyService from '../../services/historyService.js?v=tasks-untrusted-content-rendering-v1';
+import searchService from '../../services/searchService.js?v=tasks-untrusted-content-rendering-v1';
+import { createEmptyState, createSearchEmptyState } from '../../utils/dom.js?v=tasks-untrusted-content-rendering-v1';
+import { createHistoryItemElement } from './historyRenderer.js?v=tasks-untrusted-content-rendering-v1';
 
 const HistoryView = {
     historyContainer: null,

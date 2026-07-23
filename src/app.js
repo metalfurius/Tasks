@@ -1,17 +1,17 @@
 // src/app.js
-import AuthComponent from './components/auth/auth.js';
-import TaskForm from './components/tasks/taskForm.js';
-import TaskList from './components/tasks/taskList.js';
-import TaskItem from './components/tasks/taskItem.js';
-import TabManager from './components/ui/tabs.js';
-import ThemeManager from './components/ui/theme.js';
-import HistoryView from './components/history/history.js';
-import ToastService from './services/toastService.js';
-import NotificationMonitor from './services/notificationMonitor.js';
-import ConfigMenu from './components/ui/configMenu.js';
-import DataCleanupService from "./services/dataCleanupService.js";
-import SearchComponent from './components/search/search.js';
-import SidebarManager from './components/ui/sidebar.js';
+import AuthComponent from './components/auth/auth.js?v=tasks-untrusted-content-rendering-v1';
+import TaskForm from './components/tasks/taskForm.js?v=tasks-untrusted-content-rendering-v1';
+import TaskList from './components/tasks/taskList.js?v=tasks-untrusted-content-rendering-v1';
+import TaskItem from './components/tasks/taskItem.js?v=tasks-untrusted-content-rendering-v1';
+import TabManager from './components/ui/tabs.js?v=tasks-untrusted-content-rendering-v1';
+import ThemeManager from './components/ui/theme.js?v=tasks-untrusted-content-rendering-v1';
+import HistoryView from './components/history/history.js?v=tasks-untrusted-content-rendering-v1';
+import ToastService from './services/toastService.js?v=tasks-untrusted-content-rendering-v1';
+import NotificationMonitor from './services/notificationMonitor.js?v=tasks-untrusted-content-rendering-v1';
+import ConfigMenu from './components/ui/configMenu.js?v=tasks-untrusted-content-rendering-v1';
+import DataCleanupService from "./services/dataCleanupService.js?v=tasks-untrusted-content-rendering-v1";
+import SearchComponent from './components/search/search.js?v=tasks-untrusted-content-rendering-v1';
+import SidebarManager from './components/ui/sidebar.js?v=tasks-untrusted-content-rendering-v1';
 
 // App initialization
 const App = {

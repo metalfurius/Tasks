@@ -5,6 +5,7 @@ const root = process.cwd();
 const index = await readFile(join(root, 'index.html'), 'utf8');
 const staticReferences = [...index.matchAll(/(?:src|href)="([^"]+)"/g)]
     .map(match => match[1])
+    .map(reference => reference.split(/[?#]/, 1)[0])
     .filter(reference => !/^(?:https?:|data:|#)/.test(reference));
 
 for (const reference of staticReferences) {
@@ -19,7 +20,7 @@ async function checkModule(path) {
 
     const contents = await readFile(absolutePath, 'utf8');
     const imports = [...contents.matchAll(/(?:from\s*|import\s*\()(['"])(\.\.\/|\.\/[^'"]+)\1/g)]
-        .map(match => match[2]);
+        .map(match => match[2].split(/[?#]/, 1)[0]);
 
     for (const specifier of imports) {
         const imported = resolve(dirname(absolutePath), specifier);

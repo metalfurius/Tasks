@@ -1,8 +1,8 @@
 // src/components/tasks/taskForm.js
-import taskService from '../../services/taskService.js';
-import historyService from '../../services/historyService.js';
-import ToastService from "../../services/toastService.js";
-import MessageProvider from "../../services/messageProvider.js";
+import taskService from '../../services/taskService.js?v=tasks-untrusted-content-rendering-v1';
+import historyService from '../../services/historyService.js?v=tasks-untrusted-content-rendering-v1';
+import ToastService from "../../services/toastService.js?v=tasks-untrusted-content-rendering-v1";
+import MessageProvider from "../../services/messageProvider.js?v=tasks-untrusted-content-rendering-v1";
 
 const TaskForm = {
     // DOM elements

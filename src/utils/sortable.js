@@ -1,6 +1,6 @@
 // src/utils/sortable.js
-import taskService from '../services/taskService.js';
-import ToastService from '../services/toastService.js';
+import taskService from '../services/taskService.js?v=tasks-untrusted-content-rendering-v1';
+import ToastService from '../services/toastService.js?v=tasks-untrusted-content-rendering-v1';
 
 const SortableManager = {
     instances: {},

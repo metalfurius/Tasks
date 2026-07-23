@@ -45,7 +45,7 @@ const SearchService = {
 
         try {
             // Import taskService here to avoid circular dependency
-            const taskService = (await import('./taskService.js')).default;
+            const taskService = (await import('./taskService.js?v=tasks-untrusted-content-rendering-v1')).default;
             return await taskService.searchAllTasks(this.searchTerm);
         } catch (error) {
             console.error('Global search failed:', error);
