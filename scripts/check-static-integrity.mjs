@@ -24,7 +24,7 @@ async function checkModule(path) {
 
     const contents = await readFile(absolutePath, 'utf8');
     const imports = [...contents.matchAll(/(?:from\s*|import\s*\()(['"])(\.\.\/|\.\/[^'"]+)\1/g)]
-        .map(match => match[2].split(/[?#]/, 1)[0]);
+        .map(match => match[2]);
 
     for (const specifier of imports) {
         if (!specifier.includes(`?${deliveryRevision}`)) {
