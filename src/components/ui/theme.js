@@ -1,5 +1,5 @@
 // src/components/ui/theme.js
-import { createTextElement } from '../../utils/dom.js';
+import { createTextElement } from '../../utils/dom.js?v=tasks-untrusted-content-rendering-v1';
 
 const ThemeManager = {
     themes: {

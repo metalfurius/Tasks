@@ -2,9 +2,14 @@ import { access, readFile } from 'node:fs/promises';
 import { dirname, extname, join, relative, resolve } from 'node:path';
 
 const root = process.cwd();
+const deliveryRevision = 'v=tasks-untrusted-content-rendering-v1';
 const index = await readFile(join(root, 'index.html'), 'utf8');
+if (!index.includes(`src/index.js?${deliveryRevision}`)) {
+    throw new Error(`Application entry is missing the ${deliveryRevision} delivery revision.`);
+}
 const staticReferences = [...index.matchAll(/(?:src|href)="([^"]+)"/g)]
     .map(match => match[1])
+    .map(reference => reference.split(/[?#]/, 1)[0])
     .filter(reference => !/^(?:https?:|data:|#)/.test(reference));
 
 for (const reference of staticReferences) {
@@ -22,7 +27,10 @@ async function checkModule(path) {
         .map(match => match[2]);
 
     for (const specifier of imports) {
-        const imported = resolve(dirname(absolutePath), specifier);
+        if (!specifier.includes(`?${deliveryRevision}`)) {
+            throw new Error(`Local import ${specifier} in ${relative(root, absolutePath)} is missing ${deliveryRevision}.`);
+        }
+        const imported = resolve(dirname(absolutePath), specifier.split(/[?#]/, 1)[0]);
         const candidate = extname(imported) ? imported : `${imported}.js`;
         await access(candidate);
         await checkModule(candidate);

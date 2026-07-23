@@ -1,7 +1,7 @@
 // src/components/ui/configMenu.js
-import historyService from '../../services/historyService.js';
-import ToastService from '../../services/toastService.js';
-import MessageProvider from '../../services/messageProvider.js';
+import historyService from '../../services/historyService.js?v=tasks-untrusted-content-rendering-v1';
+import ToastService from '../../services/toastService.js?v=tasks-untrusted-content-rendering-v1';
+import MessageProvider from '../../services/messageProvider.js?v=tasks-untrusted-content-rendering-v1';
 
 const ConfigMenu = {
     configButton: null,

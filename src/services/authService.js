@@ -1,5 +1,5 @@
 // src/services/authService.js
-import { auth } from './firebase.js';
+import { auth } from './firebase.js?v=tasks-untrusted-content-rendering-v1';
 import { GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
 const provider = new GoogleAuthProvider();

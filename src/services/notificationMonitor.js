@@ -1,8 +1,8 @@
 // src/services/notificationMonitor.js
-import taskService from './taskService.js';
-import ToastService from './toastService.js';
-import MessageProvider from './messageProvider.js';
-import authService from './authService.js';
+import taskService from './taskService.js?v=tasks-untrusted-content-rendering-v1';
+import ToastService from './toastService.js?v=tasks-untrusted-content-rendering-v1';
+import MessageProvider from './messageProvider.js?v=tasks-untrusted-content-rendering-v1';
+import authService from './authService.js?v=tasks-untrusted-content-rendering-v1';
 
 const NotificationMonitor = {
     checkInterval: 5 * 60 * 10000, // 50 minutes

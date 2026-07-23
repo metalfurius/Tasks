@@ -1,15 +1,15 @@
 // src/components/tasks/taskItem.js
-import taskService from '../../services/taskService.js';
-import historyService from '../../services/historyService.js';
-import ToastService from '../../services/toastService.js';
-import MessageProvider from '../../services/messageProvider.js';
-import { getTextWithLineBreaks, setTextWithLineBreaks } from '../../utils/dom.js';
+import taskService from '../../services/taskService.js?v=tasks-untrusted-content-rendering-v1';
+import historyService from '../../services/historyService.js?v=tasks-untrusted-content-rendering-v1';
+import ToastService from '../../services/toastService.js?v=tasks-untrusted-content-rendering-v1';
+import MessageProvider from '../../services/messageProvider.js?v=tasks-untrusted-content-rendering-v1';
+import { getTextWithLineBreaks, setTextWithLineBreaks } from '../../utils/dom.js?v=tasks-untrusted-content-rendering-v1';
 import {
     createDueDateElement,
     createTaskElement as renderTaskElement,
     formatDueDate as formatTaskDueDate,
     isOverdue as isTaskOverdue
-} from './taskRenderer.js';
+} from './taskRenderer.js?v=tasks-untrusted-content-rendering-v1';
 
 const DELETE_ICON = '\u{1F5D1}\uFE0F';
 const CONFIRM_DELETE_ICON = '\u2713';

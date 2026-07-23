@@ -1,9 +1,9 @@
 // src/components/auth/auth.js
-import authService from '../../services/authService.js';
-import NotificationMonitor from '../../services/notificationMonitor.js';
-import ToastService from '../../services/toastService.js';
-import MessageProvider from '../../services/messageProvider.js';
-import SidebarManager from "../ui/sidebar.js";
+import authService from '../../services/authService.js?v=tasks-untrusted-content-rendering-v1';
+import NotificationMonitor from '../../services/notificationMonitor.js?v=tasks-untrusted-content-rendering-v1';
+import ToastService from '../../services/toastService.js?v=tasks-untrusted-content-rendering-v1';
+import MessageProvider from '../../services/messageProvider.js?v=tasks-untrusted-content-rendering-v1';
+import SidebarManager from "../ui/sidebar.js?v=tasks-untrusted-content-rendering-v1";
 
 const AuthComponent = {
     // DOM elements

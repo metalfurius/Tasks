@@ -1,11 +1,11 @@
 // src/components/tasks/taskList.js
-import taskService from '../../services/taskService.js';
-import TabManager from '../ui/tabs.js';
-import SortableManager from '../../utils/sortable.js';
-import TaskItem from './taskItem.js';
-import ToastService from '../../services/toastService.js';
-import searchService from '../../services/searchService.js';
-import { createEmptyState, createSearchEmptyState } from '../../utils/dom.js';
+import taskService from '../../services/taskService.js?v=tasks-untrusted-content-rendering-v1';
+import TabManager from '../ui/tabs.js?v=tasks-untrusted-content-rendering-v1';
+import SortableManager from '../../utils/sortable.js?v=tasks-untrusted-content-rendering-v1';
+import TaskItem from './taskItem.js?v=tasks-untrusted-content-rendering-v1';
+import ToastService from '../../services/toastService.js?v=tasks-untrusted-content-rendering-v1';
+import searchService from '../../services/searchService.js?v=tasks-untrusted-content-rendering-v1';
+import { createEmptyState, createSearchEmptyState } from '../../utils/dom.js?v=tasks-untrusted-content-rendering-v1';
 
 const TaskList = {
     pendingTasksContainer: null,

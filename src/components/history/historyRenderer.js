@@ -1,5 +1,5 @@
 // DOM-only history renderer. Stored history values are written as text nodes.
-import { createTextElement } from '../../utils/dom.js';
+import { createTextElement } from '../../utils/dom.js?v=tasks-untrusted-content-rendering-v1';
 
 export function createHistoryItemElement(historyItem) {
     const date = typeof historyItem.timestamp.toDate === 'function'

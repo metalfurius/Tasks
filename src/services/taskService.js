@@ -1,9 +1,9 @@
 // src/services/taskService.js
-import { db } from './firebase.js';
-import authService from './authService.js';
-import ToastService from './toastService.js';
-import { RateLimiter } from './rateLimiter.js';
-import { Validator } from '../utils/validation.js';
+import { db } from './firebase.js?v=tasks-untrusted-content-rendering-v1';
+import authService from './authService.js?v=tasks-untrusted-content-rendering-v1';
+import ToastService from './toastService.js?v=tasks-untrusted-content-rendering-v1';
+import { RateLimiter } from './rateLimiter.js?v=tasks-untrusted-content-rendering-v1';
+import { Validator } from '../utils/validation.js?v=tasks-untrusted-content-rendering-v1';
 import {
     collection, addDoc, query, where, onSnapshot,
     updateDoc, deleteDoc, doc, orderBy, writeBatch, limit, startAfter, getDocs,

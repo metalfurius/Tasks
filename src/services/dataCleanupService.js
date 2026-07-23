@@ -1,8 +1,8 @@
 // src/services/dataCleanupService.js
-import taskService from './taskService.js';
-import historyService from './historyService.js';
-import ToastService from './toastService.js';
-import authService from "./authService.js";
+import taskService from './taskService.js?v=tasks-untrusted-content-rendering-v1';
+import historyService from './historyService.js?v=tasks-untrusted-content-rendering-v1';
+import ToastService from './toastService.js?v=tasks-untrusted-content-rendering-v1';
+import authService from "./authService.js?v=tasks-untrusted-content-rendering-v1";
 import {
     collection,
     query,
@@ -10,7 +10,7 @@ import {
     getDocs,
     writeBatch
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import {db} from "./firebase.js";
+import {db} from "./firebase.js?v=tasks-untrusted-content-rendering-v1";
 
 const DataCleanupService = {
     async deleteAllUserData() {

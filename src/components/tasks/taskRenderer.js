@@ -2,7 +2,7 @@
 import {
     appendTextWithLineBreaks,
     createTextElement
-} from '../../utils/dom.js';
+} from '../../utils/dom.js?v=tasks-untrusted-content-rendering-v1';
 
 const DRAG_HANDLE_ICON = '\u22ee\u22ee';
 const DELETE_ICON = '\u{1F5D1}\uFE0F';

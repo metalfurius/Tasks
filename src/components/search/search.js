@@ -1,7 +1,7 @@
 // src/components/search/search.js
-import searchService from '../../services/searchService.js';
-import TabManager from '../ui/tabs.js';
-import { createTextElement } from '../../utils/dom.js';
+import searchService from '../../services/searchService.js?v=tasks-untrusted-content-rendering-v1';
+import TabManager from '../ui/tabs.js?v=tasks-untrusted-content-rendering-v1';
+import { createTextElement } from '../../utils/dom.js?v=tasks-untrusted-content-rendering-v1';
 
 const SearchComponent = {
     searchInput: null,
