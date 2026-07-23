@@ -30,6 +30,14 @@ A modern, responsive task management web application with multiple views, themes
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
+## Rendering security boundary
+
+Task titles, descriptions, search terms, history entries, and toast messages are rendered as text nodes. The application does not accept rich text, Markdown, or user-authored HTML.
+
+The `_headers` file is defense-in-depth for hosts that explicitly support that convention; it is not the primary fix. GitHub Pages publishes the selected repository source and does not document `_headers` as a per-file response-header configuration. The [GitHub Pages publishing documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site) and [MIME-type documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/creating-a-github-pages-site#mime-types-on-github-pages) describe the supported boundary. Live validation must therefore verify inert rendering and the actual deployed revision; missing or unavailable response headers do not make unsafe DOM construction acceptable.
+
+At the 2026-07-23 audit, the Pages API reported the legacy `main`-root deployment at `https://codeoverdose.es/Tasks/`. A synthetic `HEAD` request returned `200`, `X-Frame-Options: SAMEORIGIN`, and no `Content-Security-Policy`; the committed `_headers` values were therefore not treated as an effective GitHub Pages control.
+
 ## License and Copyright
 
 © [metalfurius] 2025. All Rights Reserved.
