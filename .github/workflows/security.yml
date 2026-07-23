@@ -43,3 +43,23 @@ jobs:
         run: npx playwright install --with-deps chromium webkit
       - name: Run browser rendering security fixture
         run: npm run test:browser
+
+  emulator:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v5
+      - name: Set up Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+      - name: Set up Java for Firestore Emulator
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install pinned dependencies
+        run: npm ci
+      - name: Run Firestore emulator round trip
+        run: npm run test:emulator

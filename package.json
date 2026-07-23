@@ -9,10 +9,13 @@
     "check:integrity": "node scripts/check-static-integrity.mjs",
     "check": "npm run lint && npm test && npm run check:sinks && npm run check:integrity",
     "test:browser": "node tests/browser/rendering-security.mjs",
+    "test:emulator": "node scripts/run-emulator-test.mjs",
     "audit:dependencies": "npm audit --audit-level=high"
   },
   "devDependencies": {
+    "firebase-tools": "15.24.0",
     "jsdom": "29.1.1",
+    "picomatch": "4.0.5",
     "playwright": "1.61.1"
   }
 }
