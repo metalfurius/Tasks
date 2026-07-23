@@ -38,6 +38,17 @@ The `_headers` file is defense-in-depth for hosts that explicitly support that c
 
 At the 2026-07-23 audit, the Pages API reported the legacy `main`-root deployment at `https://codeoverdose.es/Tasks/`. A synthetic `HEAD` request returned `200`, `X-Frame-Options: SAMEORIGIN`, and no `Content-Security-Policy`; the committed `_headers` values were therefore not treated as an effective GitHub Pages control.
 
+Security regression commands:
+
+```text
+npm run check
+npm run test:browser
+npm run test:emulator
+npm run audit:dependencies
+```
+
+`npm run test:emulator` starts only the local Firestore emulator with the disposable project ID `tasks-untrusted-test`, writes synthetic task/history documents, verifies exact Firestore round trips, and renders the returned values through the text-only DOM helpers. It does not use authentication, production data, or a production Firebase project.
+
 ## License and Copyright
 
 © [metalfurius] 2025. All Rights Reserved.
