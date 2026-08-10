@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Taskify realtime state fixture</title>
+</head>
+<body>
+    <main>
+        <h1>Realtime state fixture</h1>
+        <p id="live-status" role="status" aria-live="polite">Connecting to synthetic Firestore...</p>
+    </main>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
+        import {
+            collection,
+            connectFirestoreEmulator,
+            deleteDoc,
+            disableNetwork,
+            doc,
+            enableNetwork,
+            getFirestore,
+            onSnapshot,
+            query,
+            setDoc,
+            Timestamp,
+            updateDoc,
+            where,
+            writeBatch
+        } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+
+        const app = initializeApp({ projectId: 'tasks-realtime-test' }, `fixture-${crypto.randomUUID()}`);
+        const db = getFirestore(app);
+        connectFirestoreEmulator(db, '127.0.0.1', 8080);
+        const tasks = new Map();
+        const liveStatus = document.getElementById('live-status');
+        let unsubscribe = null;
+
+        function publishState() {
+            liveStatus.textContent = `Tasks synchronized: ${tasks.size}`;
+            window.__realtimeState = [...tasks.values()]
+                .sort((a, b) => a.order - b.order || a.id.localeCompare(b.id))
+                .map(task => ({
+                    id: task.id,
+                    text: task.text,
+                    completed: task.completed,
+                    order: task.order,
+                    userId: task.userId
+                }));
+        }
+
+        window.startListener = userId => new Promise(resolve => {
+            const taskQuery = query(collection(db, 'tasks'), where('userId', '==', userId));
+            unsubscribe = onSnapshot(taskQuery, snapshot => {
+                snapshot.docChanges().forEach(change => {
+                    if (change.type === 'removed') {
+                        tasks.delete(change.doc.id);
+                    } else if (change.doc.data().userId === userId) {
+                        tasks.set(change.doc.id, { id: change.doc.id, ...change.doc.data() });
+                    }
+                });
+                publishState();
+                resolve();
+            });
+        });
+
+        window.writeTask = async task => {
+            await setDoc(doc(db, 'tasks', task.id), {
+                ...task,
+                timestamp: Timestamp.now()
+            });
+        };
+
+        window.updateTask = async (taskId, updates) => {
+            await updateDoc(doc(db, 'tasks', taskId), updates);
+        };
+
+        window.deleteTask = taskId => deleteDoc(doc(db, 'tasks', taskId));
+
+        window.bulkDelete = async taskIds => {
+            const batch = writeBatch(db);
+            taskIds.forEach(taskId => batch.delete(doc(db, 'tasks', taskId)));
+            await batch.commit();
+        };
+
+        window.setOffline = () => disableNetwork(db);
+        window.setOnline = () => enableNetwork(db);
+        window.stopListener = () => {
+            if (unsubscribe) {
+                unsubscribe();
+                unsubscribe = null;
+            }
+        };
+
+        window.__realtimeState = [];
+        publishState();
+    </script>
+</body>
+</html>

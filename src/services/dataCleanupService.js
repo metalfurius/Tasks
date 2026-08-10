@@ -77,6 +77,8 @@ const DataCleanupService = {
 
             // Count the number of tasks to delete
             const taskCount = snapshot.size;
+            const previousState = taskService.snapshotState();
+            const taskIds = snapshot.docs.map(taskDoc => taskDoc.id);
 
             // Create batch delete operation
             const batch = writeBatch(db);
@@ -84,17 +86,23 @@ const DataCleanupService = {
                 batch.delete(doc.ref);
             });
 
+            // Remove known documents immediately while retaining an exact
+            // snapshot for a failed batch commit.
+            taskService.removeTasks(taskIds);
+
             // Execute batch delete
-            await batch.commit();
+            try {
+                await batch.commit();
+            } catch (error) {
+                taskService.restoreState(previousState, 'Pending tasks restored after bulk deletion failed');
+                throw error;
+            }
 
             // Log action in history
             await historyService.logAction('Cleared all pending tasks', `${taskCount} tasks deleted`);
 
             // Show success message
             ToastService.warning(`${taskCount} pending tasks have been deleted.`);
-
-            // Force refresh of tasks list
-            taskService.notifyObservers();
 
             return true;
         } catch (error) {

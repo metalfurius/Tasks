@@ -12,7 +12,7 @@ const firebaseArgs = [
     '--only',
     'firestore',
     '--non-interactive',
-    'node tests/emulator/firestore-roundtrip.mjs'
+    'node tests/emulator/run-all.mjs'
 ];
 const args = isWindows ? ['/d', '/s', '/c', 'firebase.cmd', ...firebaseArgs] : firebaseArgs;
 const configHome = mkdtempSync(join(tmpdir(), 'tasks-firebase-config-'));
