@@ -4,6 +4,7 @@ import { Validator } from '../utils/validation.js?v=tasks-untrusted-content-rend
 import { db } from './firebase.js?v=tasks-untrusted-content-rendering-v1';
 import authService from './authService.js?v=tasks-untrusted-content-rendering-v1';
 import ToastService from './toastService.js?v=tasks-untrusted-content-rendering-v1';
+import { runOwnedDeletion } from './dataDeletion.js?v=tasks-untrusted-content-rendering-v1';
 import {
     collection, addDoc, query, where, onSnapshot,
     orderBy, writeBatch, getDocs, limit, startAfter
@@ -21,6 +22,8 @@ const historyService = {
     init() {
         authService.onAuthStateChanged(async user => {
             if (user) {
+                lastHistoryDoc = null;
+                hasMore = true;
                 this.loadHistory();
                 try {
                     await this.scheduleCleanup();
@@ -34,9 +37,29 @@ const historyService = {
                     this.unsubscribe = null;
                 }
                 this.historyItems = [];
+                lastHistoryDoc = null;
+                hasMore = true;
                 this.notifyObservers();
             }
         });
+    },
+
+    resetLocalState() {
+        if (this.unsubscribe) {
+            this.unsubscribe();
+            this.unsubscribe = null;
+        }
+        this.historyItems = [];
+        lastHistoryDoc = null;
+        hasMore = true;
+        this.notifyObservers();
+    },
+
+    async refresh() {
+        this.resetLocalState();
+        if (authService.getCurrentUserId()) {
+            this.loadHistory({ source: 'server' });
+        }
     },
     async scheduleCleanup() {
         // Run cleanup once a day
@@ -50,44 +73,52 @@ const historyService = {
         }, 24 * 60 * 60 * 1000);
     },
 
-    async cleanupOldHistory(clearAll = false) {
+    async cleanupOldHistory(clearAll = false, options = {}) {
         const userId = authService.getCurrentUserId();
-        if (!userId) return;
+        if (!userId) return { status: 'cancelled', deleted: 0, completedCollections: 0 };
 
         try {
-            // If clearAll is true, don't use the cutoff date
-            const cutoffDate = clearAll ? new Date(Date.now() + 1000) : new Date(Date.now() - MAX_HISTORY_AGE);
-            const batchSize = 500;
-            let totalDeleted = 0;
+            const cutoffDate = new Date(Date.now() - MAX_HISTORY_AGE);
+            const ageFilter = clearAll ? [] : [where('timestamp', '<=', cutoffDate)];
+            const result = await runOwnedDeletion({
+                collections: [{
+                    name: 'history',
+                    queryPage: async batchSize => {
+                        const q = query(
+                            collection(db, 'history'),
+                            where('userId', '==', userId),
+                            ...ageFilter,
+                            limit(batchSize)
+                        );
+                        const snapshot = await getDocs(q);
+                        return { docs: snapshot.docs };
+                    },
+                    deleteBatch: async docs => {
+                        const batch = writeBatch(db);
+                        docs.forEach(historyDoc => batch.delete(historyDoc.ref));
+                        await batch.commit();
+                    },
+                    verifyRemaining: async () => {
+                        const q = query(
+                            collection(db, 'history'),
+                            where('userId', '==', userId),
+                            ...ageFilter,
+                            limit(1)
+                        );
+                        return (await getDocs(q)).size;
+                    }
+                }],
+                shouldCancel: () => Boolean(options.signal?.aborted),
+                onProgress: options.onProgress
+            });
 
-            while (true) {
-                const q = query(
-                    collection(db, 'history'),
-                    where('userId', '==', userId),
-                    where('timestamp', '<=', cutoffDate),
-                    limit(batchSize)
-                );
-
-                const snapshot = await getDocs(q);
-                if (snapshot.empty) break;
-
-                const batch = writeBatch(db);
-                snapshot.docs.forEach(doc => {
-                    batch.delete(doc.ref);
-                    totalDeleted++;
-                });
-
-                await batch.commit();
-
-                if (snapshot.docs.length < batchSize) break;
+            await this.refresh();
+            if (result.status === 'complete' && result.deleted > 0) {
+                ToastService.info(`Cleaned up ${result.deleted} history items`);
+            } else if (result.status === 'partial-failure') {
+                ToastService.error(`History cleanup incomplete after ${result.deleted} items. Retry to resume.`);
             }
-
-            if (totalDeleted > 0) {
-                ToastService.info(`Cleaned up ${totalDeleted} history items`);
-            }
-
-            // Refresh history after clearing
-            this.loadHistory();
+            return result;
         } catch (error) {
             console.error('Error cleaning up history:', error);
             ToastService.error('Failed to cleanup history');
@@ -118,7 +149,7 @@ const historyService = {
         }
     },
 
-    loadHistory() {
+    loadHistory({ source = 'cache' } = {}) {
         const userId = authService.getCurrentUserId();
         if (!userId) return;
 
@@ -138,12 +169,11 @@ const historyService = {
                 this.unsubscribe();
             }
 
-            // Usar getDocsFromCache primero
-            this.unsubscribe = onSnapshot(q, {
-                includeMetadataChanges: true,
-                source: 'cache' // Priorizar cache
-            }, async (snapshot) => {
-                if (snapshot.empty && !snapshot.metadata.fromCache) {
+            const snapshotOptions = source === 'server'
+                ? { includeMetadataChanges: true, source: 'server' }
+                : { includeMetadataChanges: true, source: 'cache' };
+            this.unsubscribe = onSnapshot(q, snapshotOptions, async (snapshot) => {
+                if (source !== 'server' && snapshot.empty && !snapshot.metadata.fromCache) {
                     // Solo buscar en servidor si cache está vacío
                     const serverSnapshot = await getDocs(q);
                     this.historyItems = serverSnapshot.docs.map(doc => ({

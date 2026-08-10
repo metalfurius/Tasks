@@ -101,9 +101,9 @@
                             <button id="clear-pending-tasks" class="dropdown-item">
                                 Clear Pending Tasks
                             </button>
-                            <div class="dropdown-item" id="delete-all-data">
+                            <button id="delete-all-data" class="dropdown-item" type="button">
                                 Delete All Data
-                            </div>
+                            </button>
                             <!-- Add more configuration options here in the future -->
                         </div>
                     </div>
@@ -129,6 +129,22 @@
             <div class="tab-content" id="history-tasks"></div>
         </div>
     </div>
+</div>
+
+<div id="destructive-confirmation" class="destructive-modal hidden" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="destructive-confirmation-title">
+    <div class="destructive-modal-backdrop" aria-hidden="true"></div>
+    <section class="destructive-modal-card" role="document">
+        <h2 id="destructive-confirmation-title">Confirm destructive action</h2>
+        <p id="destructive-confirmation-message"></p>
+        <p id="cleanup-progress" class="cleanup-progress" role="status" aria-live="polite"></p>
+        <p id="cleanup-error" class="cleanup-error hidden" role="alert" aria-live="assertive"></p>
+        <div class="destructive-modal-actions">
+            <button id="cleanup-cancel" type="button">Cancel</button>
+            <button id="cleanup-confirm" class="danger-button" type="button">Confirm deletion</button>
+            <button id="cleanup-retry" class="danger-button hidden" type="button">Retry deletion</button>
+            <button id="cleanup-close" class="hidden" type="button">Close</button>
+        </div>
+    </section>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>

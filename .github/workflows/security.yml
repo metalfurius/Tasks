@@ -61,5 +61,5 @@ jobs:
           java-version: '21'
       - name: Install pinned dependencies
         run: npm ci
-      - name: Run Firestore emulator round trip
+      - name: Run Firestore emulator round trip and data erasure ownership suite
         run: npm run test:emulator
