@@ -3,12 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --test tests/unit/rendering-security.test.js tests/unit/source-sink-ratchet.test.js",
+    "test": "node --test tests/unit/rendering-security.test.js tests/unit/source-sink-ratchet.test.js tests/unit/data-deletion.test.js",
     "lint": "node scripts/check-js-syntax.mjs",
     "check:sinks": "node scripts/check-sinks.mjs",
     "check:integrity": "node scripts/check-static-integrity.mjs",
     "check": "npm run lint && npm test && npm run check:sinks && npm run check:integrity",
-    "test:browser": "node tests/browser/rendering-security.mjs",
+    "test:browser": "node tests/browser/rendering-security.mjs && node tests/browser/data-erasure.mjs",
     "test:emulator": "node scripts/run-emulator-test.mjs",
     "audit:dependencies": "npm audit --audit-level=high"
   },

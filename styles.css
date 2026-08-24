@@ -751,6 +751,99 @@ input[type="date"]:focus {
     display: none !important; /* Use !important for utility classes to ensure override */
 }
 
+body.modal-open {
+    overflow: hidden;
+}
+
+.destructive-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+}
+
+.destructive-modal-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.72);
+}
+
+.destructive-modal-card {
+    position: relative;
+    width: min(100%, 34rem);
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 1rem;
+    background: var(--card-background, #ffffff);
+    color: var(--text-color, #172033);
+    box-shadow: 0 1.5rem 4rem rgba(15, 23, 42, 0.35);
+}
+
+.destructive-modal-card h2 {
+    margin-top: 0;
+}
+
+.cleanup-progress,
+.cleanup-error {
+    min-height: 1.5rem;
+    margin: 1rem 0 0;
+}
+
+.cleanup-progress {
+    color: var(--primary, #7c5dfa);
+}
+
+.cleanup-error {
+    color: var(--delete-red, #ec5757);
+    font-weight: 600;
+}
+
+.destructive-modal-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+.destructive-modal-actions button {
+    min-height: 2.75rem;
+    padding: 0.65rem 1rem;
+    border: 1px solid currentColor;
+    border-radius: 0.5rem;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+}
+
+.destructive-modal-actions button:focus-visible,
+.destructive-modal-actions button:hover {
+    outline: 3px solid rgba(124, 93, 250, 0.35);
+    outline-offset: 2px;
+}
+
+.destructive-modal-actions .danger-button {
+    border-color: var(--delete-red, #ec5757);
+    background: var(--delete-red, #ec5757);
+    color: #ffffff;
+}
+
+@media (max-width: 520px) {
+    .destructive-modal-card {
+        padding: 1.25rem;
+    }
+
+    .destructive-modal-actions {
+        flex-direction: column-reverse;
+    }
+
+    .destructive-modal-actions button {
+        width: 100%;
+    }
+}
+
 .empty-state {
     padding: var(--spacing-xl);
     text-align: center;
