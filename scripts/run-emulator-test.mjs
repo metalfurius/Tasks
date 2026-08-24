@@ -8,7 +8,7 @@ import { pathToFileURL } from 'node:url';
 const projectId = 'tasks-untrusted-test';
 const command = process.execPath;
 const firebaseCli = join(process.cwd(), 'node_modules', 'firebase-tools', 'lib', 'bin', 'firebase.js');
-const testScript = join(process.cwd(), 'tests', 'emulator', 'firestore-roundtrip.mjs');
+const testScript = join(process.cwd(), 'tests', 'emulator', 'run-all.mjs');
 const configHome = mkdtempSync(join(tmpdir(), 'tasks-firebase-config-'));
 const firebaseConfigPath = join(configHome, 'firebase.json');
 const debugLogs = ['firestore-debug.log', 'firebase-debug.log']
@@ -62,7 +62,7 @@ function wait(milliseconds) {
 
 async function waitForFirestore() {
     const queryUrl = `http://${emulatorHost}/v1/projects/${projectId}/databases/(default)/documents:runQuery`;
-    for (let attempt = 0; attempt < 120; attempt += 1) {
+    for (let attempt = 0; attempt < 480; attempt += 1) {
         try {
             const response = await fetch(queryUrl, {
                 method: 'POST',
@@ -80,7 +80,7 @@ async function waitForFirestore() {
         }
         await wait(250);
     }
-    throw new Error('Firestore Emulator did not become ready within 30 seconds.');
+    throw new Error('Firestore Emulator did not become ready within 120 seconds.');
 }
 
 function runPowerShell(script) {

@@ -61,21 +61,6 @@ const TaskItem = {
 
             await taskService.updateTask(taskId, { completed: isCompleted });
 
-            const taskIndex = taskService.tasks.findIndex(t => t.id === taskId);
-            if (taskIndex !== -1) {
-                taskService.tasks[taskIndex].completed = isCompleted;
-
-                if (isCompleted) {
-                    const completedTasks = taskService.tasks.filter(t => t.completed === isCompleted);
-                    const minOrder = completedTasks.length > 0
-                        ? Math.min(...completedTasks.map(t => t.order))
-                        : 0;
-                    taskService.tasks[taskIndex].order = minOrder - 1;
-                }
-
-                taskService.notifyObservers();
-            }
-
             await historyService.logAction(
                 isCompleted ? 'Task completed' : 'Task marked incomplete',
                 task.text

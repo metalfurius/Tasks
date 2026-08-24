@@ -25,7 +25,11 @@ const TaskList = {
         searchService.onSearchChanged(this.renderTasks.bind(this));
     },
 
-    async renderTasks() {
+    async renderTasks(_tasks = null, announcement = null) {
+        if (announcement) {
+            this.announce(announcement);
+        }
+
         const searchTerm = searchService.getSearchTerm();
 
         if (searchTerm) {
@@ -189,6 +193,13 @@ const TaskList = {
         this.completedTasksContainer.replaceChildren(
             ...completedTasks.map(task => TaskItem.createTaskElement(task))
         );
+    },
+
+    announce(message) {
+        const liveStatus = document.getElementById('task-live-status');
+        if (liveStatus) {
+            liveStatus.textContent = message;
+        }
     }
 };
 

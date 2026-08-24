@@ -5,9 +5,12 @@ import ToastService from './toastService.js?v=tasks-untrusted-content-rendering-
 import { RateLimiter } from './rateLimiter.js?v=tasks-untrusted-content-rendering-v1';
 import { Validator } from '../utils/validation.js?v=tasks-untrusted-content-rendering-v1';
 import {
-    collection, addDoc, query, where, onSnapshot,
+    cloneTaskList, sortTaskList, mergeTaskList, removeTaskList, applySnapshotChanges
+} from '../utils/taskState.js?v=tasks-untrusted-content-rendering-v1';
+import {
+    collection, query, where, onSnapshot,
     updateDoc, deleteDoc, doc, orderBy, writeBatch, limit, startAfter, getDocs,
-    serverTimestamp, Timestamp
+    serverTimestamp, Timestamp, setDoc
 } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
 const TASKS_PER_PAGE = 5;
@@ -17,36 +20,57 @@ let hasMorePending = true;
 let hasMoreCompleted = true;
 let isLoading = false;
 let loadingPromise = null;
+let authUnsubscribe = null;
+let sessionId = 0;
 
 // Task service object
 const taskService = {
     tasks: [],
     unsubscribe: null,
     observers: [],
+    activeUserId: null,
 
     init() {
-        authService.onAuthStateChanged(async user => {
-            // Cancel any previous loading
-            if (this.unsubscribe) {
-                this.unsubscribe();
-                this.unsubscribe = null;
-            }
+        if (authUnsubscribe) return;
 
-            // Reset state
-            this.tasks = [];
-            isLoading = false;
-            loadingPromise = null;
-            lastPendingDoc = null;
-            lastCompletedDoc = null;
-            hasMorePending = true;
-            hasMoreCompleted = true;
-
-            if (user) {
-                await this.loadTasks();
-            }
-
-            this.notifyObservers();
+        authUnsubscribe = authService.onAuthStateChanged(user => {
+            this.handleAuthStateChanged(user);
         });
+    },
+
+    async handleAuthStateChanged(user) {
+        const currentSessionId = ++sessionId;
+        this.activeUserId = user?.uid || null;
+        this.stopListening();
+        this.resetState();
+
+        if (user) {
+            await this.loadTasks(user.uid, currentSessionId);
+        }
+
+        if (currentSessionId === sessionId) {
+            this.notifyObservers(user ? 'Tasks synchronized.' : 'Signed out; local tasks cleared.');
+        }
+    },
+
+    stopListening() {
+        const unsubscribe = this.unsubscribe;
+        this.unsubscribe = null;
+        unsubscribe?.();
+    },
+
+    resetState() {
+        this.tasks = [];
+        isLoading = false;
+        loadingPromise = null;
+        lastPendingDoc = null;
+        lastCompletedDoc = null;
+        hasMorePending = true;
+        hasMoreCompleted = true;
+    },
+
+    isCurrentSession(userId, currentSessionId = sessionId) {
+        return currentSessionId === sessionId && this.activeUserId === userId;
     },
 // Add task observer
     onTasksChanged(callback) {
@@ -58,106 +82,125 @@ const taskService = {
     },
 
     resetLocalState() {
-        if (this.unsubscribe) {
-            this.unsubscribe();
-            this.unsubscribe = null;
-        }
-
-        this.tasks = [];
-        isLoading = false;
-        loadingPromise = null;
-        lastPendingDoc = null;
-        lastCompletedDoc = null;
-        hasMorePending = true;
-        hasMoreCompleted = true;
+        sessionId += 1;
+        this.stopListening();
+        this.resetState();
         this.notifyObservers();
     },
 
     async refresh() {
+        const userId = authService.getCurrentUserId();
         this.resetLocalState();
-        if (authService.getCurrentUserId()) {
-            await this.loadTasks();
+        const currentSessionId = sessionId;
+        if (userId) {
+            await this.loadTasks(userId, currentSessionId);
         }
-        this.notifyObservers();
+        if (this.isCurrentSession(userId, currentSessionId)) {
+            this.notifyObservers('Tasks refreshed.');
+        }
     },
 
     // Notify all observers
-    notifyObservers() {
-        this.observers.forEach(callback => callback(this.tasks));
+    notifyObservers(announcement = null) {
+        this.observers.forEach(callback => callback(this.tasks, announcement));
+    },
+
+    snapshotState() {
+        return cloneTaskList(this.tasks);
+    },
+
+    restoreState(snapshot, announcement = 'Task list restored after a failed save') {
+        this.tasks = cloneTaskList(snapshot);
+        this.notifyObservers(announcement);
+    },
+
+    sortTasks() {
+        this.tasks = sortTaskList(this.tasks);
+    },
+
+    mergeTasks(incomingTasks, userId = this.activeUserId) {
+        const ownedTasks = incomingTasks.filter(task => task?.userId === userId);
+        this.tasks = mergeTaskList(this.tasks, ownedTasks);
+    },
+
+    removeTasks(taskIds, announcement = null) {
+        this.tasks = removeTaskList(this.tasks, taskIds);
+        this.notifyObservers(announcement);
     },
 
     // Load tasks from Firebase
-    async loadTasks() {
+    async loadTasks(userId = authService.getCurrentUserId(), currentSessionId = sessionId) {
         if (isLoading) return loadingPromise;
 
-        const userId = authService.getCurrentUserId();
-        if (!userId) return;
+        if (!userId || !this.isCurrentSession(userId, currentSessionId)) return;
 
+        let currentLoadingPromise = null;
         try {
             isLoading = true;
-            loadingPromise = (async () => {
+            currentLoadingPromise = (async () => {
                 // Load initial paginated tasks
                 await Promise.all([
-                    this.loadPendingTasks(),
-                    this.loadCompletedTasks()
+                    this.loadPendingTasks(userId, currentSessionId),
+                    this.loadCompletedTasks(userId, currentSessionId)
                 ]);
 
-                // Only listen for changes to tasks we've already loaded
-                const taskIds = this.tasks.map(task => task.id);
+                if (!this.isCurrentSession(userId, currentSessionId)) return;
 
                 const q = query(
                     collection(db, 'tasks'),
-                    where('userId', '==', userId),
-                    where('__name__', 'in', taskIds.length ? taskIds : ['dummy-id'])
+                    where('userId', '==', userId)
                 );
 
-                this.unsubscribe = onSnapshot(q, (snapshot) => {
-                    this.handleSnapshotChanges(snapshot);
-                });
+                const unsubscribe = onSnapshot(
+                    q,
+                    snapshot => this.handleSnapshotChanges(snapshot, userId, currentSessionId),
+                    error => {
+                        if (!this.isCurrentSession(userId, currentSessionId)) return;
+                        console.error('Error listening for task changes:', error);
+                        ToastService.error('Live task updates are temporarily unavailable');
+                    }
+                );
+                if (this.isCurrentSession(userId, currentSessionId)) {
+                    this.unsubscribe = unsubscribe;
+                } else {
+                    unsubscribe();
+                }
             })();
+            loadingPromise = currentLoadingPromise;
 
-            await loadingPromise;
+            await currentLoadingPromise;
         } catch (error) {
             console.error('Error loading tasks:', error);
             ToastService.error('Failed to load tasks');
         } finally {
-            isLoading = false;
-            loadingPromise = null;
+            if (loadingPromise === currentLoadingPromise) {
+                isLoading = false;
+                loadingPromise = null;
+            }
         }
     },
 
     // New helper method to handle snapshot changes
-    handleSnapshotChanges(snapshot) {
-        snapshot.docChanges().forEach((change) => {
-            const task = { id: change.doc.id, ...change.doc.data() };
+    handleSnapshotChanges(snapshot, userId = this.activeUserId, currentSessionId = sessionId) {
+        if (!this.isCurrentSession(userId, currentSessionId)) return;
 
-            switch (change.type) {
-                case 'removed':
-                    this.tasks = this.tasks.filter(t => t.id !== change.doc.id);
-                    break;
-                case 'modified':
-                    const index = this.tasks.findIndex(t => t.id === change.doc.id);
-                    if (index !== -1) {
-                        this.tasks[index] = task;
-                    }
-                    break;
-                case 'added':
-                    if (!this.tasks.some(t => t.id === change.doc.id)) {
-                        this.tasks.push(task);
-                    }
-                    break;
-            }
-        });
+        const changes = snapshot.docChanges().map(change => ({
+            type: change.type,
+            id: change.doc.id,
+            data: change.doc.data() || {}
+        }));
+        const result = applySnapshotChanges(this.tasks, changes, userId);
+        this.tasks = result.tasks;
 
-        this.tasks.sort((a, b) => a.order - b.order);
-        this.notifyObservers();
+        if (result.changed) {
+            this.notifyObservers();
+        }
     },
 
-    async loadPendingTasks() {
+    async loadPendingTasks(userId = authService.getCurrentUserId(), currentSessionId = sessionId) {
         if (!hasMorePending) return false;
 
-        const userId = authService.getCurrentUserId();
-        if (!userId) return false;
+        if (!userId || !this.isCurrentSession(userId, currentSessionId)) return false;
 
         try {
             let q = query(
@@ -174,6 +217,8 @@ const taskService = {
 
             const snapshot = await getDocs(q);
 
+            if (!this.isCurrentSession(userId, currentSessionId)) return false;
+
             // No more results
             if (snapshot.empty) {
                 hasMorePending = false;
@@ -189,16 +234,7 @@ const taskService = {
                 ...doc.data()
             }));
 
-            // Get existing tasks, filtering out any that would be duplicates
-            const existingCompletedTasks = this.tasks.filter(t => t.completed);
-            const existingPendingTasks = this.tasks.filter(t => !t.completed);
-
-            // Create a set of IDs for efficient duplicate checking
-            const existingIds = new Set(existingPendingTasks.map(t => t.id));
-            const uniqueNewTasks = newTasks.filter(task => !existingIds.has(task.id));
-
-            // Merge tasks, preserving order
-            this.tasks = [...existingPendingTasks, ...uniqueNewTasks, ...existingCompletedTasks];
+            this.mergeTasks(newTasks, userId);
             this.notifyObservers();
 
             return hasMorePending;
@@ -209,11 +245,10 @@ const taskService = {
         }
     },
 
-    async loadCompletedTasks() {
+    async loadCompletedTasks(userId = authService.getCurrentUserId(), currentSessionId = sessionId) {
         if (!hasMoreCompleted) return false;
 
-        const userId = authService.getCurrentUserId();
-        if (!userId) return false;
+        if (!userId || !this.isCurrentSession(userId, currentSessionId)) return false;
 
         try {
             let q = query(
@@ -230,6 +265,8 @@ const taskService = {
 
             const snapshot = await getDocs(q);
 
+            if (!this.isCurrentSession(userId, currentSessionId)) return false;
+
             // No more results
             if (snapshot.empty) {
                 hasMoreCompleted = false;
@@ -245,16 +282,7 @@ const taskService = {
                 ...doc.data()
             }));
 
-            // Get existing tasks, filtering out any that would be duplicates
-            const existingPendingTasks = this.tasks.filter(t => !t.completed);
-            const existingCompletedTasks = this.tasks.filter(t => t.completed);
-
-            // Create a set of IDs for efficient duplicate checking
-            const existingIds = new Set(existingCompletedTasks.map(t => t.id));
-            const uniqueNewTasks = newTasks.filter(task => !existingIds.has(task.id));
-
-            // Merge tasks, preserving order
-            this.tasks = [...existingPendingTasks, ...existingCompletedTasks, ...uniqueNewTasks];
+            this.mergeTasks(newTasks, userId);
             this.notifyObservers();
 
             return hasMoreCompleted;
@@ -277,10 +305,12 @@ const taskService = {
         const userId = authService.getCurrentUserId();
         if (!userId) throw new Error("Authentication required");
 
+        const previousState = this.snapshotState();
+
         try {
             RateLimiter.checkLimit('addTask', userId);
 
-            const lastTask = Array.from(this.tasks.values())
+            const lastTask = this.tasks
                 .reduce((max, task) => (!task.completed && task.order > max.order) ? task : max, { order: 0 });
 
             const taskData = {
@@ -294,7 +324,7 @@ const taskService = {
             };
 
             Validator.task(taskData);
-            const docRef = await addDoc(collection(db, 'tasks'), taskData);
+            const docRef = doc(collection(db, 'tasks'));
 
             const localTaskData = {
                 ...taskData,
@@ -302,12 +332,15 @@ const taskService = {
                 timestamp: Timestamp.fromDate(new Date()) // Use local timestamp for immediate display
             };
 
-            this.tasks.push(localTaskData);
-            this.notifyObservers(); // Notify observers about the change
+            this.mergeTasks([localTaskData]);
+            this.notifyObservers();
+
+            await setDoc(docRef, taskData);
 
             return docRef.id;
 
         } catch (error) {
+            this.restoreState(previousState, 'Task creation restored after the save failed');
             console.error('Error adding task:', error);
             ToastService.error(`Error adding task: ${error.message}`);
             throw error;
@@ -324,26 +357,37 @@ const taskService = {
             const taskRef = doc(db, 'tasks', taskId);
             const task = this.tasks.find(t => t.id === taskId);
 
-            if (!task) throw new Error('Task not found');
+            if (!task || task.userId !== userId) throw new Error('Task not found');
+
+            const previousState = this.snapshotState();
+            const nextUpdates = { ...updates };
 
             // If completing/uncompleting task, update order
-            if ('completed' in updates && updates.completed !== task.completed) {
-                const tasksInTargetState = this.tasks.filter(t => t.completed === updates.completed);
+            if ('completed' in nextUpdates && nextUpdates.completed !== task.completed) {
+                const tasksInTargetState = this.tasks.filter(t => t.completed === nextUpdates.completed);
                 const minOrder = tasksInTargetState.length > 0
                     ? Math.min(...tasksInTargetState.map(t => t.order))
                     : 0;
-                updates.order = minOrder - 1;
+                nextUpdates.order = minOrder - 1;
             }
 
             // Include the original timestamp in the validation
             const updatedTask = {
                 ...task,
-                ...updates,
-                timestamp: task.timestamp.toDate()
+                ...nextUpdates,
+                timestamp: task.timestamp?.toDate ? task.timestamp.toDate() : task.timestamp
             };
 
             Validator.task(updatedTask);
-            await updateDoc(taskRef, updates);
+            this.mergeTasks([{ ...task, ...nextUpdates }]);
+            this.notifyObservers();
+
+            try {
+                await updateDoc(taskRef, nextUpdates);
+            } catch (error) {
+                this.restoreState(previousState, 'Task update restored after the save failed');
+                throw error;
+            }
         } catch (error) {
             console.error('Error updating task:', error);
             ToastService.error(error.message);
@@ -352,53 +396,99 @@ const taskService = {
     },
     // Delete task
     async deleteTask(taskId) {
+        const userId = authService.getCurrentUserId();
+        if (!userId) throw new Error('Authentication required');
+
+        const previousState = this.snapshotState();
+
         try {
             const task = this.getTask(taskId);
-            if (!task) return false;
+            if (!task || task.userId !== userId) return false;
 
-            // Remove from local array immediately
-            this.tasks = this.tasks.filter(t => t.id !== taskId);
-            this.notifyObservers();
+            this.removeTasks([taskId]);
 
             // Delete from Firestore
             await deleteDoc(doc(db, 'tasks', taskId));
             return true;
         } catch (error) {
-            // Revert local deletion if Firestore deletion fails
-            const task = this.getTask(taskId);
-            if (task) {
-                this.tasks.push(task);
-                this.notifyObservers();
-            }
+            this.restoreState(previousState, 'Task restored after deletion failed');
             ToastService.error('❌ Could not delete task. Please try again');
             throw error;
         }
     },
 
-    async updateTaskOrder(orderedIds) {
+    async deleteTasks(taskIds, announcement = null) {
+        const userId = authService.getCurrentUserId();
+        if (!userId) throw new Error('Authentication required');
+
+        const previousState = this.snapshotState();
+        const taskById = new Map(this.tasks.map(task => [task.id, task]));
+        const ownedIds = [...new Set(taskIds)]
+            .filter(taskId => taskById.get(taskId)?.userId === userId);
+
+        if (ownedIds.length === 0) return false;
+
+        const batch = writeBatch(db);
+        ownedIds.forEach(taskId => batch.delete(doc(db, 'tasks', taskId)));
+        this.removeTasks(
+            ownedIds,
+            announcement || `${ownedIds.length} tasks are being deleted.`
+        );
+
         try {
-            // Only update if order has actually changed
+            await batch.commit();
+            return true;
+        } catch (error) {
+            this.restoreState(previousState, 'Tasks restored after bulk deletion failed');
+            console.error('Error deleting tasks:', error);
+            ToastService.error('Could not delete the selected tasks');
+            throw error;
+        }
+    },
+
+    async updateTaskOrder(orderedIds) {
+        const userId = authService.getCurrentUserId();
+        if (!userId) throw new Error("Authentication required");
+
+        const previousState = this.snapshotState();
+
+        try {
+            const taskById = new Map(this.tasks.map(task => [task.id, task]));
+            const uniqueOrderedIds = [...new Set(orderedIds)].filter(taskId => taskById.has(taskId));
             const currentOrder = this.tasks
-                .sort((a, b) => a.order - b.order)
+                .filter(task => uniqueOrderedIds.includes(task.id))
+                .sort((a, b) => a.order - b.order || String(a.id).localeCompare(String(b.id)))
                 .map(task => task.id);
 
-            if (JSON.stringify(currentOrder) === JSON.stringify(orderedIds)) {
+            if (JSON.stringify(currentOrder) === JSON.stringify(uniqueOrderedIds)) {
                 return true;
             }
 
             const batch = writeBatch(db);
-            orderedIds.forEach((taskId, index) => {
+            uniqueOrderedIds.forEach((taskId, index) => {
                 // Only update if position changed
-                const task = this.tasks.find(t => t.id === taskId);
+                const task = taskById.get(taskId);
                 if (task && task.order !== index) {
                     batch.update(doc(db, 'tasks', taskId), { order: index });
                 }
             });
 
-            await batch.commit();
+            this.mergeTasks(uniqueOrderedIds.map((taskId, index) => ({
+                ...taskById.get(taskId),
+                order: index
+            })));
+            this.notifyObservers();
+
+            try {
+                await batch.commit();
+            } catch (error) {
+                this.restoreState(previousState, 'Task order restored after the save failed');
+                throw error;
+            }
             return true;
         } catch (error) {
             console.error('Error updating task order:', error);
+            ToastService.error('Could not save the new task order');
             throw error;
         }
     },
@@ -409,15 +499,11 @@ const taskService = {
     },
 
     getPendingTasks() {
-        return Array.from(this.tasks.values())
-            .filter(task => !task.completed)
-            .sort((a, b) => a.order - b.order); // Sort by order ascending
+        return sortTaskList(this.tasks.filter(task => !task.completed));
     },
 
     getCompletedTasks() {
-        return Array.from(this.tasks.values())
-            .filter(task => task.completed)
-            .sort((a, b) => a.order - b.order); // Sort by order ascending
+        return sortTaskList(this.tasks.filter(task => task.completed));
     },
 
     async getTotalPendingCount() {

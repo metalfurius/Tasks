@@ -61,5 +61,7 @@ jobs:
           java-version: '21'
       - name: Install pinned dependencies
         run: npm ci
+      - name: Install Chromium for realtime browser and emulator scenarios
+        run: npx playwright install --with-deps chromium
       - name: Run Firestore emulator round trip and data erasure ownership suite
         run: npm run test:emulator

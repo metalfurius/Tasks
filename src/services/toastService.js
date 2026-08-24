@@ -26,6 +26,9 @@ const ToastService = {
         const safeType = Object.prototype.hasOwnProperty.call(TOAST_ICONS, type) ? type : 'info';
         const toast = document.createElement('div');
         toast.className = `toast ${safeType}`;
+        toast.setAttribute('role', safeType === 'error' ? 'alert' : 'status');
+        toast.setAttribute('aria-live', safeType === 'error' ? 'assertive' : 'polite');
+        toast.setAttribute('aria-atomic', 'true');
 
         const icon = TOAST_ICONS[safeType];
         const toastContent = createTextElement('div', message, 'toast-content');

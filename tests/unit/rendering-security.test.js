@@ -81,6 +81,12 @@ test('toast messages are text and cannot create event attributes or elements', (
     assert.equal(content.textContent, payloads[0]);
     assert.equal(content.querySelector('img,svg,script'), null);
     assert.equal(toast.querySelector('[onerror],[onload]'), null);
+    assert.equal(toast.getAttribute('role'), 'status');
+    assert.equal(toast.getAttribute('aria-live'), 'polite');
+
+    const errorToast = ToastService.error(payloads[0]);
+    assert.equal(errorToast.getAttribute('role'), 'alert');
+    assert.equal(errorToast.getAttribute('aria-live'), 'assertive');
 });
 
 test('empty states use a text node for encoded and quoted search terms', () => {
