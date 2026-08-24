@@ -1,15 +1,16 @@
-import { existsSync, mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { execFileSync, spawn } from 'node:child_process';
+import { createServer } from 'node:net';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const projectId = 'tasks-untrusted-test';
-const emulatorHost = '127.0.0.1:8080';
 const command = process.execPath;
 const firebaseCli = join(process.cwd(), 'node_modules', 'firebase-tools', 'lib', 'bin', 'firebase.js');
 const testScript = join(process.cwd(), 'tests', 'emulator', 'firestore-roundtrip.mjs');
 const configHome = mkdtempSync(join(tmpdir(), 'tasks-firebase-config-'));
+const firebaseConfigPath = join(configHome, 'firebase.json');
 const debugLogs = ['firestore-debug.log', 'firebase-debug.log']
     .map(filename => join(process.cwd(), filename));
 const hadDebugLogs = new Set(debugLogs.filter(existsSync));
@@ -20,6 +21,33 @@ const env = {
 };
 
 let emulatorProcess;
+let emulatorPort;
+let emulatorHost;
+
+function findAvailablePort() {
+    return new Promise((resolve, reject) => {
+        const server = createServer();
+        server.once('error', reject);
+        server.listen(0, '127.0.0.1', () => {
+            const address = server.address();
+            const port = typeof address === 'object' && address ? address.port : null;
+            server.close(error => error ? reject(error) : resolve(port));
+        });
+    });
+}
+
+async function configureEmulator() {
+    emulatorPort = await findAvailablePort();
+    emulatorHost = `127.0.0.1:${emulatorPort}`;
+    writeFileSync(firebaseConfigPath, JSON.stringify({
+        emulators: {
+            firestore: {
+                host: '127.0.0.1',
+                port: emulatorPort
+            }
+        }
+    }));
+}
 
 function cleanupFiles() {
     rmSync(configHome, { recursive: true, force: true });
@@ -33,9 +61,19 @@ function wait(milliseconds) {
 }
 
 async function waitForFirestore() {
+    const queryUrl = `http://${emulatorHost}/v1/projects/${projectId}/databases/(default)/documents:runQuery`;
     for (let attempt = 0; attempt < 120; attempt += 1) {
         try {
-            const response = await fetch(`http://${emulatorHost}`);
+            const response = await fetch(queryUrl, {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({
+                    structuredQuery: {
+                        from: [{ collectionId: 'emulatorReadinessProbe' }],
+                        limit: 1
+                    }
+                })
+            });
             if (response.ok) return;
         } catch {
             // The emulator is still starting.
@@ -62,7 +100,7 @@ function runPowerShell(script) {
 function getWindowsEmulatorProcessIds() {
     const processQuery = [
         '$ids = @()',
-        "$listener = Get-NetTCPConnection -LocalAddress '127.0.0.1' -LocalPort 8080 -State Listen -ErrorAction SilentlyContinue",
+        `$listener = Get-NetTCPConnection -LocalAddress '127.0.0.1' -LocalPort ${emulatorPort} -State Listen -ErrorAction SilentlyContinue`,
         'if ($listener) { $ids += $listener.OwningProcess }',
         "$ids += @(Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | Where-Object { $_.Name -eq 'java.exe' -and $_.CommandLine -like '*google_cloud_firestore.debug_log_level*' } | Select-Object -ExpandProperty ProcessId)",
         '$ids | Where-Object { $_ } | Sort-Object -Unique | ConvertTo-Json -Compress'
@@ -120,9 +158,12 @@ async function stopEmulator() {
 }
 
 async function main() {
+    await configureEmulator();
     emulatorProcess = spawn(command, [
         firebaseCli,
         'emulators:start',
+        '--config',
+        firebaseConfigPath,
         '--project',
         projectId,
         '--only',
