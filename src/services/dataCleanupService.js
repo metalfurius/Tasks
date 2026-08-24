@@ -115,21 +115,47 @@ const DataCleanupService = {
         const userId = authService.getCurrentUserId();
         if (!userId) return authRequiredResult(1);
 
-        const result = await runOwnedDeletion({
-            collections: [ownedCollection('tasks', userId, [where('completed', '==', false)])],
-            shouldCancel: () => Boolean(signal?.aborted),
-            onProgress
-        });
+        const previousState = taskService.snapshotState();
+        const pendingTaskIds = taskService.getPendingTasks().map(task => task.id);
+        taskService.removeTasks(
+            pendingTaskIds,
+            pendingTaskIds.length > 0
+                ? `${pendingTaskIds.length} pending tasks are being deleted.`
+                : null
+        );
 
+        let result;
         try {
-            await this.reconcileLocalState();
+            result = await runOwnedDeletion({
+                collections: [ownedCollection('tasks', userId, [where('completed', '==', false)])],
+                shouldCancel: () => Boolean(signal?.aborted),
+                onProgress
+            });
         } catch (error) {
-            return {
-                ...result,
-                status: 'partial-failure',
-                error,
-                message: `Pending-task deletion finished with ${result.status}, but local state could not be refreshed: ${error.message}`
-            };
+            taskService.restoreState(previousState, 'Pending tasks restored after deletion failed');
+            throw error;
+        }
+
+        if (result.status !== 'complete') {
+            taskService.restoreState(
+                previousState,
+                'Pending tasks restored because deletion did not complete.'
+            );
+        } else {
+            try {
+                await this.reconcileLocalState();
+            } catch (error) {
+                taskService.restoreState(
+                    previousState,
+                    'Pending tasks restored because local state could not be refreshed.'
+                );
+                return {
+                    ...result,
+                    status: 'partial-failure',
+                    error,
+                    message: `Pending-task deletion finished with ${result.status}, but local state could not be refreshed: ${error.message}`
+                };
+            }
         }
 
         if (result.status === 'complete') {

@@ -49,15 +49,14 @@ const taskService = {
         }
 
         if (currentSessionId === sessionId) {
-            this.notifyObservers();
+            this.notifyObservers(user ? 'Tasks synchronized.' : 'Signed out; local tasks cleared.');
         }
     },
 
     stopListening() {
-        if (this.unsubscribe) {
-            this.unsubscribe();
-            this.unsubscribe = null;
-        }
+        const unsubscribe = this.unsubscribe;
+        this.unsubscribe = null;
+        unsubscribe?.();
     },
 
     resetState() {
@@ -83,27 +82,22 @@ const taskService = {
     },
 
     resetLocalState() {
-        if (this.unsubscribe) {
-            this.unsubscribe();
-            this.unsubscribe = null;
-        }
-
-        this.tasks = [];
-        isLoading = false;
-        loadingPromise = null;
-        lastPendingDoc = null;
-        lastCompletedDoc = null;
-        hasMorePending = true;
-        hasMoreCompleted = true;
+        sessionId += 1;
+        this.stopListening();
+        this.resetState();
         this.notifyObservers();
     },
 
     async refresh() {
+        const userId = authService.getCurrentUserId();
         this.resetLocalState();
-        if (authService.getCurrentUserId()) {
-            await this.loadTasks();
+        const currentSessionId = sessionId;
+        if (userId) {
+            await this.loadTasks(userId, currentSessionId);
         }
-        this.notifyObservers();
+        if (this.isCurrentSession(userId, currentSessionId)) {
+            this.notifyObservers('Tasks refreshed.');
+        }
     },
 
     // Notify all observers
@@ -124,13 +118,14 @@ const taskService = {
         this.tasks = sortTaskList(this.tasks);
     },
 
-    mergeTasks(incomingTasks) {
-        this.tasks = mergeTaskList(this.tasks, incomingTasks);
+    mergeTasks(incomingTasks, userId = this.activeUserId) {
+        const ownedTasks = incomingTasks.filter(task => task?.userId === userId);
+        this.tasks = mergeTaskList(this.tasks, ownedTasks);
     },
 
-    removeTasks(taskIds) {
+    removeTasks(taskIds, announcement = null) {
         this.tasks = removeTaskList(this.tasks, taskIds);
-        this.notifyObservers();
+        this.notifyObservers(announcement);
     },
 
     // Load tasks from Firebase
@@ -156,7 +151,7 @@ const taskService = {
                     where('userId', '==', userId)
                 );
 
-                this.unsubscribe = onSnapshot(
+                const unsubscribe = onSnapshot(
                     q,
                     snapshot => this.handleSnapshotChanges(snapshot, userId, currentSessionId),
                     error => {
@@ -165,6 +160,11 @@ const taskService = {
                         ToastService.error('Live task updates are temporarily unavailable');
                     }
                 );
+                if (this.isCurrentSession(userId, currentSessionId)) {
+                    this.unsubscribe = unsubscribe;
+                } else {
+                    unsubscribe();
+                }
             })();
             loadingPromise = currentLoadingPromise;
 
@@ -234,7 +234,7 @@ const taskService = {
                 ...doc.data()
             }));
 
-            this.mergeTasks(newTasks);
+            this.mergeTasks(newTasks, userId);
             this.notifyObservers();
 
             return hasMorePending;
@@ -282,7 +282,7 @@ const taskService = {
                 ...doc.data()
             }));
 
-            this.mergeTasks(newTasks);
+            this.mergeTasks(newTasks, userId);
             this.notifyObservers();
 
             return hasMoreCompleted;
@@ -310,7 +310,7 @@ const taskService = {
         try {
             RateLimiter.checkLimit('addTask', userId);
 
-            const lastTask = Array.from(this.tasks.values())
+            const lastTask = this.tasks
                 .reduce((max, task) => (!task.completed && task.order > max.order) ? task : max, { order: 0 });
 
             const taskData = {
@@ -357,7 +357,7 @@ const taskService = {
             const taskRef = doc(db, 'tasks', taskId);
             const task = this.tasks.find(t => t.id === taskId);
 
-            if (!task) throw new Error('Task not found');
+            if (!task || task.userId !== userId) throw new Error('Task not found');
 
             const previousState = this.snapshotState();
             const nextUpdates = { ...updates };
@@ -396,11 +396,14 @@ const taskService = {
     },
     // Delete task
     async deleteTask(taskId) {
+        const userId = authService.getCurrentUserId();
+        if (!userId) throw new Error('Authentication required');
+
         const previousState = this.snapshotState();
 
         try {
             const task = this.getTask(taskId);
-            if (!task) return false;
+            if (!task || task.userId !== userId) return false;
 
             this.removeTasks([taskId]);
 
@@ -410,6 +413,35 @@ const taskService = {
         } catch (error) {
             this.restoreState(previousState, 'Task restored after deletion failed');
             ToastService.error('❌ Could not delete task. Please try again');
+            throw error;
+        }
+    },
+
+    async deleteTasks(taskIds, announcement = null) {
+        const userId = authService.getCurrentUserId();
+        if (!userId) throw new Error('Authentication required');
+
+        const previousState = this.snapshotState();
+        const taskById = new Map(this.tasks.map(task => [task.id, task]));
+        const ownedIds = [...new Set(taskIds)]
+            .filter(taskId => taskById.get(taskId)?.userId === userId);
+
+        if (ownedIds.length === 0) return false;
+
+        const batch = writeBatch(db);
+        ownedIds.forEach(taskId => batch.delete(doc(db, 'tasks', taskId)));
+        this.removeTasks(
+            ownedIds,
+            announcement || `${ownedIds.length} tasks are being deleted.`
+        );
+
+        try {
+            await batch.commit();
+            return true;
+        } catch (error) {
+            this.restoreState(previousState, 'Tasks restored after bulk deletion failed');
+            console.error('Error deleting tasks:', error);
+            ToastService.error('Could not delete the selected tasks');
             throw error;
         }
     },

@@ -4,7 +4,8 @@ import {
     applySnapshotChanges,
     cloneTaskList,
     mergeTaskList,
-    removeTaskList
+    removeTaskList,
+    sortTaskList
 } from '../../src/utils/taskState.js';
 
 const task = (id, order, overrides = {}) => ({
@@ -28,6 +29,40 @@ test('realtime changes reconcile by document id and keep deterministic order', (
     assert.equal(result.changed, true);
     assert.deepEqual(result.tasks.map(item => item.id), ['remote-new', 'page-1']);
     assert.equal(result.tasks[1].text, 'Updated remotely');
+});
+
+test('pagination and live adds merge the same document only once', () => {
+    const initialPage = [task('page-1', 10), task('page-2', 20)];
+    const merged = mergeTaskList(initialPage, [
+        task('page-2', 5, { text: 'Updated after pagination' }),
+        task('page-3', 30),
+        task('page-4', 40)
+    ]);
+
+    assert.deepEqual(merged.map(item => item.id), ['page-2', 'page-1', 'page-3', 'page-4']);
+    assert.equal(merged.filter(item => item.id === 'page-2').length, 1);
+    assert.equal(merged[0].text, 'Updated after pagination');
+});
+
+test('removals reconcile by id even when Firestore provides no removed payload', () => {
+    const result = applySnapshotChanges(
+        [task('owned', 10), task('other', 20)],
+        [{ type: 'removed', id: 'owned', data: {} }],
+        'synthetic-user-a'
+    );
+
+    assert.equal(result.changed, true);
+    assert.deepEqual(result.tasks.map(item => item.id), ['other']);
+});
+
+test('equal orders remain stable by document id', () => {
+    const sorted = sortTaskList([
+        task('z', 10),
+        task('a', 10),
+        task('m', Number.NaN)
+    ]);
+
+    assert.deepEqual(sorted.map(item => item.id), ['a', 'z', 'm']);
 });
 
 test('ownership filtering prevents another user from entering local state', () => {

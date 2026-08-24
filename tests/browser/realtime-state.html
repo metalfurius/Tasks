@@ -10,30 +10,84 @@
         <p id="live-status" role="status" aria-live="polite">Connecting to synthetic Firestore...</p>
     </main>
     <script type="module">
-        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js';
-        import {
-            collection,
-            connectFirestoreEmulator,
-            deleteDoc,
-            disableNetwork,
-            doc,
-            enableNetwork,
-            getFirestore,
-            onSnapshot,
-            query,
-            setDoc,
-            Timestamp,
-            updateDoc,
-            where,
-            writeBatch
-        } from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
-
-        const app = initializeApp({ projectId: 'tasks-realtime-test' }, `fixture-${crypto.randomUUID()}`);
-        const db = getFirestore(app);
-        connectFirestoreEmulator(db, '127.0.0.1', 8080);
+        const emulatorHost = new URL(window.location.href).searchParams.get('emulatorHost') || '127.0.0.1:8080';
+        const documentsUrl = `http://${emulatorHost}/v1/projects/tasks-realtime-test/databases/(default)/documents`;
         const tasks = new Map();
         const liveStatus = document.getElementById('live-status');
         let unsubscribe = null;
+        let activeUserId = null;
+        let online = true;
+
+        function encodeFirestoreValue(value) {
+            if (value === null) return { nullValue: null };
+            if (typeof value === 'boolean') return { booleanValue: value };
+            if (typeof value === 'number') {
+                return Number.isInteger(value)
+                    ? { integerValue: String(value) }
+                    : { doubleValue: value };
+            }
+            return { stringValue: String(value) };
+        }
+
+        function decodeFirestoreValue(value) {
+            if ('nullValue' in value) return null;
+            if ('booleanValue' in value) return value.booleanValue;
+            if ('integerValue' in value) return Number(value.integerValue);
+            if ('doubleValue' in value) return value.doubleValue;
+            return value.stringValue ?? value.timestampValue ?? '';
+        }
+
+        function decodeDocument(document) {
+            const path = document.name.split('/');
+            const id = decodeURIComponent(path[path.length - 1]);
+            return {
+                id,
+                ...Object.fromEntries(
+                    Object.entries(document.fields || {})
+                        .map(([key, value]) => [key, decodeFirestoreValue(value)])
+                )
+            };
+        }
+
+        async function readOwnedTasks(userId) {
+            const response = await fetch(`${documentsUrl}:runQuery`, {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({
+                    structuredQuery: {
+                        from: [{ collectionId: 'tasks' }],
+                        where: {
+                            fieldFilter: {
+                                field: { fieldPath: 'userId' },
+                                op: 'EQUAL',
+                                value: { stringValue: userId }
+                            }
+                        }
+                    }
+                })
+            });
+            if (!response.ok) throw new Error(`Firestore query failed with ${response.status}`);
+            const body = await response.text();
+            const trimmedBody = body.trim();
+            if (!trimmedBody) return [];
+            const results = trimmedBody.startsWith('[')
+                ? JSON.parse(trimmedBody)
+                : trimmedBody.split('\n').map(line => JSON.parse(line.trim()));
+            return results
+                .filter(result => result.document)
+                .map(result => decodeDocument(result.document));
+        }
+
+        async function synchronize() {
+            if (!online || !activeUserId) return;
+            const remoteTasks = await readOwnedTasks(activeUserId);
+            const remoteIds = new Set(remoteTasks.map(task => task.id));
+            for (const taskId of tasks.keys()) {
+                if (!remoteIds.has(taskId)) tasks.delete(taskId);
+            }
+            remoteTasks.forEach(task => tasks.set(task.id, task));
+            publishState();
+        }
 
         function publishState() {
             liveStatus.textContent = `Tasks synchronized: ${tasks.size}`;
@@ -48,47 +102,60 @@
                 }));
         }
 
-        window.startListener = userId => new Promise(resolve => {
-            const taskQuery = query(collection(db, 'tasks'), where('userId', '==', userId));
-            unsubscribe = onSnapshot(taskQuery, snapshot => {
-                snapshot.docChanges().forEach(change => {
-                    if (change.type === 'removed') {
-                        tasks.delete(change.doc.id);
-                    } else if (change.doc.data().userId === userId) {
-                        tasks.set(change.doc.id, { id: change.doc.id, ...change.doc.data() });
-                    }
+        window.startListener = async userId => {
+            activeUserId = userId;
+            online = true;
+            await synchronize();
+            unsubscribe = window.setInterval(() => {
+                synchronize().catch(error => {
+                    liveStatus.textContent = `Realtime sync unavailable: ${error.message}`;
                 });
-                publishState();
-                resolve();
-            });
-        });
+            }, 100);
+        };
 
         window.writeTask = async task => {
-            await setDoc(doc(db, 'tasks', task.id), {
-                ...task,
-                timestamp: Timestamp.now()
+            const response = await fetch(`${documentsUrl}/tasks/${encodeURIComponent(task.id)}`, {
+                method: 'PATCH',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({
+                    fields: Object.fromEntries(
+                        Object.entries({ ...task, timestamp: new Date().toISOString() })
+                            .map(([key, value]) => [key, encodeFirestoreValue(value)])
+                    )
+                })
             });
+            if (!response.ok) throw new Error(`Firestore write failed with ${response.status}`);
         };
 
         window.updateTask = async (taskId, updates) => {
-            await updateDoc(doc(db, 'tasks', taskId), updates);
+            const current = tasks.get(taskId);
+            await window.writeTask({ ...current, ...updates, id: taskId });
         };
 
-        window.deleteTask = taskId => deleteDoc(doc(db, 'tasks', taskId));
+        window.deleteTask = async taskId => {
+            const response = await fetch(`${documentsUrl}/tasks/${encodeURIComponent(taskId)}`, {
+                method: 'DELETE'
+            });
+            if (!response.ok) throw new Error(`Firestore delete failed with ${response.status}`);
+        };
 
         window.bulkDelete = async taskIds => {
-            const batch = writeBatch(db);
-            taskIds.forEach(taskId => batch.delete(doc(db, 'tasks', taskId)));
-            await batch.commit();
+            await Promise.all(taskIds.map(taskId => window.deleteTask(taskId)));
         };
 
-        window.setOffline = () => disableNetwork(db);
-        window.setOnline = () => enableNetwork(db);
+        window.setOffline = async () => {
+            online = false;
+        };
+        window.setOnline = async () => {
+            online = true;
+            await synchronize();
+        };
         window.stopListener = () => {
             if (unsubscribe) {
-                unsubscribe();
+                window.clearInterval(unsubscribe);
                 unsubscribe = null;
             }
+            activeUserId = null;
         };
 
         window.__realtimeState = [];

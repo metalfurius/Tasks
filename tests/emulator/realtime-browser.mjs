@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
+import { unlink } from 'node:fs/promises';
 import { join } from 'node:path';
 import { chromium } from 'playwright';
 
@@ -33,16 +34,25 @@ async function waitForCount(page, count) {
 let browser;
 let contextA;
 let contextB;
+const screenshotPaths = [
+    join(root, 'realtime-state-desktop.png'),
+    join(root, 'realtime-state-mobile.png')
+];
 try {
     await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
     const { port } = server.address();
-    const url = `http://127.0.0.1:${port}/`;
+    const emulatorHost = process.env.FIRESTORE_EMULATOR_HOST || '127.0.0.1:8080';
+    const url = `http://127.0.0.1:${port}/?emulatorHost=${encodeURIComponent(emulatorHost)}`;
 
     browser = await chromium.launch({ headless: true });
     contextA = await browser.newContext({ viewport: { width: 1280, height: 720 } });
     contextB = await browser.newContext({ viewport: { width: 390, height: 844 } });
     const pageA = await contextA.newPage();
     const pageB = await contextB.newPage();
+    for (const page of [pageA, pageB]) {
+        page.on('pageerror', error => console.error(`Realtime fixture page error: ${error.message}`));
+        page.on('requestfailed', request => console.error(`Realtime fixture request failed: ${request.url()} ${request.failure()?.errorText || ''}`));
+    }
     await Promise.all([pageA.goto(url), pageB.goto(url)]);
     await Promise.all([
         pageA.evaluate(userId => window.startListener(userId), ownerId),
@@ -55,6 +65,17 @@ try {
     }, initialTasks);
     await Promise.all([waitForCount(pageA, 7), waitForCount(pageB, 7)]);
 
+    await pageB.evaluate(taskItem => window.writeTask(taskItem), {
+        ...task('foreign', 0),
+        userId: 'synthetic-realtime-other-user'
+    });
+    await new Promise(resolve => setTimeout(resolve, 500));
+    assert.equal((await pageA.evaluate(() => window.__realtimeState)).length, 7);
+    assert.equal(
+        await pageA.evaluate(() => window.__realtimeState.some(item => item.userId === 'synthetic-realtime-other-user')),
+        false
+    );
+
     await pageB.evaluate(async ({ id, text }) => window.updateTask(id, { text }), {
         id: `${prefix}page-2`,
         text: `${prefix}remote-edit`
@@ -62,6 +83,13 @@ try {
     await pageB.evaluate(id => window.updateTask(id, { completed: true, order: 0 }), `${prefix}page-3`);
     await pageB.evaluate(id => window.deleteTask(id), `${prefix}page-4`);
     await Promise.all([waitForCount(pageA, 6), waitForCount(pageB, 6)]);
+    await Promise.all([
+        pageA.waitForFunction(({ id, text }) => window.__realtimeState.find(item => item.id === id)?.text === text, {
+            id: `${prefix}page-2`,
+            text: `${prefix}remote-edit`
+        }),
+        pageB.waitForFunction(id => window.__realtimeState.find(item => item.id === id)?.completed === true, `${prefix}page-3`)
+    ]);
 
     const statesAfterRemoteChanges = await Promise.all([
         pageA.evaluate(() => window.__realtimeState),
@@ -72,8 +100,8 @@ try {
     assert.equal(statesAfterRemoteChanges[0].find(item => item.id === `${prefix}page-3`).completed, true);
     assert.equal(statesAfterRemoteChanges[0].some(item => item.id === `${prefix}page-4`), false);
     assert.equal(await pageA.locator('#live-status').getAttribute('aria-live'), 'polite');
-    await pageA.screenshot({ path: join(root, 'realtime-state-desktop.png') });
-    await pageB.screenshot({ path: join(root, 'realtime-state-mobile.png') });
+    await pageA.screenshot({ path: screenshotPaths[0] });
+    await pageB.screenshot({ path: screenshotPaths[1] });
 
     await pageA.evaluate(() => window.setOffline());
     await pageB.evaluate(taskItem => window.writeTask(taskItem), task('offline', 8));
@@ -97,6 +125,7 @@ try {
 
     console.log('synthetic realtime two-context fixture passed.');
 } finally {
+    await Promise.all(screenshotPaths.map(path => unlink(path).catch(() => {})));
     await contextA?.close();
     await contextB?.close();
     await browser?.close();
