@@ -82,6 +82,30 @@ const taskService = {
         };
     },
 
+    resetLocalState() {
+        if (this.unsubscribe) {
+            this.unsubscribe();
+            this.unsubscribe = null;
+        }
+
+        this.tasks = [];
+        isLoading = false;
+        loadingPromise = null;
+        lastPendingDoc = null;
+        lastCompletedDoc = null;
+        hasMorePending = true;
+        hasMoreCompleted = true;
+        this.notifyObservers();
+    },
+
+    async refresh() {
+        this.resetLocalState();
+        if (authService.getCurrentUserId()) {
+            await this.loadTasks();
+        }
+        this.notifyObservers();
+    },
+
     // Notify all observers
     notifyObservers(announcement = null) {
         this.observers.forEach(callback => callback(this.tasks, announcement));

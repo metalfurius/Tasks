@@ -9,7 +9,6 @@ import HistoryView from './components/history/history.js?v=tasks-untrusted-conte
 import ToastService from './services/toastService.js?v=tasks-untrusted-content-rendering-v1';
 import NotificationMonitor from './services/notificationMonitor.js?v=tasks-untrusted-content-rendering-v1';
 import ConfigMenu from './components/ui/configMenu.js?v=tasks-untrusted-content-rendering-v1';
-import DataCleanupService from "./services/dataCleanupService.js?v=tasks-untrusted-content-rendering-v1";
 import SearchComponent from './components/search/search.js?v=tasks-untrusted-content-rendering-v1';
 import SidebarManager from './components/ui/sidebar.js?v=tasks-untrusted-content-rendering-v1';
 
@@ -36,20 +35,6 @@ const App = {
 
         // Initialize history view
         HistoryView.init();
-
-        // Add event listener for the delete all data button
-        document.getElementById('delete-all-data').addEventListener('click', async () => {
-            await DataCleanupService.deleteAllUserData();
-            document.getElementById('config-menu').classList.remove('show');
-        });
-
-        document.getElementById('clear-pending-tasks').addEventListener('click', async () => {
-            // Show confirmation dialog
-            if (confirm('Are you sure you want to delete all pending tasks? This cannot be undone.')) {
-                await DataCleanupService.clearPendingTasks();
-                document.getElementById('config-menu').classList.remove('show');
-            }
-        });
 
         SidebarManager.init();
 

@@ -1,0 +1,107 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taskify data erasure fixture</title>
+<style>
+    :root { font-family: system-ui, sans-serif; color: #172033; background: #f5f7fb; }
+    body { margin: 0; padding: 2rem; }
+    button { min-height: 2.75rem; padding: .6rem 1rem; margin: .25rem; }
+    .hidden { display: none !important; }
+    .destructive-modal { position: fixed; inset: 0; display: grid; place-items: center; padding: 1rem; background: rgba(15, 23, 42, .72); }
+    .destructive-modal-card { width: min(100%, 34rem); padding: 1.5rem; background: white; border-radius: 1rem; }
+    .destructive-modal-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: .5rem; }
+    .cleanup-error { color: #b42318; }
+</style>
+<main>
+    <button id="open-all" type="button">Open delete-all confirmation</button>
+</main>
+<div id="destructive-confirmation" class="destructive-modal hidden" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="destructive-confirmation-title">
+    <section class="destructive-modal-card" role="document">
+        <h1 id="destructive-confirmation-title">Confirm destructive action</h1>
+        <p id="destructive-confirmation-message"></p>
+        <p id="cleanup-progress" role="status" aria-live="polite"></p>
+        <p id="cleanup-error" class="cleanup-error hidden" role="alert" aria-live="assertive"></p>
+        <div class="destructive-modal-actions">
+            <button id="cleanup-cancel" type="button">Cancel</button>
+            <button id="cleanup-confirm" type="button">Confirm deletion</button>
+            <button id="cleanup-retry" class="hidden" type="button">Retry deletion</button>
+            <button id="cleanup-close" class="hidden" type="button">Close</button>
+        </div>
+    </section>
+</div>
+<script type="module">
+    import DestructiveConfirmation from '../../src/components/ui/destructiveConfirmation.js';
+    import { runOwnedDeletion } from '../../src/services/dataDeletion.js';
+
+    const wait = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds));
+    const scope = 'This permanently deletes all Taskify tasks and all Taskify history owned by the signed-in account. Your Google/Firebase authentication account remains active.';
+
+    function memorySpec(collection, owner, records) {
+        return {
+            name: collection,
+            queryPage: async limit => ({ docs: records.filter(record => record.owner === owner).slice(0, limit) }),
+            deleteBatch: async documents => {
+                const ids = new Set(documents.map(document => document.id));
+                for (let index = records.length - 1; index >= 0; index -= 1) {
+                    if (ids.has(records[index].id)) records.splice(index, 1);
+                }
+            },
+            verifyRemaining: async () => records.filter(record => record.owner === owner).length
+        };
+    }
+
+    DestructiveConfirmation.init();
+
+    async function runScenario(scenario) {
+        const confirmed = await DestructiveConfirmation.request({
+            title: 'Delete all Taskify data?',
+            message: scope,
+            confirmLabel: 'Delete all Taskify data'
+        });
+        if (!confirmed) {
+            window.__lastResult = { status: 'cancelled-before-start' };
+            return window.__lastResult;
+        }
+
+        let attempts = 0;
+        const runAttempt = async () => {
+            attempts += 1;
+            const controller = new AbortController();
+            DestructiveConfirmation.beginProgress(() => controller.abort());
+            DestructiveConfirmation.updateProgress({ phase: 'delete', collection: 'tasks', batchSize: 450, deleted: 0 });
+            await wait(scenario === 'cancelled' ? 1000 : 60);
+
+            let result;
+            if (controller.signal.aborted) {
+                result = { status: 'cancelled', deleted: 450, completedCollections: 0, totalCollections: 2 };
+            } else if (scenario === 'partial-failure' && attempts === 1) {
+                result = { status: 'partial-failure', deleted: 450, completedCollections: 1, totalCollections: 2, error: new Error('Synthetic permission failure in history batch.') };
+            } else {
+                result = { status: 'complete', deleted: 901, completedCollections: 2, totalCollections: 2 };
+            }
+
+            window.__lastResult = result;
+            DestructiveConfirmation.showResult(result, {
+                onRetry: (result.status === 'cancelled' || result.status === 'partial-failure') ? runAttempt : null
+            });
+            return result;
+        };
+
+        return runAttempt();
+    }
+
+    window.__startScenario = scenario => runScenario(scenario);
+    window.__runOwnershipScenario = async () => {
+        const records = [
+            { id: 'user-a-task', owner: 'user-a' },
+            { id: 'user-b-task', owner: 'user-b' }
+        ];
+        const result = await runOwnedDeletion({
+            collections: [memorySpec('tasks', 'user-a', records)],
+            delay: async () => {}
+        });
+        return { result, remainingOwners: records.map(record => record.owner) };
+    };
+    window.__reloadState = () => ({ hidden: document.getElementById('destructive-confirmation').classList.contains('hidden') });
+    document.getElementById('open-all').addEventListener('click', () => window.__startScenario('complete'));
+</script>

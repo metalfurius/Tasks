@@ -1,115 +1,157 @@
-// src/services/dataCleanupService.js
 import taskService from './taskService.js?v=tasks-untrusted-content-rendering-v1';
 import historyService from './historyService.js?v=tasks-untrusted-content-rendering-v1';
 import ToastService from './toastService.js?v=tasks-untrusted-content-rendering-v1';
-import authService from "./authService.js?v=tasks-untrusted-content-rendering-v1";
+import authService from './authService.js?v=tasks-untrusted-content-rendering-v1';
+import { runOwnedDeletion } from './dataDeletion.js?v=tasks-untrusted-content-rendering-v1';
 import {
     collection,
+    getDocs,
+    limit,
     query,
     where,
-    getDocs,
     writeBatch
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
-import {db} from "./firebase.js?v=tasks-untrusted-content-rendering-v1";
+} from 'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js';
+import { db } from './firebase.js?v=tasks-untrusted-content-rendering-v1';
+
+function ownedCollection(name, userId, filters = []) {
+    return {
+        name,
+        queryPage: async batchSize => {
+            const snapshot = await getDocs(query(
+                collection(db, name),
+                where('userId', '==', userId),
+                ...filters,
+                limit(batchSize)
+            ));
+            return { docs: snapshot.docs };
+        },
+        deleteBatch: async docs => {
+            const batch = writeBatch(db);
+            docs.forEach(documentSnapshot => batch.delete(documentSnapshot.ref));
+            await batch.commit();
+        },
+        verifyRemaining: async () => {
+            const snapshot = await getDocs(query(
+                collection(db, name),
+                where('userId', '==', userId),
+                ...filters,
+                limit(1)
+            ));
+            return snapshot.size;
+        }
+    };
+}
+
+function authRequiredResult(totalCollections = 2) {
+    const error = new Error('Authentication is required before deleting Taskify data.');
+    return {
+        status: 'partial-failure',
+        deleted: 0,
+        completedCollections: 0,
+        totalCollections,
+        error,
+        message: error.message
+    };
+}
 
 const DataCleanupService = {
-    async deleteAllUserData() {
-        if (!confirm("WARNING: This will permanently delete ALL your tasks and history. This action cannot be undone. Continue?")) {
-            return false;
-        }
-
-        // Double-check with another confirmation
-        if (!confirm("Are you absolutely sure? All your data will be permanently deleted.")) {
-            return false;
-        }
-
-        try {
-            ToastService.info("Deleting all your data. Please wait...", 0);
-
-            // Delete all tasks first
-            await this.deleteAllTasks();
-
-            // Then delete all history
-            await historyService.cleanupOldHistory(true);
-
-            ToastService.success("All your data has been successfully deleted.");
-            return true;
-        } catch (error) {
-            console.error("Error deleting user data:", error);
-            ToastService.error("Failed to delete all data. Please try again.");
-            return false;
-        }
+    async reconcileLocalState() {
+        await Promise.all([
+            taskService.refresh(),
+            historyService.refresh()
+        ]);
     },
 
-    async deleteAllTasks() {
-        const allTasks = taskService.tasks;
-        const deletePromises = [];
+    async deleteAllUserData({ signal, onProgress } = {}) {
+        const userId = authService.getCurrentUserId();
+        if (!userId) return authRequiredResult();
 
-        for (const task of allTasks) {
-            deletePromises.push(taskService.deleteTask(task.id));
+        const result = await runOwnedDeletion({
+            collections: [
+                ownedCollection('tasks', userId),
+                ownedCollection('history', userId)
+            ],
+            shouldCancel: () => Boolean(signal?.aborted),
+            onProgress
+        });
+
+        try {
+            await this.reconcileLocalState();
+        } catch (error) {
+            return {
+                ...result,
+                status: 'partial-failure',
+                error,
+                message: `Server deletion result was ${result.status}, but local state could not be refreshed: ${error.message}`
+            };
         }
 
-        await Promise.all(deletePromises);
+        if (result.status === 'complete') {
+            ToastService.success('All Taskify tasks and history were deleted. Your Google/Firebase account remains active.');
+        } else if (result.status === 'cancelled') {
+            ToastService.warning(`Deletion cancelled after ${result.deleted} documents. Retry to resume safely.`);
+        } else {
+            const detail = result.error?.message || 'server verification did not pass';
+            ToastService.error(`Deletion incomplete after ${result.deleted} documents: ${detail}`);
+        }
+
+        return result;
     },
 
-    async clearPendingTasks() {
+    async deleteAllTasks(options = {}) {
+        const userId = authService.getCurrentUserId();
+        if (!userId) return authRequiredResult(1);
+
+        const result = await runOwnedDeletion({
+            collections: [ownedCollection('tasks', userId)],
+            shouldCancel: () => Boolean(options.signal?.aborted),
+            onProgress: options.onProgress
+        });
+        await taskService.refresh();
+        return result;
+    },
+
+    async clearPendingTasks({ signal, onProgress } = {}) {
+        const userId = authService.getCurrentUserId();
+        if (!userId) return authRequiredResult(1);
+
+        const result = await runOwnedDeletion({
+            collections: [ownedCollection('tasks', userId, [where('completed', '==', false)])],
+            shouldCancel: () => Boolean(signal?.aborted),
+            onProgress
+        });
+
         try {
-            const userId = authService.getCurrentUserId();
-            if (!userId) return;
-
-            // Show loading toast
-            ToastService.info("Clearing all pending tasks. Please wait...", 0);
-
-            // Query all pending tasks directly from Firestore
-            const pendingTasksQuery = query(
-                collection(db, 'tasks'),
-                where('userId', '==', userId),
-                where('completed', '==', false)
-            );
-
-            // Get all pending tasks
-            const snapshot = await getDocs(pendingTasksQuery);
-
-            if (snapshot.empty) {
-                ToastService.info("No pending tasks to clear.");
-                return;
-            }
-
-            // Count the number of tasks to delete
-            const taskCount = snapshot.size;
-            const previousState = taskService.snapshotState();
-            const taskIds = snapshot.docs.map(taskDoc => taskDoc.id);
-
-            // Create batch delete operation
-            const batch = writeBatch(db);
-            snapshot.docs.forEach(doc => {
-                batch.delete(doc.ref);
-            });
-
-            // Remove known documents immediately while retaining an exact
-            // snapshot for a failed batch commit.
-            taskService.removeTasks(taskIds);
-
-            // Execute batch delete
-            try {
-                await batch.commit();
-            } catch (error) {
-                taskService.restoreState(previousState, 'Pending tasks restored after bulk deletion failed');
-                throw error;
-            }
-
-            // Log action in history
-            await historyService.logAction('Cleared all pending tasks', `${taskCount} tasks deleted`);
-
-            // Show success message
-            ToastService.warning(`${taskCount} pending tasks have been deleted.`);
-
-            return true;
+            await this.reconcileLocalState();
         } catch (error) {
-            console.error('Error clearing pending tasks:', error);
-            ToastService.error('Failed to clear pending tasks');
-            throw error;
+            return {
+                ...result,
+                status: 'partial-failure',
+                error,
+                message: `Pending-task deletion finished with ${result.status}, but local state could not be refreshed: ${error.message}`
+            };
         }
+
+        if (result.status === 'complete') {
+            if (result.deleted > 0) {
+                try {
+                    await historyService.logAction('Cleared all pending tasks', `${result.deleted} tasks deleted`);
+                    await historyService.refresh();
+                } catch (error) {
+                    // The task deletion and its verification are still complete;
+                    // surface the audit-log issue without claiming task failure.
+                    ToastService.error(`Pending tasks were deleted, but the audit entry failed: ${error.message}`);
+                }
+            }
+            ToastService.warning(`${result.deleted} pending tasks were deleted and verified.`);
+        } else if (result.status === 'cancelled') {
+            ToastService.warning(`Pending-task deletion cancelled after ${result.deleted} documents. Retry to resume.`);
+        } else {
+            const detail = result.error?.message || 'server verification did not pass';
+            ToastService.error(`Pending-task deletion incomplete after ${result.deleted} documents: ${detail}`);
+        }
+
+        return result;
     }
 };
 
